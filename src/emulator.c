@@ -24,4 +24,4 @@ uint32_t a6;
 uint32_t a7;
 
 // memory
-uint8_t memory[16777220];
+uint8_t *memory;

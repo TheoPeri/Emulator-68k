@@ -13,7 +13,7 @@ TSOURCES=$(wildcard $(TEST_DIR)*.c) # all .c file
 
 OBJECTS=$(patsubst $(SRC_DIR)%.c, $(TMP_DIR)%.o, $(SOURCES)) # all .o for exec
 DOBJECTS=$(patsubst $(SRC_DIR)%.c, $(TMP_DIR)_d_%.o, $(SOURCES)) # all .o for debug
-TOBJECTS=$(patsubst $(TEST_DIR)%.c, $(TMP_DIR)_t_%.o, $(TSOURCES)) # all .o for test
+TOBJECTS=$(patsubst $(TEST_DIR)%.c, $(TMP_DIR)%.o, $(TSOURCES)) # all .o for test
 
 LOBJECTS=$(filter-out $(TMP_DIR)main.o, $(OBJECTS)) # all .o for the lib
 
@@ -24,7 +24,7 @@ debug: $(DOBJECTS)
 	$(CC) $(CFLAGS) -g $(DOBJECTS) -o $(BUILD_DIR)$@
 
 unit_test: $(TOBJECTS) $(LOBJECTS)
-	$(CC) $(CFLAGS) -Ofast -lcriterion $(TOBJECTS) -o $(BUILD_DIR)$@ 
+	$(CC) $(CFLAGS) -Ofast -lcriterion $(TOBJECTS) $(LOBJECTS) -o $(BUILD_DIR)$@ 
 
 $(OBJECTS): $(TMP_DIR)%.o : $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) -Ofast -c $< -o $@
@@ -32,7 +32,7 @@ $(OBJECTS): $(TMP_DIR)%.o : $(SRC_DIR)%.c
 $(DOBJECTS): $(TMP_DIR)_d_%.o : $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) -g -c $< -o $@
 
-$(TOBJECTS): $(TMP_DIR)_t_%.o : $(TEST_DIR)%.c
+$(TOBJECTS): $(TMP_DIR)%.o : $(TEST_DIR)%.c
 	$(CC) $(CFLAGS) -Ofast -lcriterion -c $< -o $@ 
 
 clean:
