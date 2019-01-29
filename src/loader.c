@@ -8,6 +8,15 @@
 
 extern uint8_t *memory;
 
+/**
+ * @brief Copy every byte in the memory.
+ *
+ * @param s The data string.
+ * @param size The size of the data.
+ * @param address The relative address where paste the data in memory.
+ *
+ * @return -1 => error || other => the sum of every byte paste
+ */
 int copy_raw_data(char *s, uint8_t size, uint32_t address) {
     uint8_t res = 0;
 
@@ -24,6 +33,13 @@ int copy_raw_data(char *s, uint8_t size, uint32_t address) {
     return (int)res;
 }
 
+/**
+ * @brief Load on line in the memory (S-Record).
+ *
+ * @param s The string wich contain the data.
+ *
+ * @return -1 => error | other => OK
+ */
 int load_line(char *s) {
     unsigned offset, type, size, checksum, address;
     int tmp;
