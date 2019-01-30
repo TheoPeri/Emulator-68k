@@ -64,8 +64,7 @@ int load_line(char *s) {
                 return -1;
             }
             
-            //
-            offset = 10 + 2 * (size - 4);
+            offset = 10 + 2 * (size - 1);
             if ((sscanf(s + offset, "%2x", &checksum)) == EOF) {
                 goto error;
             }
@@ -75,6 +74,7 @@ int load_line(char *s) {
                 fprintf(stderr, "WARNING: checksum value incorrect expect: %u,"
                     "received: %u", checksum, ~(size + tmp + address) & 0xFF);
             }
+
             break;
         case 3:
             break;
@@ -87,7 +87,7 @@ int load_line(char *s) {
         case 9:
             break;
         default:
-            return -1; 
+            goto error;
     }
 
     return 0;
