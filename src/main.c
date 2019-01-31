@@ -1,20 +1,15 @@
-#include "loader.h"
 #include <stdio.h>
+
+#include "loader.h"
 #include "emulator.h"
 #include "stdlib.h"
 
 extern char *memory;
 
 int main() {
-    memory = calloc(16777220, sizeof(char));
+    init();
 
-    int tmp = load_line("S214000000285F245F2212226A000424290008237C29");
+    load_file("test.hex");
 
-    // loader
-
-    // init
-
-    // main loop
-
-    // exit
+    shutdown();
 }

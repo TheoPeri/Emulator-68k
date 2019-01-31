@@ -1,4 +1,7 @@
+#define _GNU_SOURCE
+
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
@@ -24,7 +27,7 @@ uint8_t compute_checksum(char *s, unsigned size) {
 
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2x", &tmp) == EOF) {
-            fprintf(stderr, "Error while parsing: %s.\n", strerror(errno));  
+            fprintf(stderr, "Error while parsing: %s\n", strerror(errno));  
             return 0;
         }
         res += tmp;
@@ -46,7 +49,7 @@ uint8_t compute_checksum(char *s, unsigned size) {
 int copy_raw_data(char *s, uint8_t size, uint32_t address) {
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2hhx", memory + address + i) == EOF) {
-            fprintf(stderr, "Error while parsing: %s.\n", strerror(errno));  
+            fprintf(stderr, "Error while parsing => %s\n", strerror(errno));  
             return -1;
         }
 
@@ -79,12 +82,18 @@ int load_line(char *s) {
         }
 
         if (type == 0) {
-            printf("Find header header content: ");
-            write(1, s + 6, size - 3);
+            printf("Find header content => ");
+            char c;
+
+            for (unsigned i = 0; i < size-3; ++i) {
+                sscanf(s + 6 + 2 * i, "%2hhx", &c); 
+                printf("%c", c);
+            }
+
             printf("\n");
         } else {
             printf("The count of S1, S2, and S3 records previously transmitted"
-                    ": %u\n", address);
+                    " => %u\n", address);
         }
     } else if (type == 1 || type == 2 || type == 3) {
         // data S
@@ -132,12 +141,13 @@ int load_line(char *s) {
                     goto error;
                 }
                 break;
-
-            // copy the data in the PC
-            PC = address;
         }
+
+        // copy the data in the PC
+        PC = address;
+        printf("Set the PC address at 0x%06u\n", address);
     } else {
-        fprintf(stderr, "Unknow S type => S%u", type);
+        fprintf(stderr, "Unknow S type => S%u\n", type);
         return -1;
     }
 
@@ -148,12 +158,38 @@ int load_line(char *s) {
     // checksum
     if (checksum != compute_checksum(s, size)) {
         fprintf(stderr, "WARNING: checksum value incorrect expect: 0x%hhx,"
-                "received: 0x%hhx\n", checksum, compute_checksum(s, size));
+                "received => 0x%hhx\n", checksum, compute_checksum(s, size));
     }
 
     return 0;
 
     error:
-        fprintf(stderr, "Error while parsing: %s.\n", strerror(errno));  
+        fprintf(stderr, "Error while parsing => %s\n", strerror(errno));  
         return -1;
+}
+
+int load_file(char *name_file) {
+    FILE *fp;
+    char *line = NULL;
+    size_t i = 0;
+    size_t len = 0;
+    ssize_t read;
+    
+    fp = fopen(name_file, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "FAIL OPEN THE FILE!!!.\n");
+        return -1; 
+    }
+
+    while ((read = getline(&line, &len, fp)) != -1) {
+        printf("\nLoad the line number %li => %s", i, line);
+        load_line(line);
+        ++i;
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+
+    return 0;
 }
