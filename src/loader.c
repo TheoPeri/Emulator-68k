@@ -1,14 +1,14 @@
 #define _GNU_SOURCE
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <unistd.h>
 
-#include "emulator.h"
 #include "loader.h"
+#include "memory.h"
 
 extern uint8_t *memory;
 extern uint32_t PC;
