@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <err.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -27,7 +28,7 @@ uint8_t compute_checksum(char *s, unsigned size) {
 
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2x", &tmp) == EOF) {
-            fprintf(stderr, "Error while parsing: %s\n", strerror(errno));  
+            warnx("Error while parsing: %s\n", strerror(errno));  
             return 0;
         }
         res += tmp;
@@ -49,7 +50,7 @@ uint8_t compute_checksum(char *s, unsigned size) {
 int copy_raw_data(char *s, uint8_t size, uint32_t address) {
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2hhx", memory + address + i) == EOF) {
-            fprintf(stderr, "Error while parsing => %s\n", strerror(errno));  
+            warnx("Error while parsing => %s\n", strerror(errno));  
             return -1;
         }
 
@@ -147,7 +148,7 @@ int load_line(char *s) {
         PC = address;
         printf("Set the PC address at 0x%06u\n", address);
     } else {
-        fprintf(stderr, "Unknow S type => S%u\n", type);
+        warnx("Unknow S type => S%u\n", type);
         return -1;
     }
 
@@ -157,14 +158,14 @@ int load_line(char *s) {
 
     // checksum
     if (checksum != compute_checksum(s, size)) {
-        fprintf(stderr, "WARNING: checksum value incorrect expect: 0x%hhx,"
-                "received => 0x%hhx\n", checksum, compute_checksum(s, size));
+        warnx("WARNING: checksum value incorrect expect: 0x%hhx,"
+            "received => 0x%hhx\n", checksum, compute_checksum(s, size));
     }
 
     return 0;
 
     error:
-        fprintf(stderr, "Error while parsing => %s\n", strerror(errno));  
+        warnx("Error while parsing => %s\n", strerror(errno));  
         return -1;
 }
 
@@ -177,7 +178,7 @@ int load_file(char *name_file) {
     
     fp = fopen(name_file, "r");
     if (fp == NULL) {
-        fprintf(stderr, "FAIL OPEN THE FILE!!!.\n");
+        warnx("FAIL OPEN THE FILE!!!.\n");
         return -1; 
     }
 
