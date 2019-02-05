@@ -3,5 +3,6 @@
 
 int init();
 int shutdown();
+int next_instruction();
 
 #endif
