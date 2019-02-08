@@ -45,19 +45,19 @@ int next_instruction() {
 }
 
 inline int is_ori_to_ccr(uint16_t current_operation) {
-    return current_operation == 0x3c;
+    return current_operation == 0x003c;
 }
 
 inline int is_ori_to_sr(uint16_t current_operation) {
-    return current_operation == 0x7c;
+    return current_operation == 0x007c;
 }
 
 inline int is_ori(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0x0;
+    return (0xff00 & current_operation) == 0x0000;
 }
 
 inline int is_andi_to_ccr(uint16_t current_operation) {
-    return current_operation == 0x23c;
+    return current_operation == 0x023c;
 }
 
 inline int is_andi_to_sr(uint16_t current_operation) {
@@ -65,63 +65,63 @@ inline int is_andi_to_sr(uint16_t current_operation) {
 }
 
 inline int is_andi(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0x200;
+    return (0xff00 & current_operation) == 0x0200;
 }
 
 inline int is_subi(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0x400;
+    return (0xff00 & current_operation) == 0x0400;
 }
 
 inline int is_addi(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0x600;
+    return (0xff00 & current_operation) == 0x0600;
 }
 
 inline int is_eori_to_ccr(uint16_t current_operation) {
-    return current_operation == 0xa3c;
+    return current_operation == 0x0a3c;
 }
 
 inline int is_eori_to_sr(uint16_t current_operation) {
-    return current_operation == 0xa7c;
+    return current_operation == 0x0a7c;
 }
 
 inline int is_eori(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0xa00;
+    return (0xff00 & current_operation) == 0x0a00;
 }
 
 inline int is_cmpi(uint16_t current_operation) {
-    return (0xff00 & current_operation) == 0xc00;
+    return (0xff00 & current_operation) == 0x0c00;
 }
 
 inline int is_btst(uint16_t current_operation) {
-    return (0xffc0 & current_operation) == 0x800
-        || (0xf1c0 & current_operation) == 0x100;
+    return (0xffc0 & current_operation) == 0x0800
+        || (0xf1c0 & current_operation) == 0x0100;
 }
 
 inline int is_bchg(uint16_t current_operation) {
-    return (0xffc0 & current_operation) == 0x840
-        || (0xf1c0 & current_operation) == 0x140;
+    return (0xffc0 & current_operation) == 0x0840
+        || (0xf1c0 & current_operation) == 0x0140;
 }
 
 inline int is_bclr(uint16_t current_operation) {
-    return (0xffc0 & current_operation) == 0x880
-        || (0xf1c0 & current_operation) == 0x180;
+    return (0xffc0 & current_operation) == 0x0880
+        || (0xf1c0 & current_operation) == 0x0180;
 }
 
 inline int is_bset(uint16_t current_operation) {
-    return (0xffc0 & current_operation) == 0x8c0
-        || (0xf1c0 & current_operation) == 0x1c0;
+    return (0xffc0 & current_operation) == 0x08c0
+        || (0xf1c0 & current_operation) == 0x01c0;
 }
 
 inline int is_movep(uint16_t current_operation) {
-    return (0xf138 & current_operation) == 0x108;
+    return (0xf138 & current_operation) == 0x0108;
 }
 
 inline int is_movea(uint16_t current_operation) {
-    return (0xc1c0 & current_operation) == 0x40;
+    return (0xc1c0 & current_operation) == 0x0040;
 }
 
 inline int is_move(uint16_t current_operation) {
-    return (0xc000 & current_operation) == 0x0;
+    return (0xc000 & current_operation) == 0x0000;
 }
 
 inline int is_move_from_sr(uint16_t current_operation) {
@@ -152,9 +152,8 @@ inline int is_not(uint16_t current_operation) {
     return (0xff00 & current_operation) == 0x4600;
 }
 
-// test
 inline int is_ext(uint16_t current_operation) {
-    return (0xffbc & current_operation) == 0x4880;
+    return (0xffb8 & current_operation) == 0x4880;
 }
 
 inline int is_nbcd(uint16_t current_operation) {
