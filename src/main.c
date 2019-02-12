@@ -6,8 +6,6 @@
 #include "emulator.h"
 #include "debug.h"
 
-extern uint8_t *memory;
-
 int main() {
     init();
     

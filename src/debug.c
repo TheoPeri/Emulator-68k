@@ -4,10 +4,10 @@
 
 #include "memory.h"
 
+#define code_size 100
+
 extern uint32_t PC;
 extern uint8_t *memory;
-
-#define code_size 100
 
 /**
  * @brief Print the current => +30 instructions

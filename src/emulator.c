@@ -418,3 +418,41 @@ int next_instruction() {
         warnx("Unknown instruction not implemented => %hx", current_operation);
         return -1;
 }
+
+// When enter in the function pc => current_operation!!!
+
+/**
+* @brief Execute the command rts
+*
+* @return -1 => error || other => OK 
+*/
+inline int rts() {
+    PC = read_32bit(memory + A7); 
+    A7 += 4;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command bsr
+*
+* @return -1 => error || other => OK 
+*/
+inline int bsr(uint16_t current_operation) {
+    uint32_t displacement = current_operation && 0xff; 
+    
+    // push address
+    A7 -= 4;
+    
+    // bra 
+    if (displacement) {
+        write_32bit(memory + A7, PC + 2);
+    } else {
+        write_32bit(memory + A7, PC + 4);
+        displacement = read_16bit(memory + PC + 2); 
+    }
+    
+    PC += displacement; 
+
+    return 0;
+}

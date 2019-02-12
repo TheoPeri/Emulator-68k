@@ -11,8 +11,8 @@
 #include "loader.h"
 #include "memory.h"
 
-extern uint8_t *memory;
 extern uint32_t PC;
+extern uint8_t *memory;
 
 /**
  * @brief Basic implementation of checksum.
