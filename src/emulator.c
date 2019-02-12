@@ -434,12 +434,30 @@ inline int rts() {
 }
 
 /**
+* @brief Execute the command bra
+*
+* @return -1 => error || other => OK 
+*/
+inline int bra(uint16_t current_operation) {
+    uint32_t displacement = current_operation & 0xff; 
+    
+    // bra 
+    if (!displacement) {
+        displacement = read_16bit(memory + PC + 2); 
+    }
+    
+    PC += displacement; 
+
+    return 0;
+}
+
+/**
 * @brief Execute the command bsr
 *
 * @return -1 => error || other => OK 
 */
 inline int bsr(uint16_t current_operation) {
-    uint32_t displacement = current_operation && 0xff; 
+    uint32_t displacement = current_operation & 0xff; 
     
     // push address
     A7 -= 4;
