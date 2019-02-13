@@ -20,23 +20,9 @@ uint32_t registers[17];
 #define EXTEND                          status_registers[4]
 #define SUPERVISOR_STATE                status_registers[5]
 
-#define D0 registers[0]
-#define D1 registers[1]
-#define D2 registers[2]
-#define D3 registers[3]
-#define D4 registers[4]
-#define D5 registers[5]
-#define D6 registers[6]
-#define D7 registers[7]
+#define D(i) registers[i]
 
-#define A0 registers[8]
-#define A1 registers[9]
-#define A2 registers[10]
-#define A3 registers[11]
-#define A4 registers[12]
-#define A5 registers[13]
-#define A6 registers[14]
-#define A7 registers[get_stack_ptr()]
+#define A(i) (registers + 8)[i]
 
 uint32_t get_stack_ptr();
 
