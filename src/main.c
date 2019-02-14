@@ -8,7 +8,7 @@
 
 int main() {
     init();
-
+    
     load_file("test.hex");
     pretty_print_instruction();
 

@@ -291,3 +291,253 @@ Test(emulator, test_adda, .init=setup_emulator) {
     cr_expect(A(4) == 0x991DDF, "Error on the destination address for adda: "
         "(dir data address register .l) => A4 = 0x%x", A(4));
 }
+
+
+Test(emulator, test_bcc, .init=setup_emulator) {
+    uint32_t instruction;
+
+    // bhi
+    PC = 0x50e;
+    ZERO = 1;
+    instruction = 0x6200;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bhi.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x6200;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bhi.w jump <) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x6200;
+    write_16bit(memory + PC + 2, 0x00f0);
+    bcc(instruction);
+    cr_expect(PC == 0x600, "Error on the (bhi.w jump >) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 1;
+    instruction = 0x62f0;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x510, "Error on the (bhi.b jump <) PC => %x", PC);
+
+
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x62f0;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bhi.b jump <) PC => %x", PC);
+
+    // bls
+    PC = 0x50e;
+    instruction = 0x6300;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bls.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    CARRY = 1;
+    NEGATIVE = 1;
+    instruction = 0x6300;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bls.w jump <) PC => %x", PC);
+
+    // bcc
+    PC = 0x50e;
+    CARRY = 1;
+    NEGATIVE = 0;
+    instruction = 0x6400;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bcc.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    CARRY = 0;
+    NEGATIVE = 1;
+    instruction = 0x6400;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bcc.w jump <) PC => %x", PC);
+
+    // bcs
+    PC = 0x50e;
+    CARRY = 0;
+    instruction = 0x6500;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bcs.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    CARRY = 1;
+    instruction = 0x6500;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bcs.w jump <) PC => %x", PC);
+
+    // bne
+    PC = 0x50e;
+    ZERO = 1;
+    instruction = 0x6600;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bne.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x6600;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bne.w jump <) PC => %x", PC);
+
+    // beq
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x6700;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (beq.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 1;
+    instruction = 0x6700;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (beq.w jump <) PC => %x", PC);
+
+    // bvc
+    PC = 0x50e;
+    OVERFLOW = 1;
+    instruction = 0x6800;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bvc.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    OVERFLOW = 0;
+    instruction = 0x6800;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bvc.w jump <) PC => %x", PC);
+
+    // bvs
+    PC = 0x50e;
+    OVERFLOW = 0;
+    instruction = 0x6900;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bvs.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    OVERFLOW = 1;
+    instruction = 0x6900;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bvs.w jump <) PC => %x", PC);
+
+    // bpl
+    PC = 0x50e;
+    NEGATIVE = 1;
+    instruction = 0x6a00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bpl.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    NEGATIVE = 0;
+    instruction = 0x6a00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bpl.w jump <) PC => %x", PC);
+
+    // bmi
+    PC = 0x50e;
+    NEGATIVE = 0;
+    instruction = 0x6b00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bmi.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    NEGATIVE = 1;
+    instruction = 0x6b00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bmi.w jump <) PC => %x", PC);
+
+    // bge
+    PC = 0x50e;
+    NEGATIVE = 1;
+    OVERFLOW = 0;
+    instruction = 0x6c00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bge.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    NEGATIVE = 0;
+    OVERFLOW = 0;
+    instruction = 0x6c00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bge.w jump <) PC => %x", PC);
+
+    // blt
+    PC = 0x50e;
+    NEGATIVE = 1;
+    OVERFLOW = 1;
+    instruction = 0x6d00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (blt.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    NEGATIVE = 0;
+    OVERFLOW = 1;
+    instruction = 0x6d00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (blt.w jump <) PC => %x", PC);
+
+    // bgt
+    PC = 0x50e;
+    ZERO = 1;
+    NEGATIVE = 0;
+    OVERFLOW = 0;
+    instruction = 0x6e00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (bgt.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 0;
+    NEGATIVE = 0;
+    OVERFLOW = 0;
+    instruction = 0x6e00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (bgt.w jump <) PC => %x", PC);
+
+    // ble
+    PC = 0x50e;
+    ZERO = 1;
+    NEGATIVE = 0;
+    OVERFLOW = 0;
+    instruction = 0x6f00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x512, "Error on the (ble.w no jump) PC => %x", PC);
+
+    PC = 0x50e;
+    ZERO = 0;
+    instruction = 0x6f00;
+    write_16bit(memory + PC + 2, 0xfff0);
+    bcc(instruction);
+    cr_expect(PC == 0x500, "Error on the (ble.w jump <) PC => %x", PC);
+
+}

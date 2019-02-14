@@ -489,7 +489,7 @@ inline int bsr(uint16_t current_operation) {
 */
 inline int adda(uint16_t current_operation) {
     // info
-    int word_operation = !(current_operation & 0x100);
+    uint32_t word_operation = !(current_operation & 0x100);
     
     int32_t tmp;
     uint32_t displacement = 2;
@@ -560,3 +560,72 @@ inline int adda(uint16_t current_operation) {
     PC += displacement;
     return 0;
 } 
+
+/**
+* @brief Execute the command bcc
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+inline int bcc(uint16_t current_operation) {
+    uint32_t byte_operation = current_operation & 0xff;
+    uint32_t condition = current_operation & 0xf00;
+    
+    switch (condition) {
+        case 0x200: // bhi
+            condition = !ZERO && !CARRY; 
+            break;
+        case 0x300: // bls
+            condition = ZERO || CARRY; 
+            break;
+        case 0x400: // bcc
+            condition = !CARRY; 
+            break;
+        case 0x500: // bcs
+            condition = CARRY; 
+            break;
+        case 0x600: // bne
+            condition = !ZERO;
+            break;
+        case 0x700: // beq
+            condition = ZERO;
+            break;
+        case 0x800: // bvc
+            condition = !OVERFLOW;
+            break;
+        case 0x900: // bvs
+            condition = OVERFLOW;
+            break;
+        case 0xa00: // bpl
+            condition = !NEGATIVE;
+            break;
+        case 0xb00: // bmi
+            condition = NEGATIVE;
+            break;
+        case 0xc00: // bge
+            condition = (NEGATIVE && OVERFLOW) || (!NEGATIVE && !OVERFLOW);
+            break;
+        case 0xd00: // blt
+            condition = NEGATIVE ^ OVERFLOW;
+            break;
+        case 0xe00: // bgt
+            condition = (!ZERO && !NEGATIVE && !OVERFLOW)
+                || (!ZERO && NEGATIVE && OVERFLOW);
+            break;
+        case 0xf00: // ble
+            condition = !ZERO || (NEGATIVE ^ OVERFLOW);
+            break;
+        default:
+            return -1;
+    }
+
+    if (condition) {
+        PC += 2 + (byte_operation ? (int8_t)(byte_operation)
+            : (int16_t)read_16bit(memory + PC + 2)); 
+    } else {
+        PC += byte_operation ? 2 : 4;
+    }
+
+    return 0;
+}
