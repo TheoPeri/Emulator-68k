@@ -614,6 +614,89 @@ inline int adda(uint16_t current_operation) {
 } 
 
 /**
+* @brief Execute the command movea
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+inline int mova(uint16_t current_operation) {
+    // info
+    uint32_t word_operation = !(current_operation & 0x1000);
+    uint32_t destination_register = (current_operation & 0xe00);
+    int32_t tmp;
+    uint32_t displacement = 2;
+    uint32_t reg = current_operation & 0x7;
+    uint32_t source; 
+    
+    // mode
+    switch (current_operation & 0x38) {
+        case 0x00:
+            source = D(reg); 
+            break;
+        case 0x08:
+            source = A(reg);        
+            break;
+        case 0x10:
+            source = word_operation ?
+                read_16bit(memory + A(reg)) : read_32bit(memory + A(reg));
+            break;
+        case 0x18:
+            if (word_operation) {
+                source = read_16bit(memory + A(reg));
+                A(reg) += 2;
+            } else {
+                source = read_32bit(memory + A(reg));
+                A(reg) += 4;
+            }
+            break;
+        case 0x20:
+            if (word_operation) {
+                A(reg) -= 2;
+                source = read_16bit(memory + A(reg));
+            } else {
+                A(reg) -= 4;
+                source = read_32bit(memory + A(reg));
+            }
+            break;
+        case 0x28:
+            tmp = (int16_t)read_16bit(memory + PC + 2) + (int32_t)A(reg);
+            source = word_operation ?
+                read_16bit(memory + tmp) : read_32bit(memory + tmp);
+
+            displacement = 4;
+            break;
+        case 0x38:
+            if (word_operation) {
+                displacement = 4;
+                source = read_16bit(memory + PC + 2);
+            } else {
+                displacement = 6;
+                source = read_32bit(memory + PC + 2);
+            }
+            break;
+        default:
+            return -1;
+    }
+    
+    // add
+    uint32_t *destination = &A((current_operation & 0x0e00)>>9);
+    
+    if (word_operation) {
+        // cast word format
+        *destination = (*destination & 0xffff0000) + (source
+        & 0xffff);
+    } else {
+        *destination = source;
+    }
+
+    PC += displacement;
+    return 0;
+} 
+
+
+
+/**
 * @brief Execute the command bcc
 *
 * @param current_operation the current operation
