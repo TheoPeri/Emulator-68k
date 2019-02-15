@@ -21,23 +21,40 @@ Test(emulator, test_rts, .init=setup_emulator) {
 }
 
 Test(emulator, test_bra, .init=setup_emulator) {
-    uint16_t instruction = 0x6100;
+    uint16_t instruction = 0x6000;
     
-    // test word
-    PC = 0xa;
+    // test word 
+    PC = 0x50e;
     
-    write_16bit(memory + 12, 0x6789);
+    write_16bit(memory + PC + 2, 0x00f0);
     bra(instruction);
 
-    cr_expect(PC == 0x6789 + 0xa, "Expect the valid new address => %x", PC);
+    cr_expect(PC == 0x600, "Expect the valid new address (word >) => %x", PC);
+
+    // test word neg
+    PC = 0x50e;
+    
+    write_16bit(memory + PC + 2, 0xfff0);
+    bra(instruction);
+
+    cr_expect(PC == 0x500, "Expect the valid new address (word <) => %x", PC);
 
     // test byte
-    PC = 0xa;
-    instruction = 0x6177;
+    PC = 0x50e;
+    instruction = 0x6030;
     
     bra(instruction);
 
-    cr_expect(PC == 0x77 + 0xa, "Expect the valid new address => %x", PC);
+    cr_expect(PC == 0x540, "Expect the valid new address (byte >) => %x", PC);
+
+    // test byte neg
+    PC = 0x50e;
+    instruction = 0x60f0;
+    
+    bra(instruction);
+
+    cr_expect(PC == 0x500, "Expect the valid new address (byte >) => %x", PC);
+
 }
 
 Test(emulator, test_bsr, .init=setup_emulator) {
@@ -45,27 +62,53 @@ Test(emulator, test_bsr, .init=setup_emulator) {
     
     // test word
     A(7) = 0x4;
-    PC = 0xa;
+    PC = 0x50e;
     
-    write_16bit(memory + 12, 0x6789);
+    write_16bit(memory + PC + 2, 0x00f0);
     bsr(instruction);
 
     cr_expect(A(7) == 0x0, "Expect a push on the stack.");
-    cr_expect(PC == 0x6789 + 0xa, "Expect the valid new address => %x", PC);
-    cr_expect(0xe == read_32bit(memory), "Expect the valid return address => %x",
+    cr_expect(PC == 0x600, "Expect the valid new address => %x", PC);
+    cr_expect(0x512 == read_32bit(memory), "Expect the valid return address => %x",
+        read_16bit(memory));
+
+
+    // test word neg
+    A(7) = 0x4;
+    PC = 0x50e;
+    
+    write_16bit(memory + PC + 2, 0xfff0);
+    bsr(instruction);
+
+    cr_expect(A(7) == 0x0, "Expect a push on the stack.");
+    cr_expect(PC == 0x500, "Expect the valid new address => %x", PC);
+    cr_expect(0x512 == read_32bit(memory), "Expect the valid return address => %x",
         read_16bit(memory));
 
     // test byte
     A(7) = 0x4;
-    PC = 0xa;
-    instruction = 0x6177;
+    PC = 0x50e;
+    instruction = 0x6130;
     
     bsr(instruction);
 
     cr_expect(A(7) == 0x0, "Expect a push on the stack.");
-    cr_expect(PC == 0x77 + 0xa, "Expect the valid new address => %x", PC);
-    cr_expect(0xc == read_32bit(memory), "Expect the valid return address => %x",
+    cr_expect(PC == 0x540, "Expect the valid new address => %x", PC);
+    cr_expect(0x510 == read_32bit(memory), "Expect the valid return address => %x",
         read_16bit(memory));
+
+    // test byte neg
+    A(7) = 0x4;
+    PC = 0x50e;
+    instruction = 0x61f0;
+    
+    bsr(instruction);
+
+    cr_expect(A(7) == 0x0, "Expect a push on the stack.");
+    cr_expect(PC == 0x500, "Expect the valid new address => %x", PC);
+    cr_expect(0x510 == read_32bit(memory), "Expect the valid return address => %x",
+        read_16bit(memory));
+
 }
 
 

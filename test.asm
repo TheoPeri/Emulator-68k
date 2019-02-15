@@ -6,4 +6,4 @@ Vector_001		dc.l		Main
 Main			move.l		#2,d0
 				move.l		#1,d1
 				cmp.l		d0,d1
-				bcc.w		$500
+				bsr.b		$540

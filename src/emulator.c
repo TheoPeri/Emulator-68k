@@ -442,11 +442,8 @@ inline int bra(uint16_t current_operation) {
     uint32_t displacement = current_operation & 0xff; 
     
     // bra 
-    if (!displacement) {
-        displacement = read_16bit(memory + PC + 2); 
-    }
-    
-    PC += displacement; 
+    PC += (displacement ? (int8_t)displacement
+        : (int16_t)read_16bit(memory + PC +2)) + 2;
 
     return 0;
 }
@@ -468,14 +465,13 @@ inline int bsr(uint16_t current_operation) {
     if (displacement) {
         // return address
         write_32bit(memory + A(7), PC + 2);
+        PC += (int8_t)displacement + 2;
     } else {
         // return address
         write_32bit(memory + A(7), PC + 4);
         // get the displacement
-        displacement = read_16bit(memory + PC + 2); 
+        PC += (int16_t)read_16bit(memory + PC + 2) + 2; 
     }
-    
-    PC += displacement; 
 
     return 0;
 }
