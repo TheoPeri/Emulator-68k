@@ -477,6 +477,113 @@ inline int bsr(uint16_t current_operation) {
 }
 
 /**
+ * @brief Parse the source operand.
+ *
+ * @param size The size mode 0 => b, 1 => w, 1 => l
+ * @param value The M and Xn value.
+ * @param displacement A ptr on the diplacement of the current instruction.
+ *
+ * @return the value of the source operand.
+ */
+inline uint32_t addressing_mode_source(
+    uint8_t size,
+    uint8_t value,
+    uint32_t *displacement
+) {
+    uint32_t source = -1;
+    int16_t tmp;
+    uint8_t reg = value & 0x7;
+
+    // mode
+    switch (value & 0x38) {
+        case 0x00: // data register
+            source = D(reg); 
+            break;
+        case 0x08: // address register
+            source = A(reg);        
+            break;
+        case 0x10: // adress
+            switch (size) {
+                case 0x0:
+                    source = memory[A(reg)];
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + A(reg));
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + A(reg));
+                    break;
+            }
+            break;
+        case 0x18: // address postincrement
+            switch (size) {
+                case 0x0:
+                    source = memory[A(reg)];
+                    ++A(reg);
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + A(reg));
+                    A(reg) += 2;
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + A(reg));
+                    A(reg) += 4;
+                    break;
+            }
+            break;
+        case 0x20: // address predecrement
+            switch (size) {
+                case 0x0:
+                    --A(reg);
+                    source = memory[A(reg)];
+                    break;
+                case 0x1:
+                    A(reg) -= 2;
+                    source = read_16bit(memory + A(reg));
+                    break;
+                case 0x2:
+                    A(reg) -= 4;
+                    source = read_32bit(memory + A(reg));
+                    break;
+            }
+            break;
+        case 0x28: // address displacement
+            tmp = (int16_t)read_16bit(memory + PC + 2) + (int32_t)A(reg);
+            switch (size) {
+                case 0x0:
+                    source = memory[tmp];
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + tmp);
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + tmp);
+                    break;
+            }
+
+            *displacement += 2;
+            break;
+        case 0x38: // immediate
+            switch (size) {
+                case 0x0:
+                    source = memory[PC + 2];
+                    *displacement += 1;
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + PC + 2);
+                    *displacement += 2;
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + PC + 2);
+                    *displacement += 4;
+                    break;
+            }
+    }
+
+    return source;
+}
+
+/**
 * @brief Execute the command adda 
 *
 * @param current_operation the current operation
@@ -485,71 +592,20 @@ inline int bsr(uint16_t current_operation) {
 */
 inline int adda(uint16_t current_operation) {
     // info
-    uint32_t word_operation = !(current_operation & 0x100);
+    uint8_t size = current_operation & 0x100 ? 2 : 1;
     
-    int32_t tmp;
     uint32_t displacement = 2;
-    uint32_t reg = current_operation & 0x7;
-    uint32_t source; 
-    
-    // mode
-    switch (current_operation & 0x38) {
-        case 0x00:
-            source = D(reg); 
-            break;
-        case 0x08:
-            source = A(reg);        
-            break;
-        case 0x10:
-            source = word_operation ?
-                read_16bit(memory + A(reg)) : read_32bit(memory + A(reg));
-            break;
-        case 0x18:
-            if (word_operation) {
-                source = read_16bit(memory + A(reg));
-                A(reg) += 2;
-            } else {
-                source = read_32bit(memory + A(reg));
-                A(reg) += 4;
-            }
-            break;
-        case 0x20:
-            if (word_operation) {
-                A(reg) -= 2;
-                source = read_16bit(memory + A(reg));
-            } else {
-                A(reg) -= 4;
-                source = read_32bit(memory + A(reg));
-            }
-            break;
-        case 0x28:
-            tmp = (int16_t)read_16bit(memory + PC + 2) + (int32_t)A(reg);
-            source = word_operation ?
-                read_16bit(memory + tmp) : read_32bit(memory + tmp);
-
-            displacement = 4;
-            break;
-        case 0x38:
-            if (word_operation) {
-                displacement = 4;
-                source = read_16bit(memory + PC + 2);
-            } else {
-                displacement = 6;
-                source = read_32bit(memory + PC + 2);
-            }
-            break;
-        default:
-            return -1;
-    }
+    uint32_t source = addressing_mode_source(size, 
+        current_operation & 0xff, &displacement); 
     
     // add
     uint32_t *destination = &A((current_operation & 0x0e00)>>9);
     
-    if (word_operation) {
+    if (size == 1) {
         // cast word format
         *destination = (*destination & 0xffff0000) + ((*destination  + source)
         & 0xffff);
-    } else {
+    } else { // size == 2
         *destination += source;
     }
 
