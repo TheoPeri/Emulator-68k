@@ -16,6 +16,7 @@ uint32_t addressing_mode_source(
 );
 
 int adda(uint16_t current_operation);
+int movea(uint16_t current_operation);
 int bcc(uint16_t current_operation);
 int cmp(uint16_t current_operation);
 #endif

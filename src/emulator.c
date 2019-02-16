@@ -592,6 +592,7 @@ inline uint32_t addressing_mode_source(
 */
 inline int adda(uint16_t current_operation) {
     // info
+    
     uint8_t size = current_operation & 0x100 ? 2 : 1;
     
     uint32_t displacement = 2;
@@ -611,7 +612,39 @@ inline int adda(uint16_t current_operation) {
 
     PC += displacement;
     return 0;
-} 
+}
+
+/**
+* @brief Execute the command movea
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+
+inline int movea(uint16_t current_operation) {
+    // info
+    uint8_t size = 2 ;
+    if(current_operation & 0x1000)
+        size = 1;
+    
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size, 
+        current_operation & 0xff, &displacement); 
+    
+    // add
+    uint32_t *destination = &A((current_operation & 0x0e00)>>9);
+    
+    if (size == 1) {
+        // cast word format
+        *destination = (source & 0xffff);
+    } else { // size == 2
+        *destination = source;
+    }
+
+    PC += displacement;
+    return 0;
+}
 
 /**
 * @brief Execute the command bcc
