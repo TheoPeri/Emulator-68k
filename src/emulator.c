@@ -502,7 +502,7 @@ inline uint32_t addressing_mode_source(
         case 0x08: // address register
             source = A(reg);        
             break;
-        case 0x10: // adress
+        case 0x10: // address
             switch (size) {
                 case 0x0:
                     source = memory[A(reg)];
@@ -566,8 +566,8 @@ inline uint32_t addressing_mode_source(
         case 0x38: // immediate
             switch (size) {
                 case 0x0:
-                    source = memory[PC + 2];
-                    *displacement += 1;
+                    source = read_16bit(memory + PC + 2);
+                    *displacement += 2;
                     break;
                 case 0x1:
                     source = read_16bit(memory + PC + 2);
@@ -678,6 +678,44 @@ inline int bcc(uint16_t current_operation) {
     } else {
         PC += byte_operation ? 2 : 4;
     }
+
+    return 0;
+}
+
+int cmp(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size, 
+        current_operation & 0xff, &displacement); 
+
+    uint32_t destination = D((current_operation & 0xe00) >> 9);
+    uint32_t tmp;
+    uint32_t mask;
+
+    switch (size) {
+        case 0:
+            mask = 0x80;
+            break;
+        case 1:
+            mask = 0x8000;
+            break;
+        case 2:
+            mask = 0x80000000;
+            break;
+        default:
+            return -1;
+    }
+    
+    tmp = destination - source;
+
+    ZERO = source == destination; 
+    CARRY = destination < source;
+    NEGATIVE = (tmp & mask) ? 1 : 0;
+    OVERFLOW = !((destination & mask) ^ (~source & mask))
+        && ((destination & mask) ^ (tmp & mask));
+
+    PC += displacement;
 
     return 0;
 }

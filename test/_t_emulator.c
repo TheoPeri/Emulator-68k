@@ -54,7 +54,6 @@ Test(emulator, test_bra, .init=setup_emulator) {
     bra(instruction);
 
     cr_expect(PC == 0x500, "Expect the valid new address (byte >) => %x", PC);
-
 }
 
 Test(emulator, test_bsr, .init=setup_emulator) {
@@ -108,7 +107,6 @@ Test(emulator, test_bsr, .init=setup_emulator) {
     cr_expect(PC == 0x500, "Expect the valid new address => %x", PC);
     cr_expect(0x510 == read_32bit(memory), "Expect the valid return address => %x",
         read_16bit(memory));
-
 }
 
 
@@ -583,4 +581,379 @@ Test(emulator, test_bcc, .init=setup_emulator) {
     bcc(instruction);
     cr_expect(PC == 0x500, "Error on the (ble.w jump <) PC => %x", PC);
 
+}
+
+Test(emulator, test_cmp, .init=setup_emulator) {
+    uint32_t instruction;
+
+    // test data register .b
+    instruction = 0xb200;
+
+    PC = 0x50c;
+    D(0) = 0x2; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = 0x2;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = -0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -128; 
+    D(1) = 1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 1; 
+    D(1) = -128;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -1; 
+    D(1) = -128;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -128; 
+    D(1) = -1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data register .w
+    instruction = 0xb240;
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data register .l 
+    instruction = 0xb280;
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test address register .w 
+    instruction = 0xb248;
+    PC = 0x50c;
+    A(0) = -0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test address register .l
+    instruction = 0xb288;
+    PC = 0x50c;
+    A(0) = -0x1; 
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data address register .b
+    instruction = 0xb210;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_8bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data address register .w
+    instruction = 0xb250;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_16bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data address register .l
+    instruction = 0xb290;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_32bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    
+    // test post data address register .b
+    instruction = 0xb218;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_8bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7001, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test post data address register .w
+    instruction = 0xb258;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_16bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7002, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test post data address register .l
+    instruction = 0xb298;
+    PC = 0x50c;
+    A(0) = 0x7000; 
+    write_32bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7004, "Error on the address after post incrementation"
+        " => %x", A(0));
+    
+    // test pre data address register .b
+    instruction = 0xb220;
+    PC = 0x50c;
+    A(0) = 0x7001; 
+    write_8bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7000, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test pre data address register .w
+    instruction = 0xb260;
+    PC = 0x50c;
+    A(0) = 0x7002; 
+    write_16bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7000, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test pre data address register .l
+    instruction = 0xb2a0;
+    PC = 0x50c;
+    A(0) = 0x7004; 
+    write_32bit(memory + 0x7000, -1);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x7000, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test mod data address register .b
+    instruction = 0xb228;
+    PC = 0x50c;
+    A(0) = 0x8000; 
+    write_8bit(memory + 0x7000, -1);
+    write_16bit(memory + PC + 2, 0xF000);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_expect(A(0) == 0x8000, "Error on the address after post incrementation"
+        " => %x", A(0));
+
+    // test dir data address register .b
+    instruction = 0x0c01;
+    PC = 0x50c;
+    write_16bit(memory + PC + 2, 0x00ff);
+    D(1) = 0x1;
+    cmp(instruction);
+    cr_expect(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_expect(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_expect(CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_expect(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
 }
