@@ -2165,3 +2165,101 @@ Test(emulator, test_move, .init=setup_emulator) {
 
 
 
+Test(emulator, test_moveq, .init=setup_emulator) {
+    uint16_t instruction;
+    
+    // test data register .b
+    instruction = 0x7208;
+
+    //move.b		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x8, "Error on the destination address for move: "
+        "(data register .b) => D1 = 0x%x", D(1));
+
+
+   // test data register .w
+    instruction = 0x7240;
+
+    //move.w		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x40, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x727f;
+
+    //move.l		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x7f, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+ 
+    // test data register .b
+    instruction = 0x7C08;
+
+    //move.b		D2,D1
+
+    PC = 0x500;
+    D(6) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(6) == 0x8, "Error on the destination address for move: "
+        "(data register .b) => D6 = 0x%x", D(6));
+
+
+   
+    // test data register .b
+    instruction = 0x72f8;
+
+    //move.b		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0xfffffff8, "Error on the destination address for move: "
+        "(data register .b) => D1 = 0x%x", D(1));
+
+
+   // test data register .w
+    instruction = 0x72c0;
+
+    //move.w		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0xffffffc0, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x7281;
+
+    //move.l		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    moveq(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0xffffff81, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+}
+
+
+

@@ -1011,3 +1011,41 @@ int cmpm(uint16_t current_operation) {
 
     return 0;
 }
+
+
+/**
+* @brief Execute the command moveq
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+
+inline int moveq(uint16_t current_operation) {
+    // info
+    OVERFLOW = 0;
+    CARRY = 0;
+
+    uint32_t displacement = 2;
+    uint32_t source = current_operation & 0xff;
+
+    //printf("0x%08x\n", source);
+    //printf("0x%08x\n", source == 0x0);
+
+    ZERO = source == 0x0;
+    NEGATIVE = ((source>>7)&1) == 0x1;
+
+
+    uint8_t reg = (current_operation & 0xe00)>>9;
+
+    D(reg) = source;
+    if(NEGATIVE)
+    {
+        D(reg)+= 0xffffff00;
+    }
+
+    PC += displacement;
+    return 0;
+}
+
+

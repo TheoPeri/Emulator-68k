@@ -23,4 +23,5 @@ int bcc(uint16_t current_operation);
 int cmp(uint16_t current_operation);
 int cmpa(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
+int moveq(uint16_t current_operation);
 #endif
