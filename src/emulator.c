@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <err.h>
 
+#include <stdio.h>
 #include "emulator.h"
 #include "memory.h"
 
@@ -583,6 +584,117 @@ inline uint32_t addressing_mode_source(
     return source;
 }
 
+inline void addressing_mode_destination(
+    uint8_t size,
+    uint8_t value,
+    uint32_t *displacement,
+    uint32_t data
+) {
+    int16_t tmp;
+    uint8_t reg = (value & 0x38)>>3;
+
+    // mode
+    switch ((value & 0x7)<<3) {
+        case 0x00: // data register
+            switch (size) {
+                case 0x0:
+                    D(reg) = (D(reg) & 0xffffff00) + (data & 0xff);
+                    break;
+                case 0x1:
+                    D(reg) = (D(reg) & 0xffff0000) + (data & 0xffff);
+                    break;
+                case 0x2:
+                    D(reg) = data;
+                    break;
+            }
+            break;
+        /*case 0x08: // address register
+            A(reg) = data;
+            break;*/
+        case 0x10: // adress
+            switch (size) {
+                case 0x0:
+                    memory[A(reg)] = data;
+                    break;
+                case 0x1:
+                    write_16bit(memory + A(reg), data);
+                    break;
+                case 0x2:
+                    write_32bit(memory + A(reg), data);
+                    break;
+            }
+            break;
+        case 0x18: // address postincrement
+            switch (size) {
+                case 0x0:
+                    memory[A(reg)] = data;
+                    ++A(reg);
+                    break;
+                case 0x1:
+                    write_16bit(memory + A(reg),data);
+                    A(reg) += 2;
+                    break;
+                case 0x2:
+                    write_32bit(memory + A(reg),data);
+                    A(reg) += 4;
+                    break;
+            }
+            break;
+        case 0x20: // address predecrement
+            switch (size) {
+                case 0x0:
+                    --A(reg);
+                    memory[A(reg)] = data;
+                    break;
+                case 0x1:
+                    A(reg) -= 2;
+                    write_16bit(memory + A(reg),data);
+                    break;
+                case 0x2:
+                    A(reg) -= 4;
+                    write_32bit(memory + A(reg),data);
+                    break;
+            }
+            break;
+        case 0x28: // address displacement
+            tmp = (int16_t)read_16bit(memory + PC + *displacement) + (int32_t)A(reg);
+            switch (size) {
+                case 0x0:
+                    memory[tmp] = data;
+                    break;
+                case 0x1:
+                    write_16bit(memory + tmp, data);
+                    break;
+                case 0x2:
+                    write_32bit(memory + tmp, data);
+                    break;
+            }
+
+            *displacement += 2;
+            break;
+        /*case 0x38: // immediate
+            switch (size) {
+                case 0x0:
+                    source = memory[PC + 2];
+                    *displacement += 1;
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + PC + 2);
+                    *displacement += 2;
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + PC + 2);
+                    *displacement += 4;
+                    break;
+            }*/
+    }
+}
+
+
+
+
+
+
 /**
 * @brief Execute the command adda 
 *
@@ -645,6 +757,57 @@ inline int movea(uint16_t current_operation) {
     PC += displacement;
     return 0;
 }
+
+/**
+* @brief Execute the command move
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+
+inline int move(uint16_t current_operation) {
+    // info
+    OVERFLOW = 0;
+    CARRY = 0;
+    uint8_t size;
+    if(!(current_operation & 0x2000))
+        size = 0;
+    else
+    {
+        if(current_operation & 0x1000)
+            size = 1;
+        else
+            size = 2;
+    }
+    
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size, 
+        current_operation & 0xff, &displacement); 
+
+    //printf("0x%08x\n", source);
+    //printf("0x%08x\n", source == 0x0);
+
+    ZERO = source == 0x0;
+    switch (size) {
+        case 0x0:
+            NEGATIVE = ((source>>7)&1) == 0x1;
+            break;
+        case 0x1:
+            NEGATIVE = ((source>>15)&1)== 0x1;
+            break;
+        case 0x2:
+            NEGATIVE = ((source>>31)&1) == 0x1;
+            break;
+    }
+
+    addressing_mode_destination(size,((current_operation)>>6)&0x3f, &displacement,source);
+
+    PC += displacement;
+    return 0;
+}
+
+
 
 /**
 * @brief Execute the command bcc
