@@ -715,6 +715,13 @@ inline int bcc(uint16_t current_operation) {
     return 0;
 }
 
+/**
+* @brief Execute the command cmp
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
 int cmp(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
     
@@ -735,6 +742,95 @@ int cmp(uint16_t current_operation) {
             break;
         case 2:
             mask = 0x80000000;
+            break;
+        default:
+            return -1;
+    }
+    
+    tmp = destination - source;
+
+    ZERO = source == destination; 
+    CARRY = destination < source;
+    NEGATIVE = (tmp & mask) ? 1 : 0;
+    OVERFLOW = !((destination & mask) ^ (~source & mask))
+        && ((destination & mask) ^ (tmp & mask));
+
+    PC += displacement;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command cmpa
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+int cmpa(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    
+    uint32_t displacement = 2;
+    uint32_t mask = 80000000;
+    uint32_t source = addressing_mode_source(size, 
+        current_operation & 0xff, &displacement); 
+
+    uint32_t destination = A((current_operation & 0xe00) >> 9);
+    uint32_t tmp;
+
+    if (size == 1) {
+            source = (int32_t)(int16_t)source;
+    }
+    
+    tmp = destination - source;
+
+    ZERO = source == destination; 
+    CARRY = destination < source;
+    NEGATIVE = (tmp & mask) ? 1 : 0;
+    OVERFLOW = !((destination & mask) ^ (~source & mask))
+        && ((destination & mask) ^ (tmp & mask));
+
+    PC += displacement;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command cmpm
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+int cmpm(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    
+    uint32_t displacement = 2;
+
+    uint32_t source;
+    uint32_t destination;
+    uint32_t tmp;
+    uint32_t mask;
+
+    switch (size) {
+        case 0:
+            mask = 0x80;
+            source = memory[A(current_operation & 0x7)++]; 
+            destination = memory[A((current_operation & 0xe00) >> 9)++];
+            break;
+        case 1:
+            mask = 0x8000;
+            source = memory[A(current_operation & 0x7)]; 
+            destination = memory[A((current_operation & 0xe00) >> 9)];
+            A(current_operation & 0x7) += 2;
+            A((current_operation & 0xe00) >> 9) += 2;
+            break;
+        case 2:
+            mask = 0x80000000;
+            source = memory[A(current_operation & 0x7)]; 
+            destination = memory[A((current_operation & 0xe00) >> 9)];
+            A(current_operation & 0x7) += 4;
+            A((current_operation & 0xe00) >> 9) += 4;
             break;
         default:
             return -1;
