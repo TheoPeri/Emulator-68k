@@ -1275,3 +1275,893 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_expect(A(0) == 0x7004, "Error on the address A0 => %x", A(0));
     cr_expect(A(1) == 0x8004, "Error on the address A1 => %x", A(1));
 }
+
+
+
+Test(emulator, test_movea, .init=setup_emulator) {
+    uint16_t instruction;
+
+    // test data register .w 
+    instruction = 0x3842;
+
+    PC = 0x500;
+    A(4) = 0x5678;
+    D(2) = 0x87654321;
+    movea(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(A(4) == 0x00004321, "Error on the destination address for movea: "
+        "(data register .w) => A4 = 0x%x", A(4));
+
+    PC = 0x500;
+    A(4) = 0x12345678;
+    D(2) = 0x87654321;
+    movea(instruction);
+    cr_expect(A(4) == 0x00004321, "Error on the destination address for movea: "
+        "(data register .w) => A4 = 0x%x", A(4));
+
+    // test data register .l 
+    instruction = 0x2842;
+
+    PC = 0x500;
+    A(4) = 0x12345678;
+    D(2) = 0x4321;
+    movea(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(A(4) == 0x4321, "Error on the destination address for movea: "
+        "(data register .l) => A4 = 0x%x", A(4));
+
+    PC = 0x500;
+    A(4) = 0x12345678;
+    D(2) = 0x87654321;
+    movea(instruction);
+    cr_expect(A(4) == 0x87654321, "Error on the destination address for movea: "
+        "(data register .l) => A4 = 0x%x", A(4));
+
+    // test address register .w 
+    instruction = 0x384e;
+
+    PC = 0x500;
+    A(4) = 0x12345678; 
+    A(6) = 0x4321;
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x4321, "Error on the destination address for movea: "
+        "(address register .w) => A4 = 0x%x", A(4));
+
+    PC = 0x500;
+    A(4) = 0x66666665; 
+    A(6) = 0x12121212;
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x1212, "Error on the destination address for movea: "
+        "(address register .w) => A4 = 0x%x", A(4));
+
+    // test address register .l
+    instruction = 0x284e;
+
+    PC = 0x500;
+    A(4) = 0x12346666;
+    A(6) = 0x1234;
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x1234, "Error on the destination address for movea: "
+        "(address register .w) => A4 = 0x%x", A(4));
+
+    PC = 0x500;
+    A(4) = 0x12345555; 
+    A(6) = 0x12348989;
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x12348989, "Error on the destination address for movea: "
+        "(address register .w) => A4 = 0x%x", A(4));
+
+     // test data address register .w 
+    instruction = 0x38d1;
+
+    PC = 0x500;
+    A(4) = 0x2839;
+    A(1) = 0x7394;
+
+    write_16bit(memory + 0x7394, 0x0984);
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x0984, "Error on the destination address for movea: "
+        "(data address register .w) => A4 = 0x%x", A(4));
+
+    // test data address register .l
+    instruction = 0x28d1;
+
+    PC = 0x500;
+    A(4) = 0x2839;
+    A(1) = 0x7394;
+
+    write_32bit(memory + 0x7394, 0x78780984);
+    
+    movea(instruction);
+    
+    cr_expect(A(4) == 0x78780984, "Error on the destination address for movea: "
+        "(data address register .l) => A4 = 0x%x", A(4));
+
+    // test post data address register .w 
+    instruction = 0x3859;
+
+    A(4) = 0x2839;
+    A(1) = 0x7394;
+
+    write_16bit(memory + 0x7394, 0x0984);
+    movea(instruction);
+    
+    cr_expect(A(1) == 0x7396, "Error on the source address for movea: "
+        "(post data address register .w) => A1 = 0x%x", A(1));
+     cr_expect(A(4) == 0x0984, "Error on the destination address for movea: "
+        "(post data address register .w) => A4 = 0x%x", A(4));
+
+
+    // test post data address register .l
+    instruction = 0x2859;
+
+    A(4) = 0x2839; 
+    A(1) = 0x7394;
+
+    write_32bit(memory + 0x7394, 0x78780984);
+    movea(instruction);
+    
+    cr_expect(A(1) == 0x7398, "Error on the source address for movea: "
+        "(post data address register .l) => A1 = 0x%x", A(1));
+    cr_expect(A(4) == 0x78780984, "Error on the destination address for movea: "
+        "(post data address register .l) => A4 = 0x%x", A(4));
+
+
+    // test pre data address register .w 
+    instruction = 0x3861;
+
+    A(4) = 0x2839; 
+    A(1) = 0x7396;
+
+    write_16bit(memory + 0x7394, 0x0984);
+    movea(instruction);
+    
+    cr_expect(A(1) == 0x7394, "Error on the source address for movea: "
+        "(pre data address register .w) => A1 = 0x%x", A(1));
+    cr_expect(A(4) == 0x0984, "Error on the destination address for movea: "
+        "(pre data address register .w) => A4 = 0x%x", A(4));
+
+    // test pre data address register .l
+    instruction = 0x2861;
+
+    A(4) = 0x2839; 
+    A(1) = 0x7398;
+
+    write_32bit(memory + 0x7394, 0x78780984);
+    movea(instruction);
+    
+    cr_expect(A(1) == 0x7394, "Error on the source address for movea: "
+        "(pre data address register .l) => A1 = 0x%x", A(1));
+    cr_expect(A(4) == 0x78780984, "Error on the destination address for movea: "
+       "(pre data address register .l) => A4 = 0x%x", A(4));
+
+    // test mod data address register .w 
+    instruction = 0x3869;
+    
+    PC = 0x500;
+    A(4) = 0x2839; 
+    A(1) = 0x7396;
+
+    write_16bit(memory + PC + 2, 0xfffe);
+    write_16bit(memory + 0x7394, 0x0984);
+    movea(instruction);
+    
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(A(1) == 0x7396, "Error on the source address for movea: "
+        "(mod data address register .w) => A1 = 0x%x", A(1));
+    cr_expect(A(4) == 0x0984, "Error on the destination address for movea: "
+        "(mod data address register .w) => A4 = 0x%x", A(4));
+
+    // test mod data address register .l
+    instruction = 0x2869;
+    
+    PC = 0x500;
+    A(4) = 0x2839; 
+    A(1) = 0x7398;
+
+    write_16bit(memory + PC + 2, 0xfffc);
+    write_32bit(memory + 0x7394, 0x78780984);
+    movea(instruction);
+    
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(A(1) == 0x7398, "Error on the source address for movea: "
+        "(mod data address register .l) => A1 = 0x%x", A(1));
+    cr_expect(A(4) == 0x78780984, "Error on the destination address for movea: "
+        "(mod data address register .l) => A4 = 0x%x", A(4));
+
+    // test dir data address register .w 
+    instruction = 0x387c;
+    
+    PC = 0x500;
+    A(4) = 0xabab; 
+
+    write_16bit(memory + PC + 2, 0x123);
+    movea(instruction);
+    
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(A(4) == 0x123, "Error on the destination address for movea: "
+        "(dir data address register .w) => A4 = 0x%x", A(4));
+
+    // test dir data address register .l
+    instruction = 0x287c;
+    
+    PC = 0x500;
+    A(4) = 0xabab; 
+
+    write_32bit(memory + PC + 2, 0x987234);
+    movea(instruction);
+    
+    cr_expect(PC == 0x506, "Error on the PC => %x", PC);
+    cr_expect(A(4) == 0x987234, "Error on the destination address for movea: "
+        "(dir data address register .l) => A4 = 0x%x", A(4));
+
+}
+
+Test(emulator, test_move, .init=setup_emulator) {
+    uint16_t instruction;
+    
+    // test data register .b
+    instruction = 0x1202;
+
+    //move.b		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    D(2) = 0x87654321;
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12345621, "Error on the destination address for move: "
+        "(data register .b) => D1 = 0x%x", D(1));
+
+
+   // test data register .w
+    instruction = 0x3202;
+
+    //move.w		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    D(2) = 0x87654321;
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12344321, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x2202;
+
+    //move.l		D2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    D(2) = 0x87654321;
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x87654321, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+
+
+   // test data register .w
+    instruction = 0x320A;
+
+    //move.w		A2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x87654321;
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12344321, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x220A;
+
+    //move.l		A2,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x87654321;
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x87654321, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+
+   // test data register .b
+    instruction = 0x1212;
+
+    //move.b		(A2),D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_8bit(memory + 0x7394, 0x84);
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12345684, "Error on the destination address for move: "
+    "(data register .b) => D1 = 0x%x", D(1));
+
+
+
+   // test data register .w
+    instruction = 0x3212;
+
+    //move.w		(A2),D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_16bit(memory + 0x7394, 0x0984);
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12340984, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x2212;
+
+    //move.l		(A2),D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_32bit(memory + 0x7394, 0x78780984);
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x78780984, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+
+   // test data register .b
+    instruction = 0x121A;
+
+    //move.b		(A2)+,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_8bit(memory + 0x7394, 0x84);
+
+    move(instruction);
+    cr_expect(A(2) == 0x7395, "Error on the source address for move: "
+        "(post data address register .b) => A2 = 0x%x", A(2));
+   cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12345684, "Error on the destination address for move: "
+    "(data register .b) => D1 = 0x%x", D(1));
+
+
+
+   // test data register .w
+    instruction = 0x321A;
+
+    //move.w		(A2)+,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_16bit(memory + 0x7394, 0x0984);
+
+    move(instruction);
+    cr_expect(A(2) == 0x7396, "Error on the source address for move: "
+        "(post data address register .w) => A2 = 0x%x", A(2));
+ cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x12340984, "Error on the destination address for move: "
+    "(data register .w) => D1 = 0x%x", D(1));
+
+
+    // test data register .l 
+    instruction = 0x221A;
+
+    //move.l		(A2)+,D1
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_32bit(memory + 0x7394, 0x78780984);
+
+    move(instruction);
+    cr_expect(A(2) == 0x7398, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+ cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(D(1) == 0x78780984, "Error on the destination address for move: "
+        "(data register .l) => D1 = 0x%x", D(1));
+
+///        its the same than movea
+
+
+
+   // test data register .b
+    instruction = 0x1481;
+
+    //move.b		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x65;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x65, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+
+
+   // test data register .w
+    instruction = 0x3481;
+
+    //move.w		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x5678, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+
+    // test data register .l 
+    instruction = 0x2481;
+
+    //move.l		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x12345678, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+
+   // test data register .b
+    instruction = 0x14c1;
+
+    //move.b		D1,(A2)+
+
+    PC = 0x500;
+    D(1) = 0x65656565;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7395, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)-1] == 0x65, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)-1]);
+
+
+
+   // test data register .w
+    instruction = 0x34c1;
+
+    //move.w		D1,(A2)+
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7396, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)-2) == 0x5678, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)-2));
+
+
+    // test data register .l 
+    instruction = 0x24c1;
+
+    //move.l		D1,(A2)+
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7398, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)-4) == 0x12345678, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)-4));
+
+
+
+   // test data register .b
+    instruction = 0x1501;
+
+    //move.b		D1,-(A2)
+
+    PC = 0x500;
+    D(1) = 0x65656565;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7393, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x65, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+
+
+   // test data register .w
+    instruction = 0x3501;
+
+    //move.w		D1,-(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7392, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x5678, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+
+    // test data register .l 
+    instruction = 0x2501;
+
+    //move.l		D1,-(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(A(2) == 0x7390, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x12345678, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+
+   // test data register .b
+    instruction = 0x1541;
+
+    //move.b		D1,5(A2)
+
+    PC = 0x500;
+    D(1) = 0x65656565;
+    A(2) = 0x7394;
+    write_16bit(memory + PC + 2, 0x5);
+    
+    move(instruction);
+    cr_expect(A(2) == 0x7394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)+5] == 0x65, "Error on the destination address for move: "
+    "(data register .b) => 5(A2) = 0x%x", memory[A(2)+5]);
+
+
+
+   // test data register .w
+    instruction = 0x3541;
+
+    //move.w		D1,5(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_16bit(memory + PC + 2, 0x5);
+
+    move(instruction);
+    cr_expect(A(2) == 0x7394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)+5) == 0x5678, "Error on the destination address for move: "
+    "(data register .w) => 5(A2) = 0x%x", read_16bit(memory + A(2)+5));
+
+
+    // test data register .l 
+    instruction = 0x2541;
+
+    //move.l		D1,5(A2)
+
+    PC = 0x500;
+    D(1) = 0x12345678;
+    A(2) = 0x7394;
+    write_16bit(memory + PC + 2, 0x5);
+
+    move(instruction);
+    cr_expect(A(2) == 0x7394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x504, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)+5) == 0x12345678, "Error on the destination address for move: "
+        "(data register .l) => 5(A2) = 0x%x", read_32bit(memory + A(2)+5));
+
+
+   // test data register .b
+    instruction = 0x1569;
+
+    //move.b		3(A1),5(A2)
+
+    PC = 0x500;
+    A(1) = 0x1234;
+    A(2) = 0x6394;
+    write_16bit(memory + PC + 2, 0x3);
+    write_16bit(memory + PC + 4, 0x5);
+    
+    memory[A(1)+3] = 0x69;
+
+    move(instruction);
+    cr_expect(A(2) == 0x6394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x506, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)+5] == 0x69, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)+5]);
+
+
+
+   // test data register .w
+    instruction = 0x3569;
+
+    //move.w		3(A1),5(A2)
+
+    PC = 0x500;
+    A(1) = 0x1534;
+    A(2) = 0x6394;
+    write_16bit(memory + PC + 2, 0x3);
+    write_16bit(memory + PC + 4, 0x5);
+    
+    write_16bit(memory + A(1) +3, 0x1233);
+
+
+    move(instruction);
+    cr_expect(A(2) == 0x6394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x506, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)+5) == 0x1233, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)+5));
+
+
+    // test data register .l 
+    instruction = 0x2569;
+
+    //move.l		3(A1),5(A2)
+
+    PC = 0x500;
+    A(1) = 0x5678;
+    A(2) = 0x6394;
+    write_16bit(memory + PC + 2, 0x3);
+    write_16bit(memory + PC + 4, 0x5);
+    
+    write_32bit(memory + A(1) +3, 0x84268426);
+
+
+    move(instruction);
+    cr_expect(A(2) == 0x6394, "Error on the source address for move: "
+        "(post data address register .l) => A2 = 0x%x", A(2));
+    cr_expect(PC == 0x506, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)+5) == 0x84268426, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)+5));
+
+
+   // test data register .b
+    instruction = 0x1481;
+
+    //move.b		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x0;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x0, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+    cr_expect(ZERO == 0x1, "Error on the ZERO => %x", ZERO);
+
+
+   // test data register .w
+    instruction = 0x3481;
+
+    //move.w		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x0;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x0, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+    cr_expect(ZERO == 0x1, "Error on the ZERO => %x", ZERO);
+
+    // test data register .l 
+    instruction = 0x2481;
+
+    //move.l		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x0;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x0, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+    cr_expect(ZERO == 0x1, "Error on the ZERO => %x", ZERO);
+
+   // test data register .b
+    instruction = 0x1481;
+
+
+
+    //move.b		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x66;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x66, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+    cr_expect(ZERO == 0x0, "Error on the ZERO => %x", ZERO);
+
+
+   // test data register .w
+    instruction = 0x3481;
+
+    //move.w		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x5656;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x5656, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+    cr_expect(ZERO == 0x0, "Error on the ZERO => %x", ZERO);
+
+    // test data register .l 
+    instruction = 0x2481;
+
+    //move.l		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x159159;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x159159, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+    cr_expect(ZERO == 0x0, "Error on the ZERO => %x", ZERO);
+
+
+   // test data register .b
+    instruction = 0x1481;
+
+    //move.b		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0xffffff80;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x80, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+    cr_expect(NEGATIVE == 0x1, "Error on the NEGATIVE => %x", NEGATIVE);
+
+
+   // test data register .w
+    instruction = 0x3481;
+
+    //move.w		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0xffff8000;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x8000, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+    cr_expect(NEGATIVE == 0x1, "Error on the NEGATIVE => %x", NEGATIVE);
+
+    // test data register .l 
+    instruction = 0x2481;
+
+    //move.l		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x80000000;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x80000000, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+    cr_expect(NEGATIVE == 0x1, "Error on the NEGATIVE => %x", NEGATIVE);
+
+
+   // test data register .b
+    instruction = 0x1481;
+
+    //move.b		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0xffffff7f;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(memory[A(2)] == 0x7f, "Error on the destination address for move: "
+    "(data register .b) => (A2) = 0x%x", memory[A(2)]);
+
+    cr_expect(NEGATIVE == 0x0, "Error on the NEGATIVE => %x", NEGATIVE);
+
+
+   // test data register .w
+    instruction = 0x3481;
+
+    //move.w		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0xffff7fff;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_16bit(memory + A(2)) == 0x7fff, "Error on the destination address for move: "
+    "(data register .w) => (A2) = 0x%x", read_16bit(memory + A(2)));
+
+    cr_expect(NEGATIVE == 0x0, "Error on the NEGATIVE => %x", NEGATIVE);
+
+    // test data register .l 
+    instruction = 0x2481;
+
+    //move.l		D1,(A2)
+
+    PC = 0x500;
+    D(1) = 0x7fffffff;
+    A(2) = 0x7394;
+
+    move(instruction);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(read_32bit(memory + A(2)) == 0x7fffffff, "Error on the destination address for move: "
+        "(data register .l) => (A2) = 0x%x", read_32bit(memory + A(2)));
+
+
+    cr_expect(NEGATIVE == 0x0, "Error on the NEGATIVE => %x", NEGATIVE);
+}
+
+
+
+
