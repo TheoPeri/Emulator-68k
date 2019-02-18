@@ -1283,7 +1283,6 @@ Test(emulator, test_movea, .init=setup_emulator) {
 
     // test data register .w 
     instruction = 0x3842;
-
     PC = 0x500;
     A(4) = 0x5678;
     D(2) = 0x87654321;
@@ -1675,13 +1674,11 @@ Test(emulator, test_move, .init=setup_emulator) {
     move(instruction);
     cr_expect(A(2) == 0x7398, "Error on the source address for move: "
         "(post data address register .l) => A2 = 0x%x", A(2));
- cr_expect(PC == 0x502, "Error on the PC => %x", PC);
+    cr_expect(PC == 0x502, "Error on the PC => %x", PC);
     cr_expect(D(1) == 0x78780984, "Error on the destination address for move: "
         "(data register .l) => D1 = 0x%x", D(1));
 
-///        its the same than movea
-
-
+///   its the same than movea
 
    // test data register .b
     instruction = 0x1481;

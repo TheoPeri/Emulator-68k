@@ -15,6 +15,13 @@ uint32_t addressing_mode_source(
     uint32_t *displacement
 );
 
+void addressing_mode_destination(
+    uint8_t size,
+    uint8_t value,
+    uint32_t *displacement,
+    uint32_t data
+);
+
 int adda(uint16_t current_operation);
 int movea(uint16_t current_operation);
 int move(uint16_t current_operation);
