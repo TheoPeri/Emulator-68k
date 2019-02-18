@@ -19,6 +19,9 @@ struct dict
     struct dict_element* data;
 };
 
+typedef struct dict_element* dict_result;
+typedef struct dict* dictionary;
+
 //Hashing function
 uint32_t hash(void *key, size_t len);
 
