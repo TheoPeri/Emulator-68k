@@ -8,11 +8,12 @@
 
 int main() {
     init();
-    /*
+    
     load_file("test.hex");
     pretty_print_instruction();
 
     shutdown();
+<<<<<<< HEAD
     */
 
     uint32_t instruction;
@@ -24,5 +25,8 @@ int main() {
     cmpa(instruction);
     
 
+=======
+   
+>>>>>>> movem done
     return 0;
 }
