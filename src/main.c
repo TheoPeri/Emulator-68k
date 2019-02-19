@@ -15,11 +15,10 @@ int main() {
     shutdown();
     */
     uint32_t instruction;
-    instruction = 0xd2c8;
-    PC = 0x500;
-    A(0) = 0x12347878; 
-    A(1) = 0x1;
-    adda(instruction);
-
+    instruction = 0xd240;
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = -0x1;
+    add(instruction);
     return 0;
 }

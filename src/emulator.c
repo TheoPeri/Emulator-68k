@@ -149,6 +149,89 @@ inline uint32_t addressing_mode_source(
 }
 
 /**
+ * @brief Parse the source operand with read only.
+ *
+ * @param size The size mode 0 => b, 1 => w, 2 => l
+ * @param value The M and Xn value.
+ * @param displacement A ptr on the diplacement of the current instruction.
+ *
+ * @return the value of the source operand.
+ */
+inline uint32_t addressing_mode_source_ro(
+    uint8_t size,
+    uint8_t value
+) {
+    uint32_t source = -1;
+    uint32_t tmp;
+    uint8_t reg = value & 0x7;
+
+    // mode
+    switch (value & 0x38) {
+        case 0x00: // data register
+            switch (size) {
+                case 0x0:
+                    source = D(reg) & 0xff;
+                    break;
+                case 0x1:
+                    source = D(reg) & 0xffff; 
+                    break;
+                case 0x2:
+                    source = D(reg); 
+                    break;
+            }
+            break;
+        case 0x08: // address register
+            source = A(reg); 
+            break;
+        case 0x28: // address displacement
+            tmp = A(reg) + (int16_t)read_16bit(memory + PC + 2);
+            switch (size) {
+                case 0x0:
+                    source = memory[tmp];
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + tmp);
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + tmp);
+                    break;
+            }
+            break;
+        case 0x38: // immediate
+            switch (size) {
+                case 0x0:
+                    source = read_16bit(memory + PC + 2);
+                    break;
+                case 0x1:
+                    source = read_16bit(memory + PC + 2);
+                    break;
+                case 0x2:
+                    source = read_32bit(memory + PC + 2);
+                    break;
+            }
+            break;
+        default:
+            if ((value & 0x38) == 0x10 || (value & 0x38) == 0x18
+                || (value & 0x38) == 0x20) {
+                switch (size) {
+                    case 0x0:
+                        source = memory[A(reg)];
+                        break;
+                    case 0x1:
+                        source = read_16bit(memory + A(reg));
+                        break;
+                    case 0x2:
+                        source = read_32bit(memory + A(reg));
+                        break;
+                }
+            }
+            break;
+    }
+
+    return source;
+}
+
+/**
  * @brief Parse the destination operand.
  *
  * @param size The size mode 0 => b, 1 => w, 2 => l
@@ -951,6 +1034,97 @@ int cmpm(uint16_t current_operation) {
 
     PC += displacement;
 
+    return 0;
+}
+
+/**
+ * @brief Set add and set all flag for add.
+ *
+ * @param source The source value
+ * @param destination The destination value
+ */
+inline uint32_t add_flag(uint32_t source, uint32_t destination, uint8_t size) {
+    uint32_t result;
+    uint8_t shift;
+
+    // get shift
+    switch (size) {
+        case 0:
+            result = (source + destination) & 0xff; 
+            shift = 7;
+            break;
+        case 1:
+            result = (source + destination) & 0xffff; 
+            shift = 15;
+            break;
+        case 2:
+            result = source + destination; 
+            shift = 31;
+            break;
+        default:
+            return -1;
+    }
+
+    ZERO = result == 0; 
+    NEGATIVE = (result >> shift) & 0x1;
+
+    CARRY = (((source & destination) | (~result & destination) | (source &
+        ~result)) >> shift) & 0x1;
+    EXTEND = CARRY; 
+
+    OVERFLOW = (((source & destination & ~result) | (~source & ~destination &
+        result)) >> shift) & 0x1;
+
+    return result;
+}
+
+/**
+* @brief Execute the command add
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+inline int add(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint8_t reg = (current_operation & 0xe00) >> 9;
+    
+    uint32_t displacement = 2;
+    uint32_t source;
+    
+    // dn + ea -> ea
+    if (current_operation & 0x100) {
+        // get source
+        source = D(reg); 
+
+        // get destination
+        uint32_t destination = addressing_mode_source_ro(size,
+            current_operation & 0xff); 
+        
+        // assign
+        addressing_mode_destination(size, current_operation & 0xff,
+            &displacement, add_flag(source, destination, size));
+    } else { // ea + dn -> dn
+        // get source
+        source = addressing_mode_source(size, current_operation & 0xff, 
+            &displacement); 
+        
+        // assign
+        switch (size) {
+            case 0x0:
+                D(reg) = (D(reg) & 0xffffff00)  | (add_flag(source, D(reg), size) & 0xff);
+                break;
+            case 0x1:
+                D(reg) = (D(reg) & 0xffff0000)  | (add_flag(source, D(reg), size) & 0xffff);
+                break;
+            case 0x2:
+                D(reg) = add_flag(source, D(reg), size);
+                break;
+        }
+    }
+
+    PC += displacement;
     return 0;
 }
 

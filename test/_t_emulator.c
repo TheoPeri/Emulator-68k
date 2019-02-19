@@ -1443,6 +1443,172 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(A(1) == 0x8004, "Error on the address A1 => %x", A(1));
 }
 
+Test(emulator, test_add, .init=setup_emulator) {
+    uint32_t instruction;
+
+    // test data register .w
+    instruction = 0xd240;
+
+    PC = 0x50c;
+    D(0) = 0x2; 
+    D(1) = 0x1;
+    add(instruction);
+    cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x3, "Expect D1(%x) == 0x3", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = 0x2;
+    add(instruction);
+    cr_assert(D(1) == 0x3, "Expect D1(%x) == 0x3", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = 0x1;
+    add(instruction);
+    cr_assert(D(1) == 0x2, "Expect D1(%x) == 0x2", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    add(instruction);
+    cr_assert(D(1) == 0x0, "Expect D1(%x) == 0x2", D(1));
+    cr_assert(ZERO == 1, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    
+    PC = 0x50c;
+    D(0) = 0x1; 
+    D(1) = -0x1;
+    add(instruction);
+    cr_assert(D(1) == 0xffff0000, "Expect D1(%x) == 0xffff0000", D(1));
+    cr_assert(ZERO == 1, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -128; 
+    D(1) = 1;
+    add(instruction);
+    cr_assert(D(1) == 0xff81, "Expect D1(%x) == 0xff81", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = 1; 
+    D(1) = -128;
+    add(instruction);
+    cr_assert(D(1) == 0xffffff81, "Expect D1(%x) == 0xffffff81", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -1; 
+    D(1) = -128;
+    add(instruction);
+    cr_assert(D(1) == 0xffffff7f, "Expect D1(%x) == 0xffffff7f", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x50c;
+    D(0) = -128; 
+    D(1) = -1;
+    add(instruction);
+    cr_assert(D(1) == 0xffffff7f, "Expect D1(%x) == 0xffffff7f", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data register .b
+    instruction = 0xd200;
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    add(instruction);
+    cr_assert(D(1) == 0x0, "Expect D1(%x) == 0x0", D(1));
+    cr_assert(ZERO == 1, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data register .l 
+    instruction = 0xb280;
+    PC = 0x50c;
+    D(0) = -0x1; 
+    D(1) = 0x1;
+    add(instruction);
+    cr_assert(D(1) == 0x0, "Expect D1(%x) == 0x0", D(1));
+    cr_assert(ZERO == 1, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+}
+
 Test(emulator, test_adda, .init=setup_emulator) {
     uint16_t instruction;
 

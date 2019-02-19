@@ -11,6 +11,11 @@ uint32_t addressing_mode_source(
     uint32_t *displacement
 );
 
+uint32_t addressing_mode_source_ro(
+    uint8_t size,
+    uint8_t value
+);
+
 void addressing_mode_destination(
     uint8_t size,
     uint8_t value,
@@ -29,6 +34,10 @@ int cmpa(uint16_t current_operation);
 int cmpi(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
 
+
+uint32_t add_flag(uint32_t source, uint32_t destination, uint8_t size);
+
+int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
 
 int move(uint16_t current_operation);
