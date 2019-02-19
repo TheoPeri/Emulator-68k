@@ -5,18 +5,21 @@ int init();
 int shutdown();
 int next_instruction();
 
-uint32_t addressing_mode_source(
+uint32_t addressing_mode_source
+(
     uint8_t size,
     uint8_t value,
     uint32_t *displacement
 );
 
-uint32_t addressing_mode_source_ro(
+uint32_t addressing_mode_source_ro
+(
     uint8_t size,
     uint8_t value
 );
 
-void addressing_mode_destination(
+void addressing_mode_destination
+(
     uint8_t size,
     uint8_t value,
     uint32_t *displacement,
@@ -35,8 +38,13 @@ int cmpi(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
 
 
-uint32_t add_flag(uint32_t source, uint32_t destination, uint8_t size);
-
+void add_flag
+(
+    uint32_t source,
+    uint32_t destination,
+    uint32_t result,
+    uint8_t shift
+);
 int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
 

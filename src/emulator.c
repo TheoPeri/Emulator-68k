@@ -1038,33 +1038,14 @@ int cmpm(uint16_t current_operation) {
 }
 
 /**
- * @brief Set add and set all flag for add.
+ * @brief Set all flag for add.
  *
  * @param source The source value
  * @param destination The destination value
+ * @param shift The shift for get the high bit
  */
-inline uint32_t add_flag(uint32_t source, uint32_t destination, uint8_t size) {
-    uint32_t result;
-    uint8_t shift;
-
-    // get shift
-    switch (size) {
-        case 0:
-            result = (source + destination) & 0xff; 
-            shift = 7;
-            break;
-        case 1:
-            result = (source + destination) & 0xffff; 
-            shift = 15;
-            break;
-        case 2:
-            result = source + destination; 
-            shift = 31;
-            break;
-        default:
-            return -1;
-    }
-
+inline void add_flag(uint32_t source, uint32_t destination,
+    uint32_t result, uint8_t shift) {
     ZERO = result == 0; 
     NEGATIVE = (result >> shift) & 0x1;
 
@@ -1074,8 +1055,6 @@ inline uint32_t add_flag(uint32_t source, uint32_t destination, uint8_t size) {
 
     OVERFLOW = (((source & destination & ~result) | (~source & ~destination &
         result)) >> shift) & 0x1;
-
-    return result;
 }
 
 /**
@@ -1091,8 +1070,9 @@ inline int add(uint16_t current_operation) {
     uint8_t reg = (current_operation & 0xe00) >> 9;
     
     uint32_t displacement = 2;
-    uint32_t source;
-    
+    uint32_t source, result;
+    uint8_t shift;
+
     // dn + ea -> ea
     if (current_operation & 0x100) {
         // get source
@@ -1102,25 +1082,56 @@ inline int add(uint16_t current_operation) {
         uint32_t destination = addressing_mode_source_ro(size,
             current_operation & 0xff); 
         
+        // setup and add
+        switch (size) {
+            case 0x0:
+                result = (source + destination) & 0xff; 
+                shift = 7;
+                break;
+            case 0x1:
+                result = (source + destination) & 0xffff; 
+                shift = 15;
+                break;
+            case 0x2:
+                result = source + destination; 
+                shift = 31;
+                break;
+            default:
+                return -1;
+        }
+        // flag 
+        add_flag(source, destination, result, shift);
+
         // assign
         addressing_mode_destination(size, current_operation & 0xff,
-            &displacement, add_flag(source, destination, size));
+            &displacement, result);
     } else { // ea + dn -> dn
         // get source
         source = addressing_mode_source(size, current_operation & 0xff, 
             &displacement); 
         
-        // assign
+        // setup and add
         switch (size) {
             case 0x0:
-                D(reg) = (D(reg) & 0xffffff00)  | (add_flag(source, D(reg), size) & 0xff);
+                result = (source + D(reg)) & 0xff; 
+                shift = 7;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = (D(reg) & 0xffffff00)  | result;
                 break;
             case 0x1:
-                D(reg) = (D(reg) & 0xffff0000)  | (add_flag(source, D(reg), size) & 0xffff);
+                result = (source + D(reg)) & 0xffff; 
+                shift = 15;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = (D(reg) & 0xffff0000)  | result;
                 break;
             case 0x2:
-                D(reg) = add_flag(source, D(reg), size);
+                result = source + D(reg); 
+                shift = 31;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = result;
                 break;
+            default:
+                return -1;
         }
     }
 
