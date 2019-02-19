@@ -16,12 +16,13 @@ int main() {
     */
 
     uint32_t instruction;
-    instruction = 0x0c01;
+    instruction = 0xb2c0;
 
-    PC = 0x506;
-    write_16bit(memory + PC + 2, (int8_t)-1);
-    D(1) = (int8_t)-128;
-    cmpi(instruction);
+    PC = 0x50c;
+    D(0) = 0x2; 
+    A(1) = 0x1;
+    cmpa(instruction);
+    
 
     return 0;
 }

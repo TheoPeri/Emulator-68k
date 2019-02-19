@@ -52,7 +52,17 @@ inline uint32_t addressing_mode_source(
     // mode
     switch (value & 0x38) {
         case 0x00: // data register
-            source = D(reg); 
+            switch (size) {
+                case 0x0:
+                    source = D(reg) & 0xff;
+                    break;
+                case 0x1:
+                    source = D(reg) & 0xffff; 
+                    break;
+                case 0x2:
+                    source = D(reg); 
+                    break;
+            }
             break;
         case 0x08: // address register
             source = A(reg); 
@@ -759,24 +769,26 @@ inline int bcc(uint16_t current_operation) {
 */
 int cmp(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
+    uint8_t shift;
     
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size, 
         current_operation & 0xff, &displacement); 
 
-    uint32_t destination = D((current_operation & 0xe00) >> 9);
-    uint32_t tmp;
-    uint32_t mask;
+    uint32_t destination, tmp;
 
     switch (size) {
         case 0:
-            mask = 0x80;
+            shift = 7;
+            destination = D((current_operation & 0xe00) >> 9) & 0xff;
             break;
         case 1:
-            mask = 0x8000;
+            shift = 15;
+            destination = D((current_operation & 0xe00) >> 9) & 0xffff;
             break;
         case 2:
-            mask = 0x80000000;
+            shift = 31;
+            destination = D((current_operation & 0xe00) >> 9);
             break;
         default:
             return -1;
@@ -785,10 +797,13 @@ int cmp(uint16_t current_operation) {
     tmp = destination - source;
 
     ZERO = source == destination; 
-    CARRY = destination < source;
-    NEGATIVE = (tmp & mask) ? 1 : 0;
-    OVERFLOW = !((destination & mask) ^ (~source & mask))
-        && ((destination & mask) ^ (tmp & mask));
+    NEGATIVE = (tmp >> shift) & 0x1;
+
+    CARRY = ((source & ~destination) | (tmp & ~destination) | (source &
+    tmp)) >> shift;
+
+    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift;
 
     PC += displacement;
 
@@ -803,27 +818,29 @@ int cmp(uint16_t current_operation) {
 * @return -1 => error || other => OK 
 */
 int cmpa(uint16_t current_operation) {
-    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint8_t size = (current_operation & 0x80) ? 2 : 1;
     
     uint32_t displacement = 2;
-    uint32_t mask = 0x80000000;
     uint32_t source = addressing_mode_source(size, 
         current_operation & 0xff, &displacement); 
 
+    if (size == 1) {
+        source = (int32_t)(int16_t)source;
+    }
+
     uint32_t destination = A((current_operation & 0xe00) >> 9);
     uint32_t tmp;
-
-    if (size == 1) {
-            source = (int32_t)(int16_t)source;
-    }
     
     tmp = destination - source;
 
     ZERO = source == destination; 
-    CARRY = destination < source;
-    NEGATIVE = (tmp & mask) ? 1 : 0;
-    OVERFLOW = !((destination & mask) ^ (~source & mask))
-        && ((destination & mask) ^ (tmp & mask));
+    NEGATIVE = (tmp >> 31) & 0x1;
+
+    CARRY = ((source & ~destination) | (tmp & ~destination) | (source &
+    tmp)) >> 31;
+
+    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> 31;
 
     PC += displacement;
 
