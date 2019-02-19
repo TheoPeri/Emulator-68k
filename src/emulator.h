@@ -53,5 +53,6 @@ int addi(uint16_t current_operation);
 int move(uint16_t current_operation);
 int moveq(uint16_t current_operation);
 int movea(uint16_t current_operation);
+int movem(uint16_t current_operation);
 
 #endif

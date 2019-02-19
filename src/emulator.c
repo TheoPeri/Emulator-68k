@@ -264,6 +264,20 @@ inline void addressing_mode_destination(
                     break;
             }
             break;
+        case 0x08: // data register
+            switch (size) {
+                case 0x0:
+                    A(reg) = (A(reg) & 0xffffff00) | (data & 0xff);
+                    break;
+                case 0x1:
+                    A(reg) = (A(reg) & 0xffff0000) | (data & 0xffff);
+                    break;
+                case 0x2:
+                    A(reg) = data;
+                    break;
+            }
+            break;
+
         case 0x10: // address
             switch (size) {
                 case 0x0:
@@ -1392,3 +1406,71 @@ inline int movea(uint16_t current_operation) {
     PC += displacement;
     return 0;
 }
+
+
+
+inline int movem(uint16_t current_operation) {
+    // info
+    uint8_t size = ((current_operation & 0x40) >>6) +1; // word :1 and long :2
+    uint8_t direction = (current_operation & 0x400) >> 10;
+    uint16_t mask = read_16bit(memory + PC + 2);
+    //printf("mask = 0x%x \n",mask);
+    uint32_t displacement = 4;
+
+    if(direction == 1) // A7 --> D0 // (An)+ // (An)+,d1/d2
+    {
+        for(int i = 0; i<8;i++)
+        {
+            if((mask & 0x1) == 0x1)
+            {
+                uint32_t source = addressing_mode_source(size, 
+                        current_operation & 0xff, &displacement); 
+
+               addressing_mode_destination(size, 0x00 + i, &displacement, source);
+            }
+            mask = mask>>1;
+        }
+
+        for(int i = 0; i<8;i++)
+        {
+            if((mask & 0x1) == 0x1)
+            {
+                uint32_t source = addressing_mode_source(size, 
+                        current_operation & 0xff, &displacement); 
+
+                addressing_mode_destination(size, 0x8 + i, &displacement, source);
+            }
+            mask = mask>>1;
+        }
+    }
+    else // D0 --> A7 // -(An) // d1/d3,-(An)
+    {
+        for(int i = 0; i<8;i++)
+        {
+            if((mask & 0x1) == 0x1)
+            {
+                uint32_t source = addressing_mode_source(size, 
+                        0x8 +(0x7 - i), &displacement); 
+                addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+            }
+            mask = mask>>1;
+        }
+
+        for(int i = 0; i<8;i++)
+        {
+            if((mask & 0x1) == 0x1)
+            {
+                uint32_t source = addressing_mode_source(size, 
+                        0x00 +(0x7 - i), &displacement); 
+
+                addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+            }
+            mask = mask>>1;
+        }
+    }
+
+    PC += displacement;
+    return 0;
+}
+
+

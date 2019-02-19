@@ -1825,3 +1825,90 @@ Test(emulator, test_movea, .init=setup_emulator) {
     cr_assert(A(4) == 0x87654321, "Error on the destination address for movea: "
         "(data register .l) => A4 = 0x%x", A(4));
 }
+
+Test(emulator, test_movem, .init=setup_emulator) {
+
+    uint16_t instruction;
+
+    PC = 0x500;
+    instruction = 0x48e7; // movem.l		D0-D7/A0-A6,-(A7)
+    write_16bit(memory + PC + 2, 0xfffe);
+
+    A(0) = 0x00009;
+    A(1) = 0x11119;
+    A(2) = 0x22229;
+    A(3) = 0x33339;
+    A(4) = 0x44449;
+    A(5) = 0x55559;
+    A(6) = 0x66669;
+    A(7) = 0x7777;
+    D(0) = 0x90009;
+    D(1) = 0x91119;
+    D(2) = 0x92229;
+    D(3) = 0x93339;
+    D(4) = 0x94449;
+    D(5) = 0x95559;
+    D(6) = 0x96669;
+    D(7) = 0x97779;
+
+    movem(instruction);
+
+    cr_expect(A(7) == 0x773b, "Error on the destination address for movem: "
+        "(data register .l) => A7 = 0x%x", A(7));
+
+    instruction = 0x4cdf; // movem.l		(A7)+,D0-D7/A0-A6
+    write_16bit(memory + PC + 2, 0x7fff);
+
+    A(0) = 0xffff;
+    A(1) = 0xffff;
+    A(2) = 0xffff;
+    A(3) = 0xffff;
+    A(4) = 0xffff;
+    A(5) = 0xffff;
+    A(6) = 0xffff;
+
+    D(0) = 0xffff;
+    D(1) = 0xffff;
+    D(2) = 0xffff;
+    D(3) = 0xffff;
+    D(4) = 0xffff;
+    D(5) = 0xffff;
+    D(6) = 0xffff;
+    D(7) = 0xffff;
+
+
+    movem(instruction);
+
+    cr_expect(A(7) == 0x7777, "Error on the destination address for movem: "
+        "(data register .l) => A7 = 0x%x", A(7));
+    cr_expect(A(0) == 0x00009, "Error on the destination address for movem: "
+        "(data register .l) => A0 = 0x%x", A(0));
+    cr_expect(A(1) == 0x11119, "Error on the destination address for movem: "
+        "(data register .l) => A1 = 0x%x", A(1));
+    cr_expect(A(2) == 0x22229, "Error on the destination address for movem: "
+        "(data register .l) => A2 = 0x%x", A(2));
+    cr_expect(A(3) == 0x33339, "Error on the destination address for movem: "
+        "(data register .l) => A3 = 0x%x", A(3));
+    cr_expect(A(4) == 0x44449, "Error on the destination address for movem: "
+        "(data register .l) => A4 = 0x%x", A(4));
+    cr_expect(A(5) == 0x55559, "Error on the destination address for movem: "
+        "(data register .l) => A5 = 0x%x", A(5));
+    cr_expect(A(6) == 0x66669, "Error on the destination address for movem: "
+        "(data register .l) => A6 = 0x%x", A(6));
+    cr_expect(D(0) == 0x90009, "Error on the destination address for movem: "
+        "(data register .l) => D0 = 0x%x", D(0));
+    cr_expect(D(1) == 0x91119, "Error on the destination address for movem: "
+        "(data register .l) => D1 = 0x%x", D(1));
+    cr_expect(D(2) == 0x92229, "Error on the destination address for movem: "
+        "(data register .l) => D2 = 0x%x", D(2));
+    cr_expect(D(3) == 0x93339, "Error on the destination address for movem: "
+        "(data register .l) => D3 = 0x%x", D(3));
+    cr_expect(D(4) == 0x94449, "Error on the destination address for movem: "
+        "(data register .l) => D4 = 0x%x", D(4));
+    cr_expect(D(5) == 0x95559, "Error on the destination address for movem: "
+        "(data register .l) => D5 = 0x%x", D(5));
+    cr_expect(D(6) == 0x96669, "Error on the destination address for movem: "
+        "(data register .l) => D6 = 0x%x", D(6));
+    cr_expect(D(7) == 0x97779, "Error on the destination address for movem: "
+        "(data register .l) => D7 = 0x%x", D(7));
+}

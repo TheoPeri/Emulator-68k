@@ -8,11 +8,12 @@
 
 int main() {
     init();
-    /*
+    
     load_file("test.hex");
     pretty_print_instruction();
 
     shutdown();
+<<<<<<< HEAD
     */
     uint32_t instruction;
 
@@ -23,5 +24,8 @@ int main() {
     addq(instruction);
 
 
+=======
+   
+>>>>>>> movem done
     return 0;
 }
