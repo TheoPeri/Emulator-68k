@@ -1168,6 +1168,115 @@ inline int adda(uint16_t current_operation) {
 }
 
 /**
+* @brief Execute the command addq
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+inline int addq(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t source = (current_operation & 0xe00) >> 9;
+    if (!source) {
+        source = 8;
+    }
+    
+    uint32_t displacement = 2;
+    uint32_t result;
+    uint8_t shift;
+
+    // get destination
+    uint32_t destination = addressing_mode_source_ro(size,
+            current_operation & 0xff); 
+
+    // setup and add
+    switch (size) {
+        case 0x0:
+            result = (source + destination) & 0xff; 
+            shift = 7;
+            break;
+        case 0x1:
+            result = (source + destination) & 0xffff; 
+            shift = 15;
+            break;
+        case 0x2:
+            result = source + destination; 
+            shift = 31;
+            break;
+        default:
+            return -1;
+    }
+    // flag 
+    add_flag(source, destination, result, shift);
+
+    // assign
+    addressing_mode_destination(size, current_operation & 0xff,
+        &displacement, result);
+
+    PC += displacement;
+    return 0;
+}
+
+/**
+* @brief Execute the command addi
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK 
+*/
+inline int addi(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    
+    uint32_t displacement = 2;
+    uint32_t source, destination, result;
+    uint8_t shift;
+
+    switch (size) {
+        case 0x0:
+            PC += 2;
+            source = read_16bit(memory + PC);
+            shift = 7;
+                
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff); 
+            result = (source + destination) & 0xff; 
+            break;
+        case 0x1:
+            PC += 2;
+            source = read_16bit(memory + PC);
+            shift = 15;
+
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff); 
+            result = (source + destination) & 0xffff; 
+            break;
+        case 0x2:
+            source = read_32bit(memory + PC + 2);
+            PC += 4;
+            shift = 31;
+            
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff); 
+            result = source + destination; 
+            break;
+        default:
+            return -1;
+    }
+
+    // flag 
+    add_flag(source, destination, result, shift);
+
+    // assign
+    addressing_mode_destination(size, current_operation & 0xff,
+        &displacement, result);
+
+    PC += displacement;
+    return 0;
+}
+
+/**
 * @brief Execute the command move
 *
 * @param current_operation the current operation

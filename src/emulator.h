@@ -37,7 +37,6 @@ int cmpa(uint16_t current_operation);
 int cmpi(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
 
-
 void add_flag
 (
     uint32_t source,
@@ -45,8 +44,11 @@ void add_flag
     uint32_t result,
     uint8_t shift
 );
+
 int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
+int addq(uint16_t current_operation);
+int addi(uint16_t current_operation);
 
 int move(uint16_t current_operation);
 int moveq(uint16_t current_operation);

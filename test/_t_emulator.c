@@ -1667,6 +1667,39 @@ Test(emulator, test_adda, .init=setup_emulator) {
 
 }
 
+Test(emulator, test_addq, .init=setup_emulator) {
+    uint16_t instruction;
+
+    // test data register .b
+    instruction = 0x5200;
+    PC = 0x500;
+    D(0) = 0x12348787; // 1 
+    addq(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x12348788, "Error on the destination for addq: "
+        "(data register .b) => D0 = 0x%x", D(0));
+
+    // test data register .w 
+    instruction = 0x5040;
+
+    PC = 0x500;
+    D(0) = 0x32; // 8
+    addq(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x3a, "Error on the destination for addq: "
+        "(data register .w) => D0 = 0x%x", D(0));
+
+    // test data register .l 
+    instruction = 0x5880;
+
+    PC = 0x500;
+    D(0) = 0x32;  // 4
+    addq(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x36, "Error on the destination for addq: "
+        "(data register .l) => D0 = 0x%x", D(0));
+}
+
 Test(emulator, test_move, .init=setup_emulator) {
     uint16_t instruction;
     
