@@ -826,9 +826,9 @@ Test(emulator, test_cmp, .init=setup_emulator) {
     cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -850,7 +850,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
     D(0) = 0x1; 
     D(1) = 0x1;
     cmp(instruction);
-    cr_assert(ZERO, "Error on the status register (data register .b) => "
+    cr_assert(ZERO == 1, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
@@ -867,7 +867,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -878,7 +878,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
     cmp(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
@@ -891,11 +891,11 @@ Test(emulator, test_cmp, .init=setup_emulator) {
     cmp(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (data register .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x50c;
@@ -908,7 +908,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (data register .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x50c;
@@ -917,9 +917,9 @@ Test(emulator, test_cmp, .init=setup_emulator) {
     cmp(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -947,7 +947,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -962,7 +962,7 @@ Test(emulator, test_cmp, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -981,9 +981,9 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
     cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .w) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .w) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .w) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1005,7 +1005,7 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
     D(0) = 0x1; 
     A(1) = 0x1;
     cmpa(instruction);
-    cr_assert(ZERO, "Error on the status register (data register .w) => "
+    cr_assert(ZERO == 1, "Error on the status register (data register .w) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
@@ -1022,7 +1022,7 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .w) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1033,7 +1033,7 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
     cmpa(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .w) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .w) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
@@ -1048,7 +1048,7 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .w) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1059,7 +1059,7 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
     cmpa(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .w) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .w) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
@@ -1072,9 +1072,9 @@ Test(emulator, test_cmpa, .init=setup_emulator) {
     cmpa(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .w) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .w) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .w) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .w) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .w) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1107,9 +1107,9 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     cr_assert(PC == 0x508, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1131,7 +1131,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     write_16bit(memory + PC + 2, (uint8_t)0x1);
     D(1) = (uint8_t)0x1;
     cmpi(instruction);
-    cr_assert(ZERO, "Error on the status register (data register .b) => "
+    cr_assert(ZERO == 1, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
@@ -1148,7 +1148,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1159,7 +1159,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     cmpi(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
@@ -1172,11 +1172,11 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     cmpi(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (data register .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x506;
@@ -1189,7 +1189,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (data register .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x506;
@@ -1198,9 +1198,9 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     cmpi(instruction);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1229,7 +1229,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1245,7 +1245,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (data register .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (data register .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1267,9 +1267,9 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(A(1) == 0x8001, "Error on the address A1 => %x", A(1));
     cr_assert(!ZERO, "Error on the status register (address .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (address .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (address .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (address .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1301,7 +1301,7 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(PC == 0x516, "Error on the PC => %x", PC);
     cr_assert(A(0) == 0x7001, "Error on the address A0 => %x", A(0));
     cr_assert(A(1) == 0x8001, "Error on the address A1 => %x", A(1));
-    cr_assert(ZERO, "Error on the status register (address .b) => "
+    cr_assert(ZERO == 1, "Error on the status register (address .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
@@ -1323,7 +1323,7 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (address .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (address .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1339,7 +1339,7 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(A(1) == 0x8001, "Error on the address A1 => %x", A(1));
     cr_assert(!ZERO, "Error on the status register (address .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (address .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
@@ -1357,11 +1357,11 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(A(1) == 0x8001, "Error on the address A1 => %x", A(1));
     cr_assert(!ZERO, "Error on the status register (address .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (address .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (address .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (address .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (address .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x514;
@@ -1379,7 +1379,7 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
         "NEGATIVE = 0x%x", NEGATIVE);
     cr_assert(!CARRY, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(OVERFLOW, "Error on the status register (address .b) => "
+    cr_assert(OVERFLOW == 1, "Error on the status register (address .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     PC = 0x514;
@@ -1393,9 +1393,9 @@ Test(emulator, test_cmpm, .init=setup_emulator) {
     cr_assert(A(1) == 0x8001, "Error on the address A1 => %x", A(1));
     cr_assert(!ZERO, "Error on the status register (address .b) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(NEGATIVE, "Error on the status register (address .b) => "
+    cr_assert(NEGATIVE == 1, "Error on the status register (address .b) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(CARRY, "Error on the status register (address .b) => "
+    cr_assert(CARRY == 1, "Error on the status register (address .b) => "
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (address .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
@@ -1464,7 +1464,7 @@ Test(emulator, test_adda, .init=setup_emulator) {
     cr_assert(A(4) == 0x6698, "Error on the destination address for adda: "
         "(data register .w) => A4 = 0x%x", A(4));
 
-    // test data register .l 
+        // test data register .l 
     instruction = 0xd9c2;
 
     PC = 0x500;
@@ -1481,6 +1481,24 @@ Test(emulator, test_adda, .init=setup_emulator) {
     adda(instruction);
     cr_assert(A(4) == 0x666698, "Error on the destination address for adda: "
         "(data register .l) => A4 = 0x%x", A(4));
+
+    // corner case
+    instruction = 0xd2c8;
+    PC = 0x500;
+    A(0) = 0x12348787; 
+    A(1) = 0x1;
+    adda(instruction);
+    cr_assert(A(1) == 0xffff8788, "Error on the destination address for adda: "
+        "(address .w) => A4 = 0x%x", A(1));
+
+    PC = 0x500;
+    A(0) = 0x12348787; 
+    A(1) = 0xffff;
+    adda(instruction);
+    cr_assert(A(1) == 0x8786, "Error on the destination address for adda: "
+        "(address .w) => A4 = 0x%x", A(1));
+
+
 }
 
 Test(emulator, test_move, .init=setup_emulator) {

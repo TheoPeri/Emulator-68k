@@ -793,17 +793,17 @@ int cmp(uint16_t current_operation) {
         default:
             return -1;
     }
-    
+    // compute diff 
     tmp = destination - source;
-
+    
     ZERO = source == destination; 
-    NEGATIVE = (tmp >> shift) & 0x1;
+    NEGATIVE = (tmp >> shift) & 0x1; // need cast and get high bit
 
-    CARRY = ((source & ~destination) | (tmp & ~destination) | (source &
-    tmp)) >> shift;
+    CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
+    tmp)) >> shift) & 0x1; // see doc
 
-    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
-    tmp)) >> shift;
+    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift) & 0x1; // see doc
 
     PC += displacement;
 
@@ -818,12 +818,12 @@ int cmp(uint16_t current_operation) {
 * @return -1 => error || other => OK 
 */
 int cmpa(uint16_t current_operation) {
-    uint8_t size = (current_operation & 0x80) ? 2 : 1;
+    uint8_t size = (current_operation & 0x100) ? 2 : 1;
     
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size, 
         current_operation & 0xff, &displacement); 
-
+    // extension
     if (size == 1) {
         source = (int32_t)(int16_t)source;
     }
@@ -834,7 +834,7 @@ int cmpa(uint16_t current_operation) {
     tmp = destination - source;
 
     ZERO = source == destination; 
-    NEGATIVE = (tmp >> 31) & 0x1;
+    NEGATIVE = tmp >> 31; // no &1 because extend to 32 bit
 
     CARRY = ((source & ~destination) | (tmp & ~destination) | (source &
     tmp)) >> 31;
@@ -858,27 +858,25 @@ int cmpi(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
     
     uint32_t source, displacement, tmp;
-    uint32_t mask;
+    uint8_t shift;
 
     uint32_t destination = addressing_mode_source(size, 
         current_operation & 0xff, &displacement); 
 
     switch (size) {
         case 0x0:
-            mask = 0x80;
             source = read_16bit(memory + PC + 2) & 0xff;
-            destination &= 0xff;
+            shift = 7;
             displacement = 2;
             break;
         case 0x1:
             source = read_16bit(memory + PC + 2);
-            mask = 0x8000;
-            destination &= 0xffff;
+            shift = 15;
             displacement = 2;
             break;
         case 0x2:
             source = read_32bit(memory + PC + 2);
-            mask = 0x80000000;
+            shift = 31;
             displacement = 4;
             break;
         default:
@@ -888,10 +886,13 @@ int cmpi(uint16_t current_operation) {
     tmp = destination - source;
 
     ZERO = source == destination; 
-    CARRY = destination < source;
-    NEGATIVE = (tmp & mask) ? 1 : 0;
-    OVERFLOW = !((destination & mask) ^ (~source & mask))
-        && ((destination & mask) ^ (tmp & mask));
+    NEGATIVE = (tmp >> shift) & 0x1;
+
+    CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
+    tmp)) >> shift) & 0x1;
+
+    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift) & 0x1;
 
     PC += displacement;
 
@@ -910,26 +911,24 @@ int cmpm(uint16_t current_operation) {
     
     uint32_t displacement = 2;
 
-    uint32_t source;
-    uint32_t destination;
-    uint32_t tmp;
-    uint32_t mask;
+    uint32_t source, destination, tmp;
+    uint8_t shift;
 
     switch (size) {
         case 0:
-            mask = 0x80;
+            shift = 7;
             source = memory[A(current_operation & 0x7)++]; 
             destination = memory[A((current_operation & 0xe00) >> 9)++];
             break;
         case 1:
-            mask = 0x8000;
+            shift = 15;
             source = memory[A(current_operation & 0x7)]; 
             destination = memory[A((current_operation & 0xe00) >> 9)];
             A(current_operation & 0x7) += 2;
             A((current_operation & 0xe00) >> 9) += 2;
             break;
         case 2:
-            mask = 0x80000000;
+            shift = 31;
             source = memory[A(current_operation & 0x7)]; 
             destination = memory[A((current_operation & 0xe00) >> 9)];
             A(current_operation & 0x7) += 4;
@@ -938,14 +937,17 @@ int cmpm(uint16_t current_operation) {
         default:
             return -1;
     }
-    
+   
     tmp = destination - source;
 
     ZERO = source == destination; 
-    CARRY = destination < source;
-    NEGATIVE = (tmp & mask) ? 1 : 0;
-    OVERFLOW = !((destination & mask) ^ (~source & mask))
-        && ((destination & mask) ^ (tmp & mask));
+    NEGATIVE = (tmp >> shift) & 0x1;
+
+    CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
+    tmp)) >> shift) & 0x1;
+
+    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift) & 0x1;
 
     PC += displacement;
 
@@ -961,23 +963,20 @@ int cmpm(uint16_t current_operation) {
 */
 inline int adda(uint16_t current_operation) {
     // info
-    
     uint8_t size = current_operation & 0x100 ? 2 : 1;
     
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size, 
         current_operation & 0xff, &displacement); 
     
-    // add
-    uint32_t *destination = &A((current_operation & 0x0e00)>>9);
-    
+    // extension
     if (size == 1) {
         // cast word format
-        *destination = (*destination & 0xffff0000) + ((*destination  + source)
-        & 0xffff);
-    } else { // size == 2
-        *destination += source;
+        source = (int32_t)(int16_t)source;
     }
+    
+    // add
+    A((current_operation & 0x0e00)>>9) += source;
 
     PC += displacement;
     return 0;
@@ -1053,12 +1052,8 @@ inline int moveq(uint16_t current_operation) {
     uint32_t displacement = 2;
     uint32_t source = current_operation & 0xff;
 
-    //printf("0x%08x\n", source);
-    //printf("0x%08x\n", source == 0x0);
-
     ZERO = source == 0x0;
     NEGATIVE = ((source>>7)&1) == 0x1;
-
 
     uint8_t reg = (current_operation & 0xe00)>>9;
 
