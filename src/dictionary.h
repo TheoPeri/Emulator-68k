@@ -8,7 +8,7 @@ struct dict_element
 {
     uint32_t hkey;
     uint32_t key;
-    void *value;
+    long value;
     struct dict_element *next;
 };
 
@@ -40,11 +40,11 @@ struct dict_element *dict_get(struct dict *d, uint32_t key);
 
 //Insert an element into the dictionary
 //returns 0 if the key already exists
-int dict_insert(struct dict *d, uint32_t key, void* value);
+int dict_insert(struct dict *d, uint32_t key, long value);
 
 //Remove the element with the corresponding key
 void dict_remove(struct dict *d, uint32_t key);
 
-void dict_print(struct dict *d);
+//void dict_print(struct dict *d);
 
 #endif

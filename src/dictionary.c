@@ -34,7 +34,7 @@ struct dict* dict_new(size_t capacity)
     {
         dict->data[i].hkey = 0;
         dict->data[i].key = 0;
-        dict->data[i].value = NULL;
+        dict->data[i].value = 0;
         dict->data[i].next = NULL;
     }
     return dict;
@@ -100,7 +100,7 @@ void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t ne
     }
 }
 
-int dict_insert(struct dict *d, uint32_t key, void* value)
+int dict_insert(struct dict *d, uint32_t key, long value)
 {
     //Hash our key
     uint32_t h = hash(&key, 4);
@@ -181,7 +181,7 @@ void dict_remove(struct dict *d, uint32_t key)
     d->size--;
 }
 
-void dict_print(struct dict *d)
+/*void dict_print(struct dict *d)
 {
     printf("==================\n");
     for(size_t i = 0; i < d->capacity; i++)
@@ -196,4 +196,4 @@ void dict_print(struct dict *d)
         printf("\n");
     }
     printf("==================\n");
-}
+}*/
