@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -Wall -Wextra -std=c99
-LDFLAGS=
-LDLIBS=
+LDFLAGS= `pkg-config --cflags gtk+-3.0` -rdynamic
+LDLIBS= `pkg-config --libs gtk+-3.0`
 
 TMP_DIR=target/tmp/
 BUILD_DIR=target/build/
@@ -18,19 +18,19 @@ TOBJECTS=$(patsubst $(TEST_DIR)%.c, $(TMP_DIR)%.o, $(TSOURCES)) # all .o for tes
 LOBJECTS=$(filter-out $(TMP_DIR)main.o, $(OBJECTS)) # all .o for the lib
 
 exec: $(OBJECTS)
-	$(CC) $(CFLAGS) -Ofast $(OBJECTS) -o $(BUILD_DIR)$@
+	$(CC) $(CFLAGS) $(LDFLAGS) -Ofast $(OBJECTS) -o $(BUILD_DIR)$@ $(LDLIBS)
 
 debug: $(DOBJECTS)
-	$(CC) $(CFLAGS) -g $(DOBJECTS) -o $(BUILD_DIR)$@
+	$(CC) $(CFLAGS) $(LDFLAGS) -g $(DOBJECTS) -o $(BUILD_DIR)$@ $(LDLIBS)
 
 unit_test: $(TOBJECTS) $(LOBJECTS)
-	$(CC) $(CFLAGS) -Ofast -lcriterion $(TOBJECTS) $(LOBJECTS) -o $(BUILD_DIR)$@ 
+	$(CC) $(CFLAGS) -Ofast -lcriterion $(TOBJECTS) $(LOBJECTS) -o $(BUILD_DIR)$@
 
 $(OBJECTS): $(TMP_DIR)%.o : $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) -Ofast -c $< -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) -Ofast -c $< -o $@  $(LDLIBS)
 
 $(DOBJECTS): $(TMP_DIR)_d_%.o : $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) -g -c $< -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) -g -c $< -o $@  $(LDLIBS)
 
 $(TOBJECTS): $(TMP_DIR)%.o : $(TEST_DIR)%.c
 	$(CC) $(CFLAGS) -Ofast -lcriterion -c $< -o $@ 
