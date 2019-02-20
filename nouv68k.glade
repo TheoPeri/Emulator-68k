@@ -1412,13 +1412,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton">
-            <property name="label" translatable="yes">Show / Hide  memory details</property>
+          <object class="GtkCheckButton" id="Toggle Disassembled Memory">
+            <property name="label" translatable="yes">Hide Disassembled Memory</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
             <property name="opacity">0.56999999977648264</property>
             <property name="draw_indicator">True</property>
+            <signal name="toggled" handler="change_memory_view" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -1427,12 +1428,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="memory">
+          <object class="GtkLabel" id="disassembled_memory">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="ypad">9</property>
             <attributes>
-              <attribute name="font-desc" value="Ubuntu Medium 13"/>
+              <attribute name="font-desc" value="Monospace 13"/>
               <attribute name="foreground" value="#34346565a4a4"/>
             </attributes>
           </object>

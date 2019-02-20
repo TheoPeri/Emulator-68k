@@ -6,6 +6,7 @@
 
 #include "loader.h"
 #include "emulator.h"
+#include "debug.h"
 
 void init_window(char *file_name) {
     builder = gtk_builder_new();
@@ -49,6 +50,12 @@ void init_window(char *file_name) {
     openfile_window = GTK_FILE_CHOOSER_DIALOG(gtk_builder_get_object(builder,
     "OpenFileHex"));
 
+    disassembled_memory = GTK_LABEL(gtk_builder_get_object(builder,
+    "disassembled_memory"));
+
+    toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
+    "Toggle Disassembled Memory"));
+
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
     gtk_builder_connect_signals(builder, NULL);
 
@@ -84,8 +91,13 @@ void update_window() {
     // update pc
     snprintf(buffer, 10, "$%08x", PC);
     gtk_label_set_text(window_pc, buffer);
+}
 
-    // update disassembly
+void update_buffer() {
+    char *tmp = pretty_print_instruction();
+    gtk_label_set_text(disassembled_memory, tmp); 
+
+    free(tmp);
 }
 
 void openfile_button() {
@@ -108,12 +120,23 @@ void loadfile_button() {
 
     init();
     update_window();
+    update_buffer();
 
     free(filename); 
 }
 
 void closefile_button() {
     gtk_widget_hide(GTK_WIDGET(openfile_window));
+}
+
+
+void change_memory_view() {
+    if(gtk_toggle_button_get_active(
+        GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
+        gtk_widget_hide(GTK_WIDGET(disassembled_memory));
+    } else {
+        gtk_widget_show(GTK_WIDGET(disassembled_memory));
+    }
 }
 
 // called when window is closed

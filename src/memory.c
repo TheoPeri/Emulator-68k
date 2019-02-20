@@ -14,7 +14,7 @@ uint32_t registers[17];
 * @return The index in the registers array of stack ptr.
 */
 uint32_t get_stack_ptr (){
-    return SUPERVISOR_STATE ? 16 : 17;    
+    return SUPERVISOR_STATE ? 15 : 16;    
 }
 
 // operation on memory
