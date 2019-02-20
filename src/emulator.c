@@ -411,7 +411,7 @@ int next_instruction() {
             goto warning;
         case 0x4afc:
             // is_illegal
-            goto warning;
+            return 42;
         case 0x4e70:
             // is_reset
             goto warning;
@@ -426,7 +426,7 @@ int next_instruction() {
             goto warning;
         case 0x4e75:
             // is_rts
-            goto warning;
+            return rts();
         case 0x4e76:
             // is_trapv
             goto warning;
@@ -447,13 +447,13 @@ int next_instruction() {
             goto warning;
         case 0x0600:
             // is_addi
-            goto warning;
+            return addi(current_operation);
         case 0x0a00:
             // is_eori
             goto warning;
         case 0x0c00:
             // is_cmpi
-            goto warning;
+            return cmpi(current_operation);
     }
 
     if (mask_0xffc0 == 0x0800 || mask_0xf1c0 == 0x0100) {
@@ -478,17 +478,20 @@ int next_instruction() {
 
     if (mask_0xf138 == 0x0108) {
         // is_movep
+        goto warning;
     }
 
     if ((0xc1c0 & current_operation) == 0x0040) {
         // is_movea
+        return movea(current_operation);
     }
     
     if ((0xc000 & current_operation) == 0x0000) {
         // is_move
+        return move(current_operation);
     }
 
-    switch (mask_0xf1c0) {
+    switch (mask_0xffc0) {
         case 0x40c0:
             // is_move_from_sr
             goto warning;
@@ -576,7 +579,7 @@ int next_instruction() {
 
     if ((0xfb80 & current_operation) == 0x4880) {
         // is_movem
-        goto warning;
+        return movem(current_operation);
     }
 
     if (mask_0xf1c0 == 0x41c0) {
@@ -591,7 +594,7 @@ int next_instruction() {
     
     if (mask_0xf100 == 0x5000) {
         // is_addq
-        goto warning;
+        return addq(current_operation);
     }
 
     if (mask_0xf100 == 0x5100) {
@@ -611,22 +614,22 @@ int next_instruction() {
 
     if (mask_0xff00 == 0x6000) {
         // is_bra
-        goto warning;
+        return bra(current_operation);
     }
 
     if (mask_0xff00 == 0x6100) {
         // is_bsr
-        goto warning;
+        return bsr(current_operation);
     }
 
     if (mask_0xf000 == 0x6000) {
         // is_bcc
-        goto warning;
+        return bcc(current_operation);
     }
 
     if (mask_0xf100 == 0x7000) {
         // is_moveq
-        goto warning;
+        return moveq(current_operation);
     }
 
     if (mask_0xf1c0 == 0x80c0) {
@@ -666,7 +669,7 @@ int next_instruction() {
 
     if (mask_0xf138 == 0xb108) {
         // is_cmpm
-        goto warning;
+        return cmpm(current_operation);
     }
 
     if (mask_0xf100 == 0xb100) {
@@ -676,12 +679,12 @@ int next_instruction() {
 
     if (mask_0xf100 == 0xb000) {
         // is_cmp
-        goto warning;
+        return cmp(current_operation);
     }
 
     if (mask_0xf0c0 == 0xb0c0) {
         // is_cmpa
-        goto warning;
+        return cmpa(current_operation);
     }
     
     if (mask_0xf1c0 == 0xc0c0) {
@@ -711,7 +714,7 @@ int next_instruction() {
 
     if (mask_0xf0c0 == 0xd0c0) {
         // is_adda
-        goto warning;
+        return adda(current_operation);
     }
 
     if (mask_0xf000 == 0xc000) {
@@ -721,7 +724,7 @@ int next_instruction() {
 
     if (mask_0xf000 == 0xd000) {
         // is_add
-        goto warning;
+        return add(current_operation);
     }
 
     if (mask_0xfec0 == 0xe0c0 || mask_0xf018== 0xe000) {
@@ -988,17 +991,17 @@ int cmpi(uint16_t current_operation) {
         case 0x0:
             source = read_16bit(memory + PC + 2) & 0xff;
             shift = 7;
-            displacement = 2;
+            displacement = 4;
             break;
         case 0x1:
             source = read_16bit(memory + PC + 2);
             shift = 15;
-            displacement = 2;
+            displacement = 4;
             break;
         case 0x2:
             source = read_32bit(memory + PC + 2);
             shift = 31;
-            displacement = 4;
+            displacement = 6;
             break;
         default:
             return -1;

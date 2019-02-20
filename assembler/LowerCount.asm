@@ -1,11 +1,11 @@
-			org 	$4
-
+			org 	$0
+Vector_000	dc.l	$10000
 Vector_001	dc.l	Main
 
 			org		$500
 
 Main		movea.l #STRING,a0
-			jsr LowerCount
+			bsr LowerCount
 			illegal
 
 LowerCount  movem.l d1/a0,-(a7)

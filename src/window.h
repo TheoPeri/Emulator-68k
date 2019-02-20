@@ -30,4 +30,7 @@ void closefile_button();
 void change_memory_view();
 
 void on_window_main_destroy();
+
+
+static gboolean key_event(GtkWidget *widget, GdkEventKey *event);
 #endif

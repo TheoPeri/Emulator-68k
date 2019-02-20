@@ -56,8 +56,12 @@ void init_window(char *file_name) {
     toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
     "Toggle Disassembled Memory"));
 
+    // link key
+
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
+
     gtk_builder_connect_signals(builder, NULL);
+    g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
 
     g_object_unref(builder);
  
@@ -129,7 +133,6 @@ void closefile_button() {
     gtk_widget_hide(GTK_WIDGET(openfile_window));
 }
 
-
 void change_memory_view() {
     if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
@@ -137,6 +140,19 @@ void change_memory_view() {
     } else {
         gtk_widget_show(GTK_WIDGET(disassembled_memory));
     }
+}
+
+static gboolean key_event(__attribute__((unused))GtkWidget *widget,
+    GdkEventKey *event) {
+    //g_printerr("%u\n", event->keyval);
+    
+    if (event->keyval == 65480) {
+        next_instruction();
+        update_window();
+        update_buffer();
+    }
+
+    return FALSE;
 }
 
 // called when window is closed

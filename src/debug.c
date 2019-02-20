@@ -10,7 +10,7 @@
 
 extern uint8_t *memory;
 
-#define code_size 50
+#define code_size 64
 
 char *mystrcat(char *s1, char *s2) {
     size_t len = strlen(s1) + strlen(s2); 
