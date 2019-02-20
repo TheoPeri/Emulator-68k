@@ -145,8 +145,11 @@ int load_line(char *s) {
         }
 
         // copy the data in the PC
-        PC = address;
-        printf("Set the PC address at 0x%06u\n", address);
+        if ((PC = address)) {
+            printf("Set the PC address at 0x%06x\n", address);
+        } else {
+            printf("No information in the .hex file for the PC\n");
+        }
     } else {
         warnx("Unknow S type => S%u\n", type);
         return -1;
@@ -174,8 +177,7 @@ int load_file(char *name_file) {
     char *line = NULL;
     size_t i = 0;
     size_t len = 0;
-    ssize_t read;
-    
+    ssize_t read; 
     fp = fopen(name_file, "r");
     if (fp == NULL) {
         warnx("FAIL OPEN THE FILE!!!.\n");

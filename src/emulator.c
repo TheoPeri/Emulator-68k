@@ -10,12 +10,39 @@ extern uint32_t PC;
 extern uint8_t *memory;
 
 /**
- * @brief Initialize the emulator.
+ * @brief Initialize the memory of the emulator.
  *
  * @return -1 => error || other => OK
  */
+int init_memory() {
+    if ((memory = calloc(16777220, sizeof(uint8_t))) == NULL) {
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+* @brief Init the processor (load the vector).
+*
+* @return -1 => error || other => OK
+*/
 int init() {
-    memory = calloc(16777220, sizeof(uint8_t));
+    uint32_t tmp;
+
+    printf("Load the vector...\n");
+    printf("Set the SUPERVISOR STATE = 1\n");
+    SUPERVISOR_STATE = 1; // start the processor as supervisor
+
+    if ((tmp = read_32bit(memory))) { // init sp
+        A(7) = tmp;
+        printf("Set the SP address at 0x%06x\n", A(7));
+    }
+
+    if (!PC) { // init pc
+        PC = read_32bit(memory + 0x4);
+        printf("Set the PC address at 0x%06x\n", PC);
+    }
 
     return 0;
 }
