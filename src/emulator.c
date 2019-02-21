@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "emulator.h"
 #include "memory.h"
+#include <gtk/gtk.h>
+
 
 /**
  * @brief Initialize the memory of the emulator.
@@ -12,10 +14,9 @@
  * @return -1 => error || other => OK
  */
 int init_memory() {
-    if ((memory = calloc(16777220, sizeof(uint8_t))) == NULL) {
+    if ((memory = g_malloc0(16777220 * sizeof(uint8_t))) == NULL) {
         return -1;
     }
-
     return 0;
 }
 
@@ -49,9 +50,9 @@ int init() {
  *
  * @return -1 => error || other => OK
  */
-int shutdown() {
-    free(memory);
-
+int shutdown_emulator() {
+	printf("################ Shutting down the emulator ###############\n");
+    g_free(memory);
     return 0;
 }
 

@@ -3,7 +3,7 @@
 
 int init_memory();
 int init();
-int shutdown();
+int shutdown_emulator();
 int next_instruction();
 
 uint32_t addressing_mode_source

@@ -98,7 +98,7 @@ void update_window() {
 }
 
 void update_buffer() {
-    char *tmp = pretty_print_instruction();
+	char *tmp = pretty_print_instruction();
     gtk_label_set_text(disassembled_memory, tmp); 
 
     free(tmp);
@@ -114,10 +114,12 @@ void loadfile_button() {
     gtk_widget_hide(GTK_WIDGET(openfile_window));
     
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(openfile_window));
-    printf("Start loading the file: %s.\n", filename);
+    printf("=====\n\nLoading: %s.\n", filename);
 
     if (memory == NULL) {
-        init_memory();
+		if(init_memory() == -1)
+			g_printerr("\t## Failed to calloc\n");
+		else g_printerr("\t-> Allocated memory at %p\n", memory);
     }
 
     load_file(filename);
@@ -125,8 +127,9 @@ void loadfile_button() {
     init();
     update_window();
     update_buffer();
-
-    free(filename); 
+	
+    g_free(filename);
+	printf("\n\n=====\n");
 }
 
 void closefile_button() {
@@ -134,7 +137,7 @@ void closefile_button() {
 }
 
 void change_memory_view() {
-    if(gtk_toggle_button_get_active(
+	if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
         gtk_widget_hide(GTK_WIDGET(disassembled_memory));
     } else {
