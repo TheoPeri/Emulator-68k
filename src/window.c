@@ -11,7 +11,7 @@
 void init_window(char *file_name) {
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, file_name, NULL);
-    
+
     // register
     window_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "d0"));
     window_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "d1"));
@@ -21,7 +21,7 @@ void init_window(char *file_name) {
     window_registers[5] = GTK_LABEL (gtk_builder_get_object (builder, "d5"));
     window_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "d6"));
     window_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "d7"));
- 
+
     window_registers[8] = GTK_LABEL (gtk_builder_get_object (builder, "a0"));
     window_registers[9] = GTK_LABEL (gtk_builder_get_object (builder, "a1"));
     window_registers[10] = GTK_LABEL (gtk_builder_get_object (builder, "a2"));
@@ -44,7 +44,7 @@ void init_window(char *file_name) {
     window_registers[17] = GTK_LABEL (gtk_builder_get_object (builder, "a7"));
     window_pc = GTK_LABEL (gtk_builder_get_object (builder, "PC"));
 
-    window_memory = GTK_LABEL (gtk_builder_get_object (builder, "memory"));
+    window_memory = GTK_LABEL(gtk_builder_get_object (builder, "memory"));
 
     // link button
     openfile_window = GTK_FILE_CHOOSER_DIALOG(gtk_builder_get_object(builder,
@@ -57,15 +57,14 @@ void init_window(char *file_name) {
     "Toggle Disassembled Memory"));
 
     // link key
-
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
 
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
 
     g_object_unref(builder);
- 
-    gtk_widget_show_all(window); 
+
+    gtk_widget_show_all(window);
 
     update_window();
 
@@ -73,18 +72,18 @@ void init_window(char *file_name) {
 }
 
 void update_window() {
-    unsigned i; 
+    unsigned i;
     char buffer[10];
-    
+
     // window register
     for (i = 0; i < 17; ++i) {
         snprintf(buffer, 10, "$%08x", registers[i]);
         gtk_label_set_text(window_registers[i], buffer);
     }
+
     // a7
     snprintf(buffer, 10, "$%08x", A(7));
     gtk_label_set_text(window_registers[i], buffer);
-
 
     // status register
     for (i = 0; i < 6; ++i) {
@@ -99,7 +98,7 @@ void update_window() {
 
 void update_buffer() {
 	char *tmp = pretty_print_instruction();
-    gtk_label_set_text(disassembled_memory, tmp); 
+    gtk_label_set_text(disassembled_memory, tmp);
 
     free(tmp);
 }
@@ -111,24 +110,21 @@ void openfile_button() {
 void loadfile_button() {
     char *filename;
 
+    // get the file name
     gtk_widget_hide(GTK_WIDGET(openfile_window));
-    
     filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(openfile_window));
+
     printf("=====\n\nLoading: %s.\n", filename);
 
-    if (memory == NULL) {
-		if(init_memory() == -1)
-			g_printerr("\t## Failed to calloc\n");
-		else g_printerr("\t-> Allocated memory at %p\n", memory);
-    }
-
+    // load the file
     load_file(filename);
+    free(filename);
 
+    // init the emulator and update the interface
     init();
     update_window();
     update_buffer();
-	
-    g_free(filename);
+
 	printf("\n\n=====\n");
 }
 
@@ -145,10 +141,9 @@ void change_memory_view() {
     }
 }
 
-static gboolean key_event(__attribute__((unused))GtkWidget *widget,
+gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
-    //g_printerr("%u\n", event->keyval);
-    
+
     if (event->keyval == 65480) {
         next_instruction();
         update_window();

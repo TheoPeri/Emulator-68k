@@ -4,7 +4,7 @@
 #include <gtk/gtk.h>
 
 // global parameter and tool
-GtkBuilder *builder; 
+GtkBuilder *builder;
 GtkWidget *window;
 
 GtkLabel *window_pc;
@@ -32,5 +32,5 @@ void change_memory_view();
 void on_window_main_destroy();
 
 
-static gboolean key_event(GtkWidget *widget, GdkEventKey *event);
+gboolean key_event(GtkWidget *widget, GdkEventKey *event);
 #endif
