@@ -6,21 +6,18 @@
 #include "loader.h"
 #include "emulator.h"
 #include "debug.h"
- 
+
 int main(int argc, char *argv[])
 {
-    // important
-    gtk_init(&argc, &argv);
+    // init the memory
+    init_memory();
 
-    init_window("nouv68k.glade"); 
+    gtk_init(NULL, NULL);
 
-/*
-    load_file("assembler/load_exemple.hex");
+    init_window("nouv68k.glade");
 
+    // free
+    shutdown_emulator();
 
-    pretty_print_instruction();
-
-    shutdown();
-    */
     return 0;
 }
