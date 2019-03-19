@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -Wall -Wextra -std=c99 -l capstone
+CFLAGS= -std=c99 -Wall -Wextra -l capstone -lX11 -lm
 LDFLAGS= `pkg-config --cflags gtk+-3.0` -rdynamic
 LDLIBS= `pkg-config --libs gtk+-3.0`
 

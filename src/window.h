@@ -19,6 +19,8 @@ GtkFileChooserDialog *openfile_window;
 GtkCheckButton *toggle_disassembled_memory;
 GtkLabel *disassembled_memory;
 
+int init_nuklear();
+
 void init_window();
 void update_window();
 void update_buffer();
