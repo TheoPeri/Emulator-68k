@@ -56,4 +56,10 @@ int moveq(uint16_t current_operation);
 int movea(uint16_t current_operation);
 int movem(uint16_t current_operation);
 
+int sub(uint16_t current_operation);
+int suba(uint16_t current_operation);
+int subq(uint16_t current_operation);
+int subi(uint16_t current_operation);
+
+
 #endif
