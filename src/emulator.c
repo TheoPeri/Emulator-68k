@@ -1499,6 +1499,259 @@ inline int movem(uint16_t current_operation) {
 
     PC += displacement;
     return 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+* @brief Execute the command sub
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int sub(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint8_t reg = (current_operation & 0xe00) >> 9;
+
+    uint32_t displacement = 2;
+    uint32_t source, result;
+    uint8_t shift;
+
+    // dn - ea -> ea
+    if (current_operation & 0x100) {
+        // get source
+        source = D(reg);
+
+        // get destination
+        uint32_t destination = addressing_mode_source_ro(size,
+            current_operation & 0xff);
+
+        // setup and add
+        switch (size) {
+            case 0x0:
+                result = (source - destination) & 0xff;
+                shift = 7;
+                break;
+            case 0x1:
+                result = (source - destination) & 0xffff;
+                shift = 15;
+                break;
+            case 0x2:
+                result = source - destination;
+                shift = 31;
+                break;
+            default:
+                return -1;
+        }
+        // flag
+        add_flag(source, destination, result, shift);
+
+        // assign
+        addressing_mode_destination(size, current_operation & 0xff,
+            &displacement, result);
+    } else { // ea - dn -> dn
+        // get source
+        source = addressing_mode_source(size, current_operation & 0xff,
+            &displacement);
+
+        // setup and sub
+        switch (size) {
+            case 0x0:
+                result = (source - D(reg)) & 0xff;
+                shift = 7;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = (D(reg) & 0xffffff00)  | result;
+                break;
+            case 0x1:
+                result = (source - D(reg)) & 0xffff;
+                shift = 15;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = (D(reg) & 0xffff0000)  | result;
+                break;
+            case 0x2:
+                result = source - D(reg);
+                shift = 31;
+                add_flag(source, D(reg), result, shift);
+                D(reg) = result;
+                break;
+            default:
+                return -1;
+        }
+    }
+
+    PC += displacement;
+    return 0;
+}
+
+/**
+* @brief Execute the command suba
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int suba(uint16_t current_operation) {
+    // info
+    uint8_t size = current_operation & 0x100 ? 2 : 1;
+
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+
+    // extension
+    if (size == 1) {
+        // cast word format
+        source = (int32_t)(int16_t)source;
+    }
+
+    // add
+    A((current_operation & 0x0e00)>>9) -= source;
+
+    PC += displacement;
+    return 0;
+}
+
+/**
+* @brief Execute the command subq
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int subq(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t source = (current_operation & 0xe00) >> 9;
+    if (!source) {
+        source = 8;
+    }
+
+    uint32_t displacement = 2;
+    uint32_t result;
+    uint8_t shift;
+
+    // get destination
+    uint32_t destination = addressing_mode_source_ro(size,
+            current_operation & 0xff);
+
+    // setup and add
+    switch (size) {
+        case 0x0:
+            result = (source - destination) & 0xff;
+            shift = 7;
+            break;
+        case 0x1:
+            result = (source - destination) & 0xffff;
+            shift = 15;
+            break;
+        case 0x2:
+            result = source - destination;
+            shift = 31;
+            break;
+        default:
+            return -1;
+    }
+    // flag
+    add_flag(source, destination, result, shift);
+
+    // assign
+    addressing_mode_destination(size, current_operation & 0xff,
+        &displacement, result);
+
+    PC += displacement;
+    return 0;
+}
+
+/**
+* @brief Execute the command subi
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int subi(uint16_t current_operation) {
+    // info
+    uint8_t size = (current_operation & 0xc0) >> 6;
+
+    uint32_t displacement = 2;
+    uint32_t source, destination, result;
+    uint8_t shift;
+
+    switch (size) {
+        case 0x0:
+            PC += 2;
+            source = read_16bit(memory + PC);
+            shift = 7;
+
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff);
+            result = (source - destination) & 0xff;
+            break;
+        case 0x1:
+            PC += 2;
+            source = read_16bit(memory + PC);
+            shift = 15;
+
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff);
+            result = (source - destination) & 0xffff;
+            break;
+        case 0x2:
+            source = read_32bit(memory + PC + 2);
+            PC += 4;
+            shift = 31;
+
+            destination = addressing_mode_source_ro(size,
+                    current_operation & 0xff);
+            result = source - destination;
+            break;
+        default:
+            return -1;
+    }
+
+    // flag
+    add_flag(source, destination, result, shift);
+
+    // assign
+    addressing_mode_destination(size, current_operation & 0xff,
+        &displacement, result);
+
+    PC += displacement;
+    return 0;
+}
+
 }
 
 
