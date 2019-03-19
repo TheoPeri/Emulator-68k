@@ -81,9 +81,15 @@ void debug_window(struct nk_context *ctx) {
         NK_WINDOW_SCALABLE|NK_WINDOW_CLOSABLE|NK_WINDOW_MINIMIZABLE
         |NK_WINDOW_TITLE))
     {
-        
+        int i = 0;
+        char buffer[64];
+        nk_layout_row_static(ctx, 18, 150, 1);
+        for (i = 0; i < 64; ++i) {
+            sprintf(buffer, "0x%02x", i);
+            nk_labelf(ctx, NK_TEXT_LEFT, "%s: scrollable region", buffer);
+        }
     }
-    
+
     nk_end(ctx);
 }
 
@@ -95,8 +101,8 @@ int init_nuklear() {
 
     struct nk_context *ctx;
 
-    /* X11 */
-    memset(&xw, 0, sizeof xw);
+    // init X11
+    memset(&xw, 0, sizeof(XWindow));
     xw.dpy = XOpenDisplay(NULL);
 
     if (!xw.dpy) {
@@ -112,7 +118,7 @@ int init_nuklear() {
 
     xw.swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
         ButtonPress | ButtonReleaseMask| ButtonMotionMask |
-        Button1MotionMask | Button3MotionMask | Button4MotionMask | 
+        Button1MotionMask | Button3MotionMask | Button4MotionMask |
         Button5MotionMask| PointerMotionMask | KeymapStateMask;
 
     xw.win = XCreateWindow(xw.dpy, xw.root, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0,
@@ -136,7 +142,7 @@ int init_nuklear() {
         /* Input */
         XEvent evt;
         started = timestamp();
-        
+
         nk_input_begin(ctx);
         while (XPending(xw.dpy)) {
             XNextEvent(xw.dpy, &evt);
@@ -151,7 +157,7 @@ int init_nuklear() {
             nk_xlib_handle_event(xw.dpy, xw.screen, xw.win, &evt);
         }
         nk_input_end(ctx);
-        
+
         // main debug window
         debug_window(ctx);
 
