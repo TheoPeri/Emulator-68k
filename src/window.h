@@ -17,7 +17,10 @@ GtkFileChooserDialog *openfile_window;
 GtkFileChooserDialog *openfile_window;
 
 GtkCheckButton *toggle_disassembled_memory;
-GtkLabel *disassembled_memory;
+GtkLabel *disassembled_memory_a;
+GtkLabel *disassembled_memory_op;
+GtkLabel *disassembled_memory_o;
+GtkLabel *hex_view;
 
 void init_window();
 void update_window();

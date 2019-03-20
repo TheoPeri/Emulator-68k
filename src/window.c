@@ -50,8 +50,16 @@ void init_window(char *file_name) {
     openfile_window = GTK_FILE_CHOOSER_DIALOG(gtk_builder_get_object(builder,
     "OpenFileHex"));
 
-    disassembled_memory = GTK_LABEL(gtk_builder_get_object(builder,
-    "disassembled_memory"));
+    disassembled_memory_a = GTK_LABEL(gtk_builder_get_object(builder,
+    "disassembled_memory_a"));
+
+	disassembled_memory_op = GTK_LABEL(gtk_builder_get_object(builder,
+    "disassembled_memory_op"));
+
+	disassembled_memory_o = GTK_LABEL(gtk_builder_get_object(builder,
+    "disassembled_memory_o"));
+
+	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
 
     toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
     "Toggle Disassembled Memory"));
@@ -97,10 +105,19 @@ void update_window() {
 }
 
 void update_buffer() {
-	char *tmp = pretty_print_instruction();
-    gtk_label_set_text(disassembled_memory, tmp);
+	char* adrrs = NULL;
+	char* opcodes = NULL;
+	char* operandes = NULL;
 
-    free(tmp);
+	pretty_print_instruction(&adrrs, &opcodes, &operandes);
+
+    gtk_label_set_markup(disassembled_memory_a, adrrs);
+	gtk_label_set_markup(disassembled_memory_op, opcodes);  
+	gtk_label_set_markup(disassembled_memory_o, operandes); 
+
+    free(adrrs);
+	free(opcodes);
+	free(operandes);
 }
 
 void openfile_button() {
@@ -135,9 +152,9 @@ void closefile_button() {
 void change_memory_view() {
 	if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
-        gtk_widget_hide(GTK_WIDGET(disassembled_memory));
+        gtk_widget_hide(GTK_WIDGET(hex_view));
     } else {
-        gtk_widget_show(GTK_WIDGET(disassembled_memory));
+        gtk_widget_show(GTK_WIDGET(hex_view));
     }
 }
 
