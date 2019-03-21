@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS= -std=c99 -Wall -Wextra -l capstone -lX11 -lm
+CFLAGS= -std=c99 -Wall -Wextra -l capstone -pedantic -D_POSIX_C_SOURCE=200809L -lX11 -lm
 LDFLAGS= `pkg-config --cflags gtk+-3.0` -rdynamic
 LDLIBS= `pkg-config --libs gtk+-3.0`
 
@@ -33,7 +33,7 @@ $(DOBJECTS): $(TMP_DIR)_d_%.o : $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(LDFLAGS) -g -c $< -o $@  $(LDLIBS)
 
 $(TOBJECTS): $(TMP_DIR)%.o : $(TEST_DIR)%.c
-	$(CC) $(CFLAGS) -Ofast -lcriterion -c $< -o $@ 
+	$(CC) $(CFLAGS) -Ofast -lcriterion -c $< -o $@
 
 clean:
 	rm -f $(TMP_DIR)*

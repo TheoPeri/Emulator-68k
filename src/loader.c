@@ -25,13 +25,13 @@ uint8_t compute_checksum(char *s, unsigned size) {
 
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2x", &tmp) == EOF) {
-            warnx("Error while parsing: %s\n", strerror(errno));  
+            warnx("Error while parsing: %s\n", strerror(errno));
             return 0;
         }
         res += tmp;
         s += 2;
     }
-    
+
     return (uint8_t)~res;
 }
 
@@ -47,7 +47,7 @@ uint8_t compute_checksum(char *s, unsigned size) {
 int copy_raw_data(char *s, uint8_t size, uint32_t address) {
     for (unsigned i = 0; i < size; ++i) {
         if (sscanf(s, "%2hhx", memory + address + i) == EOF) {
-            warnx("Error while parsing => %s\n", strerror(errno));  
+            warnx("Error while parsing => %s\n", strerror(errno));
             return -1;
         }
 
@@ -69,10 +69,10 @@ int load_line(char *s) {
     uint8_t checksum;
     int tmp = 0;
 
-    if (sscanf(s++, "S%1d", &type) == EOF || sscanf(++s, "%2x", &size) == EOF) {
+    if (sscanf(s++, "S%1u", &type) == EOF || sscanf(++s, "%2x", &size) == EOF) {
         goto error;
     }
-    
+
     if (type == 0 || type == 5) {
         // informative S
         if (sscanf(s + 2, "%4x", &address) == EOF) {
@@ -81,10 +81,10 @@ int load_line(char *s) {
 
         if (type == 0) {
             printf("Find header content => ");
-            char c;
+            unsigned char c;
 
             for (unsigned i = 0; i < size-3; ++i) {
-                sscanf(s + 6 + 2 * i, "%2hhx", &c); 
+                sscanf(s + 6 + 2 * i, "%2hhx", &c);
                 printf("%c", c);
             }
 
@@ -115,8 +115,8 @@ int load_line(char *s) {
                 }
                 break;
         }
-        
-        // copy data in the memory             
+
+        // copy data in the memory
         if ((tmp = copy_raw_data(s + 2 + size_address,
             size - 1 - size_address/2, address)) == -1) {
             return -1;
@@ -165,7 +165,7 @@ int load_line(char *s) {
     return 0;
 
     error:
-        warnx("Error while parsing => %s\n", strerror(errno));  
+        warnx("Error while parsing => %s\n", strerror(errno));
         return -1;
 }
 
@@ -174,11 +174,11 @@ int load_file(char *name_file) {
     char *line = NULL;
     size_t i = 0;
     size_t len = 0;
-    ssize_t read; 
+    ssize_t read;
     fp = fopen(name_file, "r");
     if (fp == NULL) {
         warnx("FAIL OPEN THE FILE!!!.\n");
-        return -1; 
+        return -1;
     }
 
     while ((read = getline(&line, &len, fp)) != -1) {

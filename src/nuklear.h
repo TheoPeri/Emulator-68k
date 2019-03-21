@@ -5732,9 +5732,9 @@ NK_GLOBAL const struct nk_color nk_yellow = {255,255,0,255};
 
 /* math */
 NK_LIB float nk_inv_sqrt(float n);
-NK_LIB float nk_sqrt(float x);
-NK_LIB float nk_sin(float x);
-NK_LIB float nk_cos(float x);
+__attribute__((unused)) NK_LIB float nk_sqrt(float x);
+__attribute__((unused)) NK_LIB float nk_sin(float x);
+__attribute__((unused)) NK_LIB float nk_cos(float x);
 NK_LIB nk_uint nk_round_up_pow2(nk_uint v);
 NK_LIB struct nk_rect nk_shrink_rect(struct nk_rect r, float amount);
 NK_LIB struct nk_rect nk_pad_rect(struct nk_rect r, struct nk_vec2 pad);
@@ -5763,7 +5763,7 @@ NK_LIB struct nk_vec2 nk_text_calculate_text_bounds(const struct nk_user_font *f
 NK_LIB int nk_strfmt(char *buf, int buf_size, const char *fmt, va_list args);
 #endif
 #ifdef NK_INCLUDE_STANDARD_IO
-NK_LIB char *nk_file_load(const char* path, nk_size* siz, struct nk_allocator *alloc);
+__attribute__((unused)) NK_LIB char *nk_file_load(const char* path, nk_size* siz, struct nk_allocator *alloc);
 #endif
 
 /* buffer */
@@ -18418,7 +18418,7 @@ nk_tree_element_image_push_hashed_base(struct nk_context *ctx, enum nk_tree_type
     struct nk_vec2 item_spacing;
     struct nk_rect header = {0,0,0,0};
     struct nk_rect sym = {0,0,0,0};
-    struct nk_text text;
+    __attribute__((unused)) struct nk_text text;
 
     nk_flags ws = 0;
     enum nk_widget_layout_states widget_state;

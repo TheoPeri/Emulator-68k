@@ -413,10 +413,10 @@ nk_stbi_image_to_xsurf(unsigned char *data, int width, int height, int channels)
     int bpl = channels;
     long i, isize = width*height*channels;
     XImageWithAlpha *aimage = (XImageWithAlpha*)calloc( 1, sizeof(XImageWithAlpha) );
-    int depth = DefaultDepth(surf->dpy, surf->screen); 
+    int depth = DefaultDepth(surf->dpy, surf->screen);
     if (data == NULL) return nk_image_id(0);
     if (aimage == NULL) return nk_image_id(0);
-    
+
     switch (depth){
         case 24:
             bpl = 4;
@@ -429,7 +429,7 @@ nk_stbi_image_to_xsurf(unsigned char *data, int width, int height, int channels)
             bpl = 1;
         break;
     }
-    
+
     /* rgba to bgra */
     if (channels >= 3){
         for (i=0; i < isize; i += channels) {
@@ -441,9 +441,9 @@ nk_stbi_image_to_xsurf(unsigned char *data, int width, int height, int channels)
     }
 
     if (channels == 4){
-        const unsigned alpha_treshold = 127;        
+        const unsigned alpha_treshold = 127;
         aimage->clipMask = XCreatePixmap(surf->dpy, surf->drawable, width, height, 1);
-        
+
         if( aimage->clipMask ){
             aimage->clipMaskGC = XCreateGC(surf->dpy, aimage->clipMask, 0, 0);
             XSetForeground(surf->dpy, aimage->clipMaskGC, BlackPixel(surf->dpy, surf->screen));
@@ -460,13 +460,13 @@ nk_stbi_image_to_xsurf(unsigned char *data, int width, int height, int channels)
             }
         }
     }
-    
-    aimage->ximage = XCreateImage(surf->dpy, 
-           CopyFromParent, depth, 
-           ZPixmap, 0, 
-           (char*)data, 
-           width, height, 
-           bpl*8, bpl * width); 
+
+    aimage->ximage = XCreateImage(surf->dpy,
+           CopyFromParent, depth,
+           ZPixmap, 0,
+           (char*)data,
+           width, height,
+           bpl*8, bpl * width);
     img = nk_image_ptr( (void*)aimage);
     img.h = height;
     img.w = width;
@@ -494,13 +494,13 @@ nk_xsurf_load_image_from_file(char const *filename)
 
 NK_INTERN void
 nk_xsurf_draw_image(XSurface *surf, short x, short y, unsigned short w, unsigned short h,
-    struct nk_image img, struct nk_color col)
+    struct nk_image img, __attribute__((unused)) struct nk_color col)
 {
     XImageWithAlpha *aimage = img.handle.ptr;
     if (aimage){
         if (aimage->clipMask){
             XSetClipMask(surf->dpy, surf->gc, aimage->clipMask);
-            XSetClipOrigin(surf->dpy, surf->gc, x, y); 
+            XSetClipOrigin(surf->dpy, surf->gc, x, y);
         }
         XPutImage(surf->dpy, surf->drawable, surf->gc, aimage->ximage, 0, 0, x, y, w, h);
         XSetClipMask(surf->dpy, surf->gc, None);
@@ -577,7 +577,7 @@ nk_xfont_create(Display *dpy, const char *name)
 }
 
 NK_INTERN float
-nk_xfont_get_text_width(nk_handle handle, float height, const char *text, int len)
+nk_xfont_get_text_width(nk_handle handle, __attribute__((unused)) float height, const char *text, int len)
 {
     XFont *font = (XFont*)handle.ptr;
     XRectangle r;
@@ -683,7 +683,7 @@ nk_xlib_copy(nk_handle handle, const char* str, int len)
 }
 
 NK_API int
-nk_xlib_handle_event(Display *dpy, int screen, Window win, XEvent *evt)
+nk_xlib_handle_event(Display *dpy, __attribute__((unused)) int screen, Window win, XEvent *evt)
 {
     struct nk_context *ctx = &xlib.ctx;
 
