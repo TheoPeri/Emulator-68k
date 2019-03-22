@@ -1916,7 +1916,7 @@ Test(emulator, test_movem, .init=setup_emulator) {
 
 
 Test(emulator, test_sub, .init=setup_emulator) {
-    uint32_t instruction;
+    uint16_t instruction;
 
     // test data register .w
     instruction = 0x9240;
@@ -2080,7 +2080,9 @@ Test(emulator, test_sub, .init=setup_emulator) {
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 }
+
 /*
+
 Test(emulator, test_suba, .init=setup_emulator) {
     uint16_t instruction;
 
