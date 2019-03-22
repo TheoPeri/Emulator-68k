@@ -445,7 +445,7 @@ int next_instruction() {
             goto warning;
         case 0x0400:
             // is_subi
-            goto warning;
+            return subi(current_operation);
         case 0x0600:
             // is_addi
             return addi(current_operation);
@@ -600,7 +600,7 @@ int next_instruction() {
 
     if (mask_0xf100 == 0x5100) {
         // is_subq
-        goto warning;
+        return subq(current_operation);
     }
 
     if ((0xf0f8 & current_operation) == 0x50c8) {
@@ -660,12 +660,12 @@ int next_instruction() {
 
     if (mask_0xf0c0 == 0x90c0) {
         // is_suba
-        goto warning;
+        return suba(current_operation);
     }
 
     if (mask_0xf000 == 0x9000) {
         // is_sub
-        goto warning;
+        return sub(current_operation);
     }
 
     if (mask_0xf138 == 0xb108) {
@@ -1100,6 +1100,27 @@ inline void add_flag(uint32_t source, uint32_t destination,
 }
 
 /**
+ * @brief Set all flag for sub.
+ *
+ * @param source The source value
+ * @param destination The destination value
+ * @param shift The shift for get the high bit
+ */
+inline void sub_flag(uint32_t source, uint32_t destination,
+    uint32_t result, uint8_t shift) {
+    ZERO = result == 0;
+    NEGATIVE = (result >> shift) & 0x1;
+
+    CARRY = (((source & ~destination ) | (~destination & result ) | (source & result ) ) >> shift) & 0x1;
+    EXTEND = CARRY;
+
+    OVERFLOW = (((~source & destination & ~result) | (source & ~destination &
+    result)) >> shift) & 0x1; // see doc
+}
+
+
+
+/**
 * @brief Execute the command add
 *
 * @param current_operation the current operation
@@ -1499,7 +1520,7 @@ inline int movem(uint16_t current_operation) {
 
     PC += displacement;
     return 0;
-
+}
 
 
 
@@ -1549,7 +1570,7 @@ inline int sub(uint16_t current_operation) {
     uint32_t source, result;
     uint8_t shift;
 
-    // dn - ea -> ea
+    // ea - dn -> ea
     if (current_operation & 0x100) {
         // get source
         source = D(reg);
@@ -1558,30 +1579,30 @@ inline int sub(uint16_t current_operation) {
         uint32_t destination = addressing_mode_source_ro(size,
             current_operation & 0xff);
 
-        // setup and add
+        // setup and sub
         switch (size) {
             case 0x0:
-                result = (source - destination) & 0xff;
+                result = (destination - source) & 0xff;
                 shift = 7;
                 break;
             case 0x1:
-                result = (source - destination) & 0xffff;
+                result = (destination - source) & 0xffff;
                 shift = 15;
                 break;
             case 0x2:
-                result = source - destination;
+                result = destination - source;
                 shift = 31;
                 break;
             default:
                 return -1;
         }
         // flag
-        add_flag(source, destination, result, shift);
+        sub_flag(source, destination, result, shift);
 
         // assign
         addressing_mode_destination(size, current_operation & 0xff,
             &displacement, result);
-    } else { // ea - dn -> dn
+    } else { // dn - ea -> dn
         // get source
         source = addressing_mode_source(size, current_operation & 0xff,
             &displacement);
@@ -1589,21 +1610,21 @@ inline int sub(uint16_t current_operation) {
         // setup and sub
         switch (size) {
             case 0x0:
-                result = (source - D(reg)) & 0xff;
+                result = (D(reg) - source) & 0xff;
                 shift = 7;
-                add_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, shift);
                 D(reg) = (D(reg) & 0xffffff00)  | result;
                 break;
             case 0x1:
-                result = (source - D(reg)) & 0xffff;
+                result = (D(reg) - source) & 0xffff;
                 shift = 15;
-                add_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, shift);
                 D(reg) = (D(reg) & 0xffff0000)  | result;
                 break;
             case 0x2:
-                result = source - D(reg);
+                result = D(reg) - source;
                 shift = 31;
-                add_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, shift);
                 D(reg) = result;
                 break;
             default:
@@ -1636,7 +1657,7 @@ inline int suba(uint16_t current_operation) {
         source = (int32_t)(int16_t)source;
     }
 
-    // add
+    // sub
     A((current_operation & 0x0e00)>>9) -= source;
 
     PC += displacement;
@@ -1666,7 +1687,7 @@ inline int subq(uint16_t current_operation) {
     uint32_t destination = addressing_mode_source_ro(size,
             current_operation & 0xff);
 
-    // setup and add
+    // setup and sub
     switch (size) {
         case 0x0:
             result = (source - destination) & 0xff;
@@ -1684,7 +1705,7 @@ inline int subq(uint16_t current_operation) {
             return -1;
     }
     // flag
-    add_flag(source, destination, result, shift);
+    sub_flag(source, destination, result, shift);
 
     // assign
     addressing_mode_destination(size, current_operation & 0xff,
@@ -1742,7 +1763,7 @@ inline int subi(uint16_t current_operation) {
     }
 
     // flag
-    add_flag(source, destination, result, shift);
+    sub_flag(source, destination, result, shift);
 
     // assign
     addressing_mode_destination(size, current_operation & 0xff,
@@ -1753,5 +1774,5 @@ inline int subi(uint16_t current_operation) {
 }
 
 
-}
+
 
