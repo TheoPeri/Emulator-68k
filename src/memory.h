@@ -8,7 +8,7 @@ extern uint8_t *memory;
 extern uint32_t PC;
 
 // status registers
-extern int8_t status_registers[6];
+extern uint8_t status_registers[6];
 
 // data and address registers
 extern uint32_t registers[17];

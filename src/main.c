@@ -1,20 +1,15 @@
 #include "stdint.h"
 
 #include "window.h"
-
-#include "memory.h"
-#include "loader.h"
 #include "emulator.h"
-#include "debug.h"
 
-int main(int argc, char *argv[])
-{
+int main() {
     // init the memory
     init_memory();
 
     gtk_init(NULL, NULL);
 
-    init_window("nouv68k.glade");
+    init_window("ressources/nouv68k.glade");
 
     // free
     shutdown_emulator();

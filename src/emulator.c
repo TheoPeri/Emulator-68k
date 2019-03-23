@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "emulator.h"
 #include "memory.h"
-#include <gtk/gtk.h>
-
 
 /**
  * @brief Initialize the memory of the emulator.
@@ -14,7 +12,7 @@
  * @return -1 => error || other => OK
  */
 int init_memory() {
-    if ((memory = g_malloc0(16777220 * sizeof(uint8_t))) == NULL) {
+    if ((memory = malloc(16777220 * sizeof(uint8_t))) == NULL) {
         return -1;
     }
     return 0;

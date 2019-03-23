@@ -14,7 +14,7 @@ uint32_t registers[17];
 * @return The index in the registers array of stack ptr.
 */
 uint32_t get_stack_ptr (){
-    return SUPERVISOR_STATE ? 15 : 16;    
+    return SUPERVISOR_STATE ? 15 : 16;
 }
 
 // operation on memory
@@ -38,7 +38,7 @@ inline uint32_t read_16bit(uint8_t *address) {
  * @return The number in low endian.
  */
 inline uint32_t read_32bit(uint8_t *address) {
-    return (uint32_t)address[0]<<24 | (uint32_t)address[1]<<16 
+    return (uint32_t)address[0]<<24 | (uint32_t)address[1]<<16
         | (uint32_t)address[2]<<8 | (uint32_t)address[3];
 }
 

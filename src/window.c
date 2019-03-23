@@ -8,6 +8,11 @@
 #include "emulator.h"
 #include "debug.h"
 
+/**
+ * @brief Init the graphic interface
+ *
+ * @param file_name Need the file path for load the interface.
+ */
 void init_window(char *file_name) {
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, file_name, NULL);
@@ -79,18 +84,21 @@ void init_window(char *file_name) {
     gtk_main();
 }
 
+/**
+ * @brief Update the data window
+ */
 void update_window() {
     unsigned i;
     char buffer[10];
 
     // window register
     for (i = 0; i < 17; ++i) {
-        snprintf(buffer, 10, "$%08x", registers[i]);
+        snprintf(buffer, 10, "%08x", registers[i]);
         gtk_label_set_text(window_registers[i], buffer);
     }
 
     // a7
-    snprintf(buffer, 10, "$%08x", A(7));
+    snprintf(buffer, 10, "%08x", A(7));
     gtk_label_set_text(window_registers[i], buffer);
 
     // status register
@@ -100,10 +108,13 @@ void update_window() {
     }
 
     // update pc
-    snprintf(buffer, 10, "$%08x", PC);
+    snprintf(buffer, 10, "%08x", PC);
     gtk_label_set_text(window_pc, buffer);
 }
 
+/**
+ * @brief Update the disassemble buffer
+ */
 void update_buffer() {
 	char* adrrs = NULL;
 	char* opcodes = NULL;
@@ -112,18 +123,24 @@ void update_buffer() {
 	pretty_print_instruction(&adrrs, &opcodes, &operandes);
 
     gtk_label_set_markup(disassembled_memory_a, adrrs);
-	gtk_label_set_markup(disassembled_memory_op, opcodes);  
-	gtk_label_set_markup(disassembled_memory_o, operandes); 
+	gtk_label_set_markup(disassembled_memory_op, opcodes);
+	gtk_label_set_markup(disassembled_memory_o, operandes);
 
     free(adrrs);
 	free(opcodes);
 	free(operandes);
 }
 
+/**
+ * @brief Open the file explorer
+ */
 void openfile_button() {
     gtk_widget_show(GTK_WIDGET(openfile_window));
 }
 
+/**
+ * @brief Load the file in the emulator
+ */
 void loadfile_button() {
     char *filename;
 
@@ -134,8 +151,14 @@ void loadfile_button() {
     printf("=====\n\nLoading: %s.\n", filename);
 
     // load the file
+    // reset memory
+    memset(memory, 0, 16777220 * sizeof(uint8_t));
     load_file(filename);
     free(filename);
+
+    // reset registers and flags
+    memset(registers, 0, 17 * sizeof(uint32_t));
+    memset(status_registers, 0, 6 * sizeof(uint8_t));
 
     // init the emulator and update the interface
     init();
@@ -145,10 +168,16 @@ void loadfile_button() {
 	printf("\n\n=====\n");
 }
 
+/**
+ * @brief Hide the file explorer
+ */
 void closefile_button() {
     gtk_widget_hide(GTK_WIDGET(openfile_window));
 }
 
+/**
+ * @brief Change the memory view
+ */
 void change_memory_view() {
 	if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
