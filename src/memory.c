@@ -5,7 +5,7 @@
 
 uint8_t *memory = NULL;
 uint32_t PC;
-int8_t status_registers[6];
+uint8_t status_registers[6];
 uint32_t registers[17];
 
 /**
