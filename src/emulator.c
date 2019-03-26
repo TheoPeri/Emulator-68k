@@ -1747,7 +1747,7 @@ inline int subi(uint16_t current_operation) {
 
             destination = addressing_mode_source_ro(size,
                     current_operation & 0xff);
-            result = (source - destination) & 0xffff;
+            result = (destination - source) & 0xffff;
             break;
         case 0x2:
             source = read_32bit(memory + PC + 2);
@@ -1756,7 +1756,7 @@ inline int subi(uint16_t current_operation) {
 
             destination = addressing_mode_source_ro(size,
                     current_operation & 0xff);
-            result = source - destination;
+            result = destination - source;
             break;
         default:
             return -1;
