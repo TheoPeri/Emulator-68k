@@ -14,7 +14,7 @@ uint32_t registers[17];
 * @return The index in the registers array of stack ptr.
 */
 uint32_t get_stack_ptr (){
-    return SUPERVISOR_STATE ? 15 : 16;    
+    return SUPERVISOR_STATE ? 15 : 16;
 }
 
 // operation on memory
@@ -38,18 +38,8 @@ inline uint32_t read_16bit(uint8_t *address) {
  * @return The number in low endian.
  */
 inline uint32_t read_32bit(uint8_t *address) {
-    return (uint32_t)address[0]<<24 | (uint32_t)address[1]<<16 
+    return (uint32_t)address[0]<<24 | (uint32_t)address[1]<<16
         | (uint32_t)address[2]<<8 | (uint32_t)address[3];
-}
-
-/**
- * @brief Write 8 bit in memory (low endian => big endian).
- *
- * @param address The starting address of the big endian memory.
- * @param value The value in low endian.
- */
-inline void write_8bit(uint8_t *address, uint32_t value) {
-    address[0] = value & 0xFF;
 }
 
 /**

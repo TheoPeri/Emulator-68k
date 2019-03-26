@@ -235,64 +235,17 @@ inline void addressing_mode_destination(
             break;
 
         case 0x10: // address
-            switch (size) {
-                case 0x0:
-                    memory[A(reg)] = data;
-                    break;
-                case 0x1:
-                    write_16bit(memory + A(reg), data);
-                    break;
-                case 0x2:
-                    write_32bit(memory + A(reg), data);
-                    break;
-            }
+            SIMPLE_WRITE_MEMORY_SIZE(data, A(reg), size);
             break;
         case 0x18: // address postincrement
-            switch (size) {
-                case 0x0:
-                    memory[A(reg)] = data;
-                    ++A(reg);
-                    break;
-                case 0x1:
-                    write_16bit(memory + A(reg),data);
-                    A(reg) += 2;
-                    break;
-                case 0x2:
-                    write_32bit(memory + A(reg),data);
-                    A(reg) += 4;
-                    break;
-            }
+            POST_INC_WRITE_MEMORY_SIZE(data, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x20: // address predecrement
-            switch (size) {
-                case 0x0:
-                    --A(reg);
-                    memory[A(reg)] = data;
-                    break;
-                case 0x1:
-                    A(reg) -= 2;
-                    write_16bit(memory + A(reg),data);
-                    break;
-                case 0x2:
-                    A(reg) -= 4;
-                    write_32bit(memory + A(reg),data);
-                    break;
-            }
+            PRE_DEC_WRITE_MEMORY_SIZE(data, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit(memory + PC + 2);
-            switch (size) {
-                case 0x0:
-                    memory[tmp] = data;
-                    break;
-                case 0x1:
-                    write_16bit(memory + tmp, data);
-                    break;
-                case 0x2:
-                    write_32bit(memory + tmp, data);
-                    break;
-            }
-
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
             *displacement += 2;
             break;
     }
@@ -698,7 +651,7 @@ int next_instruction() {
 * @return -1 => error || other => OK
 */
 inline int rts() {
-    PC = read_32bit(memory + A(7));
+    PC = read_32bit_memory(A(7));
     A(7) += 4;
 
     return 0;
@@ -714,7 +667,7 @@ inline int bra(uint16_t current_operation) {
 
     // bra
     PC += (displacement ? (int8_t)displacement
-        : (int16_t)read_16bit(memory + PC +2)) + 2;
+        : (int16_t)read_16bit_memory(PC +2)) + 2;
 
     return 0;
 }
@@ -735,13 +688,13 @@ inline int bsr(uint16_t current_operation) {
     // bra
     if (displacement) {
         // return address
-        write_32bit(memory + A(7), PC + 2);
+        write_32bit_memory(A(7), PC + 2);
         PC += (int8_t)displacement + 2;
     } else {
         // return address
-        write_32bit(memory + A(7), PC + 4);
+        write_32bit_memory(A(7), PC + 4);
         // get the displacement
-        PC += (int16_t)read_16bit(memory + PC + 2) + 2;
+        PC += (int16_t)read_16bit_memory(PC + 2) + 2;
     }
 
     return 0;
@@ -808,7 +761,7 @@ inline int bcc(uint16_t current_operation) {
 
     if (condition) {
         PC += 2 + (byte_operation ? (int8_t)(byte_operation)
-            : (int16_t)read_16bit(memory + PC + 2));
+            : (int16_t)read_16bit_memory(PC + 2));
     } else {
         PC += byte_operation ? 2 : 4;
     }
@@ -922,17 +875,17 @@ int cmpi(uint16_t current_operation) {
 
     switch (size) {
         case 0x0:
-            source = read_16bit(memory + PC + 2) & 0xff;
+            source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
             displacement = 2;
             break;
         case 0x1:
-            source = read_16bit(memory + PC + 2);
+            source = read_16bit_memory(PC + 2);
             shift = 15;
             displacement = 2;
             break;
         case 0x2:
-            source = read_32bit(memory + PC + 2);
+            source = read_32bit_memory(PC + 2);
             shift = 31;
             displacement = 4;
             break;
@@ -974,20 +927,20 @@ int cmpm(uint16_t current_operation) {
     switch (size) {
         case 0:
             shift = 7;
-            source = memory[A(current_operation & 0x7)++];
-            destination = memory[A((current_operation & 0xe00) >> 9)++];
+            source = read_8bit_memory(A(current_operation & 0x7)++);
+            destination = read_8bit_memory(A((current_operation & 0xe00) >> 9)++);
             break;
         case 1:
             shift = 15;
-            source = memory[A(current_operation & 0x7)];
-            destination = memory[A((current_operation & 0xe00) >> 9)];
+            source = read_8bit_memory(A(current_operation & 0x7));
+            destination = read_8bit_memory(A((current_operation & 0xe00) >> 9));
             A(current_operation & 0x7) += 2;
             A((current_operation & 0xe00) >> 9) += 2;
             break;
         case 2:
             shift = 31;
-            source = memory[A(current_operation & 0x7)];
-            destination = memory[A((current_operation & 0xe00) >> 9)];
+            source = read_8bit_memory(A(current_operation & 0x7));
+            destination = read_8bit_memory(A((current_operation & 0xe00) >> 9));
             A(current_operation & 0x7) += 4;
             A((current_operation & 0xe00) >> 9) += 4;
             break;
@@ -1049,8 +1002,6 @@ inline void sub_flag(uint32_t source, uint32_t destination,
     OVERFLOW = (((~source & destination & ~result) | (source & ~destination &
     result)) >> shift) & 0x1; // see doc
 }
-
-
 
 /**
 * @brief Execute the command add
@@ -1231,7 +1182,7 @@ inline int addi(uint16_t current_operation) {
     switch (size) {
         case 0x0:
             PC += 2;
-            source = read_16bit(memory + PC);
+            source = read_16bit_memory(PC);
             shift = 7;
 
             destination = addressing_mode_source_ro(size,
@@ -1240,7 +1191,7 @@ inline int addi(uint16_t current_operation) {
             break;
         case 0x1:
             PC += 2;
-            source = read_16bit(memory + PC);
+            source = read_16bit_memory(PC);
             shift = 15;
 
             destination = addressing_mode_source_ro(size,
@@ -1248,7 +1199,7 @@ inline int addi(uint16_t current_operation) {
             result = (source + destination) & 0xffff;
             break;
         case 0x2:
-            source = read_32bit(memory + PC + 2);
+            source = read_32bit_memory(PC + 2);
             PC += 4;
             shift = 31;
 
@@ -1394,7 +1345,7 @@ inline int movem(uint16_t current_operation) {
     // info
     uint8_t size = ((current_operation & 0x40) >>6) +1; // word :1 and long :2
     uint8_t direction = (current_operation & 0x400) >> 10;
-    uint16_t mask = read_16bit(memory + PC + 2);
+    uint16_t mask = read_16bit_memory(PC + 2);
     //printf("mask = 0x%x \n",mask);
     uint32_t displacement = 4;
 
@@ -1633,7 +1584,7 @@ inline int subi(uint16_t current_operation) {
     switch (size) {
         case 0x0:
             PC += 2;
-            source = read_16bit(memory + PC);
+            source = read_16bit_memory(PC);
             shift = 7;
 
             destination = addressing_mode_source_ro(size,
@@ -1642,7 +1593,7 @@ inline int subi(uint16_t current_operation) {
             break;
         case 0x1:
             PC += 2;
-            source = read_16bit(memory + PC);
+            source = read_16bit_memory(PC);
             shift = 15;
 
             destination = addressing_mode_source_ro(size,
@@ -1650,7 +1601,7 @@ inline int subi(uint16_t current_operation) {
             result = (source - destination) & 0xffff;
             break;
         case 0x2:
-            source = read_32bit(memory + PC + 2);
+            source = read_32bit_memory(PC + 2);
             PC += 4;
             shift = 31;
 
