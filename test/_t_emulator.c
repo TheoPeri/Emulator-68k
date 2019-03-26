@@ -2082,60 +2082,60 @@ Test(emulator, test_sub, .init=setup_emulator) {
 }
 
 
-/*
+
 Test(emulator, test_suba, .init=setup_emulator) {
     uint16_t instruction;
 
     // test data register .w 
-    instruction = 0xd8c2;
+    instruction = 0x98c2;
 
     PC = 0x500;
     A(4) = 0x32; 
     D(2) = 0x666;
     suba(instruction);
     cr_assert(PC == 0x502, "Error on the PC => %x", PC);
-    cr_assert(A(4) == 0x698, "Error on the destination subress for suba: "
+    cr_assert(A(4) == 0xfffff9cc, "Error on the destination subress for suba: "
         "(data register .w) => A4 = 0x%x", A(4));
 
     PC = 0x500;
     A(4) = 0x32; 
-    D(2) = 0x666666;
+    D(2) = 0x31;
     suba(instruction);
-    cr_assert(A(4) == 0x6698, "Error on the destination subress for suba: "
+    cr_assert(A(4) == 0x1, "Error on the destination subress for suba: "
         "(data register .w) => A4 = 0x%x", A(4));
 
         // test data register .l 
-    instruction = 0xd9c2;
+    instruction = 0x99c2;
 
     PC = 0x500;
     A(4) = 0x32; 
     D(2) = 0x666;
     suba(instruction);
     cr_assert(PC == 0x502, "Error on the PC => %x", PC);
-    cr_assert(A(4) == 0x698, "Error on the destination subress for suba: "
+    cr_assert(A(4) == 0xfffff9cc, "Error on the destination subress for suba: "
         "(data register .l) => A4 = 0x%x", A(4));
 
     PC = 0x500;
     A(4) = 0x32; 
-    D(2) = 0x666666;
+    D(2) = 0x31;
     suba(instruction);
-    cr_assert(A(4) == 0x666698, "Error on the destination subress for suba: "
+    cr_assert(A(4) == 0x1, "Error on the destination subress for suba: "
         "(data register .l) => A4 = 0x%x", A(4));
 
     // corner case
-    instruction = 0xd2c8;
+    instruction = 0x93c8;
     PC = 0x500;
-    A(0) = 0x12348787; 
+    A(0) = 0x12348787;
     A(1) = 0x1;
     suba(instruction);
-    cr_assert(A(1) == 0xffff8788, "Error on the destination subress for suba: "
+    cr_assert(A(1) == 0xedcb787a, "Error on the destination subress for suba: "
         "(subress .w) => A4 = 0x%x", A(1));
 
     PC = 0x500;
     A(0) = 0x12348787; 
     A(1) = 0xffff;
     suba(instruction);
-    cr_assert(A(1) == 0x8786, "Error on the destination subress for suba: "
+    cr_assert(A(1) == 0xedcc7878, "Error on the destination subress for suba: "
         "(subress .w) => A4 = 0x%x", A(1));
 
 
@@ -2145,32 +2145,32 @@ Test(emulator, test_subq, .init=setup_emulator) {
     uint16_t instruction;
 
     // test data register .b
-    instruction = 0x5200;
+    instruction = 0x5300;
     PC = 0x500;
     D(0) = 0x12348787; // 1 
     subq(instruction);
     cr_assert(PC == 0x502, "Error on the PC => %x", PC);
-    cr_assert(D(0) == 0x12348788, "Error on the destination for subq: "
+    cr_assert(D(0) == 0x12348786, "Error on the destination for subq: "
         "(data register .b) => D0 = 0x%x", D(0));
 
     // test data register .w 
-    instruction = 0x5040;
+    instruction = 0x5140;
 
     PC = 0x500;
     D(0) = 0x32; // 8
     subq(instruction);
     cr_assert(PC == 0x502, "Error on the PC => %x", PC);
-    cr_assert(D(0) == 0x3a, "Error on the destination for subq: "
+    cr_assert(D(0) == 0x2a, "Error on the destination for subq: "
         "(data register .w) => D0 = 0x%x", D(0));
 
     // test data register .l 
-    instruction = 0x5880;
+    instruction = 0x5180;
 
     PC = 0x500;
     D(0) = 0x32;  // 4
     subq(instruction);
     cr_assert(PC == 0x502, "Error on the PC => %x", PC);
-    cr_assert(D(0) == 0x36, "Error on the destination for subq: "
+    cr_assert(D(0) == 0x2a, "Error on the destination for subq: "
         "(data register .l) => D0 = 0x%x", D(0));
 }
-*/
+

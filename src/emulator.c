@@ -1690,15 +1690,15 @@ inline int subq(uint16_t current_operation) {
     // setup and sub
     switch (size) {
         case 0x0:
-            result = (source - destination) & 0xff;
+            result = (destination - source) & 0xff;
             shift = 7;
             break;
         case 0x1:
-            result = (source - destination) & 0xffff;
+            result = (destination - source) & 0xffff;
             shift = 15;
             break;
         case 0x2:
-            result = source - destination;
+            result = destination - source;
             shift = 31;
             break;
         default:
@@ -1738,7 +1738,7 @@ inline int subi(uint16_t current_operation) {
 
             destination = addressing_mode_source_ro(size,
                     current_operation & 0xff);
-            result = (source - destination) & 0xff;
+            result = (destination - source) & 0xff;
             break;
         case 0x1:
             PC += 2;
