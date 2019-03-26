@@ -7,7 +7,7 @@
 #include "loader.h"
 #include "emulator.h"
 #include "debug.h"
-/*
+
 void init_window(char *file_name) {
     builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, file_name, NULL);
@@ -158,4 +158,3 @@ void on_window_main_destroy()
 {
     gtk_main_quit();
 }
-*/

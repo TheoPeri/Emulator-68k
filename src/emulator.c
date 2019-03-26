@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "emulator.h"
 #include "memory.h"
-#include <gtk/gtk.h>
-
 
 /**
  * @brief Initialize the memory of the emulator.
@@ -32,13 +30,13 @@ int init() {
     printf("Set the SUPERVISOR STATE = 1\n");
     SUPERVISOR_STATE = 1; // start the processor as supervisor
 
-    if ((tmp = read_32bit(memory))) { // init sp
+    if ((tmp = read_32bit_memory(0))) { // init sp
         A(7) = tmp;
         printf("Set the SP address at 0x%06x\n", A(7));
     }
 
     if (!PC) { // init pc
-        PC = read_32bit(memory + 0x4);
+        PC = read_32bit_memory(0x4);
         printf("Set the PC address at 0x%06x\n", PC);
     }
 
@@ -93,78 +91,31 @@ inline uint32_t addressing_mode_source(
             source = A(reg);
             break;
         case 0x10: // address
-            switch (size) {
-                case 0x0:
-                    source = memory[A(reg)];
-                    break;
-                case 0x1:
-                    source = read_16bit(memory + A(reg));
-                    break;
-                case 0x2:
-                    source = read_32bit(memory + A(reg));
-                    break;
-            }
+            SIMPLE_READ_MEMORY_SIZE(source, A(reg), size);
             break;
         case 0x18: // address postincrement
-            switch (size) {
-                case 0x0:
-                    source = memory[A(reg)];
-                    ++A(reg);
-                    break;
-                case 0x1:
-                    source = read_16bit(memory + A(reg));
-                    A(reg) += 2;
-                    break;
-                case 0x2:
-                    source = read_32bit(memory + A(reg));
-                    A(reg) += 4;
-                    break;
-            }
+            POST_INC_READ_MEMORY_SIZE(source, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x20: // address predecrement
-            switch (size) {
-                case 0x0:
-                    --A(reg);
-                    source = memory[A(reg)];
-                    break;
-                case 0x1:
-                    A(reg) -= 2;
-                    source = read_16bit(memory + A(reg));
-                    break;
-                case 0x2:
-                    A(reg) -= 4;
-                    source = read_32bit(memory + A(reg));
-                    break;
-            }
+            PRE_DEC_READ_MEMORY_SIZE(source, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit(memory + PC + 2);
-            switch (size) {
-                case 0x0:
-                    source = memory[tmp];
-                    break;
-                case 0x1:
-                    source = read_16bit(memory + tmp);
-                    break;
-                case 0x2:
-                    source = read_32bit(memory + tmp);
-                    break;
-            }
-
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             *displacement += 2;
             break;
         case 0x38: // immediate
             switch (size) {
                 case 0x0:
-                    source = read_16bit(memory + PC + 2);
+                    source = read_16bit_memory(PC + 2);
                     *displacement += 2;
                     break;
                 case 0x1:
-                    source = read_16bit(memory + PC + 2);
+                    source = read_16bit_memory(PC + 2);
                     *displacement += 2;
                     break;
                 case 0x2:
-                    source = read_32bit(memory + PC + 2);
+                    source = read_32bit_memory(PC + 2);
                     *displacement += 4;
                     break;
             }
@@ -209,46 +160,26 @@ inline uint32_t addressing_mode_source_ro(
             source = A(reg);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit(memory + PC + 2);
-            switch (size) {
-                case 0x0:
-                    source = memory[tmp];
-                    break;
-                case 0x1:
-                    source = read_16bit(memory + tmp);
-                    break;
-                case 0x2:
-                    source = read_32bit(memory + tmp);
-                    break;
-            }
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             break;
         case 0x38: // immediate
             switch (size) {
                 case 0x0:
-                    source = read_16bit(memory + PC + 2);
+                    source = read_16bit_memory(PC + 2);
                     break;
                 case 0x1:
-                    source = read_16bit(memory + PC + 2);
+                    source = read_16bit_memory(PC + 2);
                     break;
                 case 0x2:
-                    source = read_32bit(memory + PC + 2);
+                    source = read_32bit_memory(PC + 2);
                     break;
             }
             break;
         default:
             if ((value & 0x38) == 0x10 || (value & 0x38) == 0x18
                 || (value & 0x38) == 0x20) {
-                switch (size) {
-                    case 0x0:
-                        source = memory[A(reg)];
-                        break;
-                    case 0x1:
-                        source = read_16bit(memory + A(reg));
-                        break;
-                    case 0x2:
-                        source = read_32bit(memory + A(reg));
-                        break;
-                }
+                SIMPLE_READ_MEMORY_SIZE(source, A(reg), size);
             }
             break;
     }
@@ -918,6 +849,7 @@ int cmp(uint16_t current_operation) {
         default:
             return -1;
     }
+
     // compute diff
     tmp = destination - source;
 
@@ -992,17 +924,17 @@ int cmpi(uint16_t current_operation) {
         case 0x0:
             source = read_16bit(memory + PC + 2) & 0xff;
             shift = 7;
-            displacement = 4;
+            displacement = 2;
             break;
         case 0x1:
             source = read_16bit(memory + PC + 2);
             shift = 15;
-            displacement = 4;
+            displacement = 2;
             break;
         case 0x2:
             source = read_32bit(memory + PC + 2);
             shift = 31;
-            displacement = 6;
+            displacement = 4;
             break;
         default:
             return -1;
@@ -1522,38 +1454,6 @@ inline int movem(uint16_t current_operation) {
     return 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
 * @brief Execute the command sub
 *
@@ -1772,7 +1672,4 @@ inline int subi(uint16_t current_operation) {
     PC += displacement;
     return 0;
 }
-
-
-
 
