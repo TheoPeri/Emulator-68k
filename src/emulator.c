@@ -864,17 +864,17 @@ int cmpi(uint16_t current_operation) {
         case 0x0:
             source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
-            displacement = 2;
+            displacement = 4;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
             shift = 15;
-            displacement = 2;
+            displacement = 4;
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
             shift = 31;
-            displacement = 4;
+            displacement = 6;
             break;
         default:
             return -1;

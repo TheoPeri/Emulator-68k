@@ -1104,7 +1104,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     write_16bit(memory + PC + 2, (uint8_t)0x2);
     D(1) = (uint8_t)0x1;
     cmpi(instruction);
-    cr_assert(PC == 0x508, "Error on the PC => %x", PC);
+    cr_assert(PC == 0x50a, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(NEGATIVE == 1, "Error on the status register (data register .b) => "
@@ -1224,7 +1224,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     write_16bit(memory + PC + 2, (int8_t)-0x1);
     D(1) = (uint8_t)0x1;
     cmpi(instruction);
-    cr_assert(PC == 0x508, "Error on the PC => %x", PC);
+    cr_assert(PC == 0x50a, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
@@ -1240,7 +1240,7 @@ Test(emulator, test_cmpi, .init=setup_emulator) {
     write_32bit(memory + PC + 2, (int8_t)-0x1);
     D(1) = (uint8_t)0x1;
     cmpi(instruction);
-    cr_assert(PC == 0x50a, "Error on the PC => %x", PC);
+    cr_assert(PC == 0x50c, "Error on the PC => %x", PC);
     cr_assert(!ZERO, "Error on the status register (data register .b) => "
         "ZERO = 0x%x", ZERO);
     cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
@@ -2086,7 +2086,7 @@ Test(emulator, test_sub, .init=setup_emulator) {
 Test(emulator, test_suba, .init=setup_emulator) {
     uint16_t instruction;
 
-    // test data register .w 
+    // test data register .w
     instruction = 0x98c2;
 
     PC = 0x500;
@@ -2098,13 +2098,13 @@ Test(emulator, test_suba, .init=setup_emulator) {
         "(data register .w) => A4 = 0x%x", A(4));
 
     PC = 0x500;
-    A(4) = 0x32; 
+    A(4) = 0x32;
     D(2) = 0x31;
     suba(instruction);
     cr_assert(A(4) == 0x1, "Error on the destination subress for suba: "
         "(data register .w) => A4 = 0x%x", A(4));
 
-        // test data register .l 
+        // test data register .l
     instruction = 0x99c2;
 
     PC = 0x500;
@@ -2116,7 +2116,7 @@ Test(emulator, test_suba, .init=setup_emulator) {
         "(data register .l) => A4 = 0x%x", A(4));
 
     PC = 0x500;
-    A(4) = 0x32; 
+    A(4) = 0x32;
     D(2) = 0x31;
     suba(instruction);
     cr_assert(A(4) == 0x1, "Error on the destination subress for suba: "
@@ -2153,7 +2153,7 @@ Test(emulator, test_subq, .init=setup_emulator) {
     cr_assert(D(0) == 0x12348786, "Error on the destination for subq: "
         "(data register .b) => D0 = 0x%x", D(0));
 
-    // test data register .w 
+    // test data register .w
     instruction = 0x5140;
 
     PC = 0x500;
@@ -2163,7 +2163,7 @@ Test(emulator, test_subq, .init=setup_emulator) {
     cr_assert(D(0) == 0x2a, "Error on the destination for subq: "
         "(data register .w) => D0 = 0x%x", D(0));
 
-    // test data register .l 
+    // test data register .l
     instruction = 0x5180;
 
     PC = 0x500;
