@@ -93,12 +93,12 @@ void update_window() {
 
     // window register
     for (i = 0; i < 17; ++i) {
-        snprintf(buffer, 10, "%08x", registers[i]);
+        snprintf(buffer, 10, "%08X", registers[i]);
         gtk_label_set_text(window_registers[i], buffer);
     }
 
     // a7
-    snprintf(buffer, 10, "%08x", A(7));
+    snprintf(buffer, 10, "%08X", A(7));
     gtk_label_set_text(window_registers[i], buffer);
 
     // status register
@@ -108,7 +108,7 @@ void update_window() {
     }
 
     // update pc
-    snprintf(buffer, 10, "%08x", PC);
+    snprintf(buffer, 10, "%08X", PC);
     gtk_label_set_text(window_pc, buffer);
 }
 

@@ -100,16 +100,16 @@ inline uint32_t addressing_mode_source(
             PRE_DEC_READ_MEMORY_SIZE(source, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             *displacement += 2;
             break;
         case 0x38: // immediate
             if (size == 2) {
-                source = read_32bit_memory(PC + 2);
+                source = read_32bit_memory(PC + *displacement);
                 *displacement += 4;
             } else {
-                source = read_16bit_memory(PC + 2);
+                source = read_16bit_memory(PC + *displacement);
                 *displacement += 2;
             }
     }
@@ -231,7 +231,7 @@ inline void addressing_mode_destination(
             PRE_DEC_WRITE_MEMORY_SIZE(data, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
             *displacement += 2;
             break;
@@ -853,8 +853,8 @@ int cmpa(uint16_t current_operation) {
 */
 int cmpi(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
-
-    uint32_t source, displacement, tmp;
+    uint32_t displacement = 2;
+    uint32_t source, tmp;
     uint8_t shift;
 
     uint32_t destination = addressing_mode_source(size,
@@ -864,17 +864,17 @@ int cmpi(uint16_t current_operation) {
         case 0x0:
             source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
-            displacement = 4;
+            displacement += 2;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
             shift = 15;
-            displacement = 4;
+            displacement += 2;
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
             shift = 31;
-            displacement = 6;
+            displacement += 4;
             break;
         default:
             return -1;
