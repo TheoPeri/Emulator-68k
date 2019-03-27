@@ -105,19 +105,12 @@ inline uint32_t addressing_mode_source(
             *displacement += 2;
             break;
         case 0x38: // immediate
-            switch (size) {
-                case 0x0:
-                    source = read_16bit_memory(PC + 2);
-                    *displacement += 2;
-                    break;
-                case 0x1:
-                    source = read_16bit_memory(PC + 2);
-                    *displacement += 2;
-                    break;
-                case 0x2:
-                    source = read_32bit_memory(PC + 2);
-                    *displacement += 4;
-                    break;
+            if (size == 2) {
+                source = read_32bit_memory(PC + 2);
+                *displacement += 4;
+            } else {
+                source = read_16bit_memory(PC + 2);
+                *displacement += 2;
             }
     }
 
@@ -164,16 +157,10 @@ inline uint32_t addressing_mode_source_ro(
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             break;
         case 0x38: // immediate
-            switch (size) {
-                case 0x0:
-                    source = read_16bit_memory(PC + 2);
-                    break;
-                case 0x1:
-                    source = read_16bit_memory(PC + 2);
-                    break;
-                case 0x2:
-                    source = read_32bit_memory(PC + 2);
-                    break;
+            if (size == 2) {
+                source = read_32bit_memory(PC + 2);
+            } else {
+                source = read_16bit_memory(PC + 2);
             }
             break;
         default:
@@ -651,8 +638,8 @@ int next_instruction() {
 * @return -1 => error || other => OK
 */
 inline int rts() {
-    PC = read_32bit_memory(A(7));
-    A(7) += 4;
+    PC = read_32bit_memory(A(7)); // read addr
+    A(7) += 4; // pop addr
 
     return 0;
 }
@@ -663,11 +650,11 @@ inline int rts() {
 * @return -1 => error || other => OK
 */
 inline int bra(uint16_t current_operation) {
-    uint32_t displacement = current_operation & 0xff;
+    uint8_t displacement = current_operation;
 
     // bra
-    PC += (displacement ? (int8_t)displacement
-        : (int16_t)read_16bit_memory(PC +2)) + 2;
+    PC += 2 + (displacement ?
+        (int8_t)displacement : (int16_t)read_16bit_memory(PC + 2));
 
     return 0;
 }
@@ -680,7 +667,7 @@ inline int bra(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 inline int bsr(uint16_t current_operation) {
-    uint32_t displacement = current_operation & 0xff;
+    int8_t displacement = current_operation;
 
     // push address
     A(7) -= 4;
@@ -689,7 +676,7 @@ inline int bsr(uint16_t current_operation) {
     if (displacement) {
         // return address
         write_32bit_memory(A(7), PC + 2);
-        PC += (int8_t)displacement + 2;
+        PC += 2 + displacement;
     } else {
         // return address
         write_32bit_memory(A(7), PC + 4);
@@ -708,7 +695,7 @@ inline int bsr(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 inline int bcc(uint16_t current_operation) {
-    uint32_t byte_operation = current_operation & 0xff;
+    int8_t byte_operation = current_operation;
     uint32_t condition = current_operation & 0xf00;
 
     switch (condition) {
@@ -760,7 +747,7 @@ inline int bcc(uint16_t current_operation) {
     }
 
     if (condition) {
-        PC += 2 + (byte_operation ? (int8_t)(byte_operation)
+        PC += 2 + (byte_operation ? byte_operation
             : (int16_t)read_16bit_memory(PC + 2));
     } else {
         PC += byte_operation ? 2 : 4;
@@ -812,8 +799,8 @@ int cmp(uint16_t current_operation) {
     CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
     tmp)) >> shift) & 0x1; // see doc
 
-    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
-    tmp)) >> shift) & 0x1; // see doc
+    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift; // see doc
 
     PC += displacement;
 
@@ -828,7 +815,7 @@ int cmp(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 int cmpa(uint16_t current_operation) {
-    uint8_t size = (current_operation & 0x100) ? 2 : 1;
+    uint8_t size = ((current_operation >> 8) & 0x1) + 1;
 
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size,
@@ -901,8 +888,8 @@ int cmpi(uint16_t current_operation) {
     CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
     tmp)) >> shift) & 0x1;
 
-    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
-    tmp)) >> shift) & 0x1;
+    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift;
 
     PC += displacement;
 
@@ -918,9 +905,7 @@ int cmpi(uint16_t current_operation) {
 */
 int cmpm(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
-
     uint32_t displacement = 2;
-
     uint32_t source, destination, tmp;
     uint8_t shift;
 
@@ -956,8 +941,8 @@ int cmpm(uint16_t current_operation) {
     CARRY = (((source & ~destination) | (tmp & ~destination) | (source &
     tmp)) >> shift) & 0x1;
 
-    OVERFLOW = (((~source & destination & ~tmp) | (source & ~destination &
-    tmp)) >> shift) & 0x1;
+    OVERFLOW = ((~source & destination & ~tmp) | (source & ~destination &
+    tmp)) >> shift;
 
     PC += displacement;
 
@@ -980,8 +965,8 @@ inline void add_flag(uint32_t source, uint32_t destination,
         ~result)) >> shift) & 0x1;
     EXTEND = CARRY;
 
-    OVERFLOW = (((source & destination & ~result) | (~source & ~destination &
-        result)) >> shift) & 0x1;
+    OVERFLOW = ((source & destination & ~result) | (~source & ~destination &
+        result)) >> shift;
 }
 
 /**
@@ -1017,16 +1002,16 @@ inline int add(uint16_t current_operation) {
 
     uint32_t displacement = 2;
     uint32_t source, result;
-    uint8_t shift;
 
     // dn + ea -> ea
     if (current_operation & 0x100) {
+        uint8_t shift;
+        uint8_t value = current_operation;
         // get source
         source = D(reg);
 
         // get destination
-        uint32_t destination = addressing_mode_source_ro(size,
-            current_operation & 0xff);
+        uint32_t destination = addressing_mode_source_ro(size, value);
 
         // setup and add
         switch (size) {
@@ -1049,8 +1034,7 @@ inline int add(uint16_t current_operation) {
         add_flag(source, destination, result, shift);
 
         // assign
-        addressing_mode_destination(size, current_operation & 0xff,
-            &displacement, result);
+        addressing_mode_destination(size, value, &displacement, result);
     } else { // ea + dn -> dn
         // get source
         source = addressing_mode_source(size, current_operation & 0xff,
@@ -1060,20 +1044,17 @@ inline int add(uint16_t current_operation) {
         switch (size) {
             case 0x0:
                 result = (source + D(reg)) & 0xff;
-                shift = 7;
-                add_flag(source, D(reg), result, shift);
+                add_flag(source, D(reg), result, 7);
                 D(reg) = (D(reg) & 0xffffff00)  | result;
                 break;
             case 0x1:
                 result = (source + D(reg)) & 0xffff;
-                shift = 15;
-                add_flag(source, D(reg), result, shift);
+                add_flag(source, D(reg), result, 15);
                 D(reg) = (D(reg) & 0xffff0000)  | result;
                 break;
             case 0x2:
                 result = source + D(reg);
-                shift = 31;
-                add_flag(source, D(reg), result, shift);
+                add_flag(source, D(reg), result, 31);
                 D(reg) = result;
                 break;
             default:
@@ -1094,7 +1075,7 @@ inline int add(uint16_t current_operation) {
 */
 inline int adda(uint16_t current_operation) {
     // info
-    uint8_t size = current_operation & 0x100 ? 2 : 1;
+    uint8_t size = ((current_operation >> 0x8) & 0x1) + 1;
 
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size,
@@ -1129,12 +1110,11 @@ inline int addq(uint16_t current_operation) {
     }
 
     uint32_t displacement = 2;
+    uint8_t value = current_operation;
     uint32_t result;
     uint8_t shift;
-
     // get destination
-    uint32_t destination = addressing_mode_source_ro(size,
-            current_operation & 0xff);
+    uint32_t destination = addressing_mode_source_ro(size, value);
 
     // setup and add
     switch (size) {
@@ -1157,8 +1137,7 @@ inline int addq(uint16_t current_operation) {
     add_flag(source, destination, result, shift);
 
     // assign
-    addressing_mode_destination(size, current_operation & 0xff,
-        &displacement, result);
+    addressing_mode_destination(size, value, &displacement, result);
 
     PC += displacement;
     return 0;
@@ -1176,6 +1155,7 @@ inline int addi(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
 
     uint32_t displacement = 2;
+    uint8_t value = current_operation;
     uint32_t source, destination, result;
     uint8_t shift;
 
@@ -1185,8 +1165,7 @@ inline int addi(uint16_t current_operation) {
             source = read_16bit_memory(PC);
             shift = 7;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = (source + destination) & 0xff;
             break;
         case 0x1:
@@ -1194,8 +1173,7 @@ inline int addi(uint16_t current_operation) {
             source = read_16bit_memory(PC);
             shift = 15;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = (source + destination) & 0xffff;
             break;
         case 0x2:
@@ -1203,8 +1181,7 @@ inline int addi(uint16_t current_operation) {
             PC += 4;
             shift = 31;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = source + destination;
             break;
         default:
@@ -1215,8 +1192,7 @@ inline int addi(uint16_t current_operation) {
     add_flag(source, destination, result, shift);
 
     // assign
-    addressing_mode_destination(size, current_operation & 0xff,
-        &displacement, result);
+    addressing_mode_destination(size, value, &displacement, result);
 
     PC += displacement;
     return 0;
@@ -1293,14 +1269,13 @@ inline int moveq(uint16_t current_operation) {
     uint32_t source = current_operation & 0xff;
 
     ZERO = source == 0x0;
-    NEGATIVE = ((source>>7)&1) == 0x1;
+    NEGATIVE = (source >> 7) & 0x1;
 
-    uint8_t reg = (current_operation & 0xe00)>>9;
+    uint8_t reg = (current_operation & 0xe00) >> 9;
 
     D(reg) = source;
-    if(NEGATIVE)
-    {
-        D(reg)+= 0xffffff00;
+    if(NEGATIVE) {
+        D(reg) += 0xffffff00;
     }
 
     PC += displacement;
@@ -1326,7 +1301,7 @@ inline int movea(uint16_t current_operation) {
         current_operation & 0xff, &displacement);
 
     // add
-    uint32_t *destination = &A((current_operation & 0x0e00)>>9);
+    uint32_t *destination = &A((current_operation & 0x0e00) >> 9);
 
     if (size == 1) {
         // cast word format
@@ -1343,60 +1318,47 @@ inline int movea(uint16_t current_operation) {
 
 inline int movem(uint16_t current_operation) {
     // info
-    uint8_t size = ((current_operation & 0x40) >>6) +1; // word :1 and long :2
-    uint8_t direction = (current_operation & 0x400) >> 10;
+    uint8_t size = ((current_operation & 0x40) >> 6) + 1; // word :1 and long :2
     uint16_t mask = read_16bit_memory(PC + 2);
-    //printf("mask = 0x%x \n",mask);
+    uint8_t value = current_operation;
     uint32_t displacement = 4;
+    uint32_t source, i;
 
-    if(direction == 1) // A7 --> D0 // (An)+ // (An)+,d1/d2
-    {
-        for(int i = 0; i<8;i++)
-        {
-            if((mask & 0x1) == 0x1)
-            {
-                uint32_t source = addressing_mode_source(size,
-                        current_operation & 0xff, &displacement);
-
-               addressing_mode_destination(size, 0x00 + i, &displacement, source);
+    if ((current_operation & 0x400) >> 10 == 1) { // A7 --> D0 // (An)+ // (An)+,d1/d2
+        for(i = 0; i < 8; i++) {
+            if(mask & 0x1) {
+                source = addressing_mode_source(size, value, &displacement);
+                addressing_mode_destination(size, i, &displacement, source);
             }
-            mask = mask>>1;
+
+            mask = mask >> 1;
         }
 
-        for(int i = 0; i<8;i++)
-        {
-            if((mask & 0x1) == 0x1)
-            {
-                uint32_t source = addressing_mode_source(size,
-                        current_operation & 0xff, &displacement);
-
+        for (i = 0; i < 8; i++) {
+            if (mask & 0x1) {
+                source = addressing_mode_source(size, value, &displacement);
                 addressing_mode_destination(size, 0x8 + i, &displacement, source);
             }
-            mask = mask>>1;
+
+            mask = mask >> 1;
         }
     }
-    else // D0 --> A7 // -(An) // d1/d3,-(An)
-    {
-        for(int i = 0; i<8;i++)
-        {
-            if((mask & 0x1) == 0x1)
-            {
-                uint32_t source = addressing_mode_source(size,
-                        0x8 +(0x7 - i), &displacement);
-                addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+    else {// D0 --> A7 // -(An) // d1/d3,-(An)
+        for (i = 0; i < 8; i++) {
+            if (mask & 0x1) {
+                source = addressing_mode_source(size, 0xf - i, &displacement);
+                addressing_mode_destination(size, value, &displacement, source);
             }
-            mask = mask>>1;
+
+            mask = mask >> 1;
         }
 
-        for(int i = 0; i<8;i++)
-        {
-            if((mask & 0x1) == 0x1)
-            {
-                uint32_t source = addressing_mode_source(size,
-                        0x00 +(0x7 - i), &displacement);
-
-                addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+        for(i = 0; i < 8; i++) {
+            if(mask & 0x1) {
+                source = addressing_mode_source(size, 0x7 - i, &displacement);
+                addressing_mode_destination(size, value, &displacement, source);
             }
+
             mask = mask>>1;
         }
     }
@@ -1424,11 +1386,11 @@ inline int sub(uint16_t current_operation) {
     // ea - dn -> ea
     if (current_operation & 0x100) {
         // get source
+        uint8_t value = current_operation;
         source = D(reg);
 
         // get destination
-        uint32_t destination = addressing_mode_source_ro(size,
-            current_operation & 0xff);
+        uint32_t destination = addressing_mode_source_ro(size, value);
 
         // setup and sub
         switch (size) {
@@ -1451,8 +1413,7 @@ inline int sub(uint16_t current_operation) {
         sub_flag(source, destination, result, shift);
 
         // assign
-        addressing_mode_destination(size, current_operation & 0xff,
-            &displacement, result);
+        addressing_mode_destination(size, value, &displacement, result);
     } else { // dn - ea -> dn
         // get source
         source = addressing_mode_source(size, current_operation & 0xff,
@@ -1462,20 +1423,17 @@ inline int sub(uint16_t current_operation) {
         switch (size) {
             case 0x0:
                 result = (D(reg) - source) & 0xff;
-                shift = 7;
-                sub_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, 7);
                 D(reg) = (D(reg) & 0xffffff00)  | result;
                 break;
             case 0x1:
                 result = (D(reg) - source) & 0xffff;
-                shift = 15;
-                sub_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, 15);
                 D(reg) = (D(reg) & 0xffff0000)  | result;
                 break;
             case 0x2:
                 result = D(reg) - source;
-                shift = 31;
-                sub_flag(source, D(reg), result, shift);
+                sub_flag(source, D(reg), result, 31);
                 D(reg) = result;
                 break;
             default:
@@ -1533,10 +1491,10 @@ inline int subq(uint16_t current_operation) {
     uint32_t displacement = 2;
     uint32_t result;
     uint8_t shift;
+    uint8_t value = current_operation;
 
     // get destination
-    uint32_t destination = addressing_mode_source_ro(size,
-            current_operation & 0xff);
+    uint32_t destination = addressing_mode_source_ro(size, value);
 
     // setup and sub
     switch (size) {
@@ -1559,8 +1517,7 @@ inline int subq(uint16_t current_operation) {
     sub_flag(source, destination, result, shift);
 
     // assign
-    addressing_mode_destination(size, current_operation & 0xff,
-        &displacement, result);
+    addressing_mode_destination(size, value, &displacement, result);
 
     PC += displacement;
     return 0;
@@ -1580,6 +1537,7 @@ inline int subi(uint16_t current_operation) {
     uint32_t displacement = 2;
     uint32_t source, destination, result;
     uint8_t shift;
+    uint8_t value = current_operation;
 
     switch (size) {
         case 0x0:
@@ -1587,8 +1545,7 @@ inline int subi(uint16_t current_operation) {
             source = read_16bit_memory(PC);
             shift = 7;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = (destination - source) & 0xff;
             break;
         case 0x1:
@@ -1596,8 +1553,7 @@ inline int subi(uint16_t current_operation) {
             source = read_16bit_memory(PC);
             shift = 15;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = (destination - source) & 0xffff;
             break;
         case 0x2:
@@ -1605,8 +1561,7 @@ inline int subi(uint16_t current_operation) {
             PC += 4;
             shift = 31;
 
-            destination = addressing_mode_source_ro(size,
-                    current_operation & 0xff);
+            destination = addressing_mode_source_ro(size, value);
             result = destination - source;
             break;
         default:
@@ -1617,10 +1572,8 @@ inline int subi(uint16_t current_operation) {
     sub_flag(source, destination, result, shift);
 
     // assign
-    addressing_mode_destination(size, current_operation & 0xff,
-        &displacement, result);
+    addressing_mode_destination(size, value, &displacement, result);
 
     PC += displacement;
     return 0;
 }
-
