@@ -104,13 +104,22 @@ inline uint32_t addressing_mode_source(
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             *displacement += 2;
             break;
-        case 0x38: // immediate
-            if (size == 2) {
-                source = read_32bit_memory(PC + *displacement);
-                *displacement += 4;
-            } else {
-                source = read_16bit_memory(PC + *displacement);
-                *displacement += 2;
+        case 0x38:
+            switch (reg) {
+                case 0x1: // absolute long
+                    tmp = read_32bit_memory(PC + *displacement);
+                    SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
+                    *displacement += 4;
+                    break;
+                case 0x4: // immediate
+                    if (size == 2) {
+                        source = read_32bit_memory(PC + *displacement);
+                        *displacement += 4;
+                    } else {
+                        source = read_16bit_memory(PC + *displacement);
+                        *displacement += 2;
+                    }
+                    break;
             }
     }
 
@@ -156,11 +165,19 @@ inline uint32_t addressing_mode_source_ro(
             tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             break;
-        case 0x38: // immediate
-            if (size == 2) {
-                source = read_32bit_memory(PC + 2);
-            } else {
-                source = read_16bit_memory(PC + 2);
+        case 0x38:
+            switch (reg) {
+                case 0x1: // absolute long
+                    tmp = read_32bit_memory(PC + 2);
+                    SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
+                    break;
+                case 0x4: // immediate
+                    if (size == 2) {
+                        source = read_32bit_memory(PC + 2);
+                    } else {
+                        source = read_16bit_memory(PC + 2);
+                    }
+                    break;
             }
             break;
         default:
@@ -234,6 +251,13 @@ inline void addressing_mode_destination(
             tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
             *displacement += 2;
+            break;
+        case 0x38:
+            if (reg == 0x1){ // absolute long
+                tmp = read_32bit_memory(PC + *displacement);
+                SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
+                *displacement += 4;
+            }
             break;
     }
 }

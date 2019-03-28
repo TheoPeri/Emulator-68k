@@ -252,6 +252,47 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     cr_assert(displacement == 6, "| immediate (long) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
+
+    // absolute long
+    PC = 0x8998;
+    // the size is byte
+    value = 0x39;
+    write_32bit_memory(PC + 2, 0x67);
+    write_8bit_memory(0x67, 0xab);
+    displacement = 2;
+
+    source = addressing_mode_source(0, value, &displacement);
+    cr_assert(source == 0xab, "| absolute long (byte) | Expect source "
+        "== #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (byte) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is word
+    value = 0x39; // a0
+    write_32bit_memory(PC + 2, 0x1689); // 0x1689
+    write_16bit_memory(0x1689, 0x8395); // 0x1689
+    displacement = 2;
+
+    source = addressing_mode_source(1, value, &displacement);
+    cr_assert(source == 0x8395, "| absolute long (word) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (word) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is long
+    value = 0x39; // a2
+    write_32bit_memory(PC + 2, 0xfff4); // -12
+    write_32bit_memory(0xfff4, 0xabcdef); // -12
+    displacement = 2;
+
+    source = addressing_mode_source(2, value, &displacement);
+    cr_assert(source == 0xabcdef, "| absolute long (long) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (long) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
 }
 
 Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
@@ -459,6 +500,44 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
         "displacement (long) | Expect source == -12(A2)(0x%x)",
         read_32bit(memory + A(2) - 12));
     cr_assert(displacement == 4, "| address displacement (long) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // absolute long
+    PC = 0x8998;
+    // the size is byte
+    value = 0x39;
+    write_32bit_memory(PC + 2, 0x67);
+    displacement = 2;
+
+    addressing_mode_destination(0, value, &displacement, 0xab);
+    cr_assert(read_8bit_memory(0x67) == 0xab, "| absolute long (byte) | Expect source "
+        "== #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (byte) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is word
+    value = 0x39; // a0
+    write_32bit_memory(PC + 2, 0x1689); // 0x1689
+    displacement = 2;
+
+    addressing_mode_destination(1, value, &displacement, 0x7654);
+    cr_assert(read_16bit_memory(0x1689) == 0x7654, "| absolute long (word) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (word) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is long
+    value = 0x39; // a2
+    write_32bit_memory(PC + 2, 0xfff4); // -12
+    displacement = 2;
+
+    addressing_mode_destination(2, value, &displacement, 0x87563421);
+    cr_assert(read_32bit_memory(0xfff4) == 0x87563421, "| absolute long (long) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (long) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 }
@@ -2171,4 +2250,5 @@ Test(emulator, test_subq, .init=setup_emulator) {
     cr_assert(D(0) == 0x2a, "Error on the destination for subq: "
         "(data register .l) => D0 = 0x%x", D(0));
 }
+
 
