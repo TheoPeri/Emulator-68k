@@ -1178,23 +1178,23 @@ inline int addi(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
 
-    uint32_t displacement = 2;
+    uint32_t displacement;
     uint8_t value = current_operation;
     uint32_t source, destination, result;
     uint8_t shift;
 
     switch (size) {
         case 0x0:
-            PC += 2;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
+            displacement = 4;
             shift = 7;
 
             destination = addressing_mode_source_ro(size, value);
             result = (source + destination) & 0xff;
             break;
         case 0x1:
-            PC += 2;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
+            displacement = 4;
             shift = 15;
 
             destination = addressing_mode_source_ro(size, value);
@@ -1202,7 +1202,7 @@ inline int addi(uint16_t current_operation) {
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
-            PC += 4;
+            displacement = 6;
             shift = 31;
 
             destination = addressing_mode_source_ro(size, value);
