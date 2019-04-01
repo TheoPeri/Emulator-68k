@@ -1577,3 +1577,73 @@ inline int subi(uint16_t current_operation) {
     PC += displacement;
     return 0;
 }
+
+/**
+* @brief Execute the command jsr
+*
+* @param current_operation The current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int jsr(uint16_t current_operation) {
+
+    // push address
+    A(7) -= 4;
+    // return address
+    uint8_t size = (current_operation & 0x1) + 1;
+
+    uint32_t displacement = 2;
+
+    uint32_t source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+    PC += displacement;
+
+    write_32bit_memory(A(7), PC);
+
+    PC = source;
+
+    return 0;
+}
+
+
+/**
+* @brief Execute the command clr
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+
+inline int clr(uint16_t current_operation) {
+    // info
+    uint8_t size;
+
+    // select size
+    switch (current_operation & 0xC0) {
+        case 0x0:
+            size = 0;
+            break;
+        case 0x40:
+            size = 1;
+            break;
+        default:
+            size = 2;
+            break;
+    }
+
+    uint32_t displacement = 2;
+    uint32_t source = 0x0;
+
+    ZERO = 1;
+    CARRY = 0;
+    OVERFLOW = 0;
+    NEGATIVE = 0;
+
+    uint32_t tmp = current_operation & 0x3f;
+
+    addressing_mode_destination(size, tmp, &displacement, source);
+
+    PC += displacement;
+    return 0;
+}
+

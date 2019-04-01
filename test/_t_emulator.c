@@ -2174,3 +2174,62 @@ Test(emulator, test_subq, .init=setup_emulator) {
         "(data register .l) => D0 = 0x%x", D(0));
 }
 
+Test(emulator, test_jsr, .init=setup_emulator) {
+    uint16_t instruction;
+
+    // test long
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_32bit(memory + PC + 2, 0x1234);
+    instruction = 0x4eb9;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack.");
+    cr_assert(PC == 0x1234, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x506, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test long neg
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_32bit(memory + PC + 2, 0xffff1234);
+    instruction = 0x4eb9;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack.");
+    cr_assert(PC == 0xffff1234, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x506, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test word
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_16bit(memory + PC + 2, 0x6969);
+    instruction = 0x4eb8;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack. SP => %x", A(7));
+    cr_assert(PC == 0x6969, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x504, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test word neg
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_16bit(memory + PC + 2, 0xf969);
+    instruction = 0x4eb8;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack. SP => %x", A(7));
+    cr_assert(PC == 0xf969, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x504, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+
+}
+
+

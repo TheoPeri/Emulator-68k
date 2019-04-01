@@ -60,4 +60,7 @@ int sub(uint16_t current_operation);
 int suba(uint16_t current_operation);
 int subq(uint16_t current_operation);
 int subi(uint16_t current_operation);
+
+
+int jsr(uint16_t current_operation);
 #endif
