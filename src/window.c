@@ -217,10 +217,17 @@ void change_memory_view() {
 gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
 
-    if (event->keyval == 65480) {
-        next_instruction();
-        update_window();
-        update_buffer();
+    switch (event->keyval) {
+        case 65480:
+            next_instruction();
+            update_window();
+            update_buffer();
+            break;
+        case 65478:
+            while (!next_instruction());
+            update_window();
+            update_buffer();
+            break;
     }
 
     return FALSE;

@@ -45,16 +45,6 @@ inline uint32_t read_32bit(uint8_t *address) {
 }
 
 /**
- * @brief Write 8 bit in memory (low endian => big endian).
- *
- * @param address The starting address of the big endian memory.
- * @param value The value in low endian.
- */
-inline void write_8bit(uint8_t *address, uint32_t value) {
-    address[0] = value & 0xFF;
-}
-
-/**
  * @brief Write 16 bit in memory (low endian => big endian).
  *
  * @param address The starting address of the big endian memory.
