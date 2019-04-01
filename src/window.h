@@ -12,6 +12,7 @@ GtkLabel *window_memory;
 
 GtkLabel *window_status_registers[6];
 GtkLabel *window_registers[18];
+GtkLabel *window_str_registers[8];
 
 GtkFileChooserDialog *openfile_window;
 GtkFileChooserDialog *openfile_window;

@@ -35,6 +35,26 @@ void init_window(char *file_name) {
     window_registers[13] = GTK_LABEL (gtk_builder_get_object (builder, "a5"));
     window_registers[14] = GTK_LABEL (gtk_builder_get_object (builder, "a6"));
 
+    //string_register
+    window_str_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "d0_str"));
+    window_str_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "d1_str"));
+    window_str_registers[2] = GTK_LABEL (gtk_builder_get_object (builder, "d2_str"));
+    window_str_registers[3] = GTK_LABEL (gtk_builder_get_object (builder, "d3_str"));
+    window_str_registers[4] = GTK_LABEL (gtk_builder_get_object (builder, "d4_str"));
+    window_str_registers[5] = GTK_LABEL (gtk_builder_get_object (builder, "d5_str"));
+    window_str_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "d6_str"));
+    window_str_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "d7_str"));
+
+    // window_str_registers[8] = GTK_LABEL (gtk_builder_get_object (builder, "a0_str"));
+    // window_str_registers[9] = GTK_LABEL (gtk_builder_get_object (builder, "a1_str"));
+    // window_str_registers[10] = GTK_LABEL (gtk_builder_get_object (builder, "a2_str"));
+    // window_str_registers[11] = GTK_LABEL (gtk_builder_get_object (builder, "a3_str"));
+    // window_str_registers[12] = GTK_LABEL (gtk_builder_get_object (builder, "a4_str"));
+    // window_str_registers[13] = GTK_LABEL (gtk_builder_get_object (builder, "a5_str"));
+    // window_str_registers[14] = GTK_LABEL (gtk_builder_get_object (builder, "a6_str"));
+    // window_str_registers[15] = GTK_LABEL (gtk_builder_get_object (builder, "a7_str"));
+
+
     // flag
     window_status_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "C"));
     window_status_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "V"));
@@ -110,6 +130,12 @@ void update_window() {
     // update pc
     snprintf(buffer, 10, "%08x", PC);
     gtk_label_set_text(window_pc, buffer);
+
+    // string register
+    for (i = 0; i < 8; ++i) {
+        uint32_tostring(buffer, registers[i]);
+        gtk_label_set_text(window_str_registers[i], buffer);
+    }
 }
 
 /**
@@ -159,6 +185,7 @@ void loadfile_button() {
     // reset registers and flags
     memset(registers, 0, 17 * sizeof(uint32_t));
     memset(status_registers, 0, 6 * sizeof(uint8_t));
+
 
     // init the emulator and update the interface
     init();

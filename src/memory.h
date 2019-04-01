@@ -13,6 +13,7 @@ extern uint8_t status_registers[6];
 // data and address registers
 extern uint32_t registers[17];
 
+
 #define CARRY                           status_registers[0]
 #define OVERFLOW                        status_registers[1]
 #define ZERO                            status_registers[2]

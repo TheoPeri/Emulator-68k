@@ -52,3 +52,4 @@ dkms.conf
 
 target/tmp/*
 target/build/*
+src/.vscode/*
