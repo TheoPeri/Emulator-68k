@@ -1,5 +1,8 @@
+#define _GNU_SOURCE
+
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "window.h"
 #include "memory.h"
@@ -7,6 +10,10 @@
 #include "loader.h"
 #include "emulator.h"
 #include "debug.h"
+
+const size_t MEM_SIZE = 16777220 * sizeof(uint8_t);
+const size_t LINE_SIZE = 16;
+const size_t LINE_COUNT = 45;
 
 /**
  * @brief Init the graphic interface
@@ -85,9 +92,12 @@ void init_window(char *file_name) {
     "disassembled_memory_o"));
 
 	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
+	update_mem_view();
 
     toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
     "Toggle Disassembled Memory"));
+
+	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "sbadj"));
 
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
@@ -138,6 +148,67 @@ void update_window() {
     }
 }
 
+void scrolled_view()
+{
+	update_mem_view();
+}
+
+/**
+ * @brief Updates the memory visualization buffer
+ */
+void update_mem_view()
+{
+	size_t first_line = (size_t)gtk_adjustment_get_value(scrollbar);
+	
+	char* tmp = NULL;
+	char* result = calloc(1, sizeof(char));
+	result = mystrcat(result, "<span font_family='Monospace'>");
+
+	for(size_t i = 0; i < LINE_COUNT; i++)
+	{
+		unsigned long mem_pos = LINE_SIZE * (first_line + i);
+		//if(mem_pos > MEM_SIZE / 2) break;
+
+		//Make sure we don't read past the memory size
+		size_t bytes = MEM_SIZE - mem_pos;
+		if(bytes > LINE_SIZE) bytes = LINE_SIZE;
+
+		//Print the address of the current line
+		asprintf(&tmp, "<span color='gray'>0x%07lx</span>\t", mem_pos);
+		result = mystrcat(result, tmp); free(tmp);
+
+		//Print the hex interpretation
+		for(size_t j = 0; j < bytes; j++)
+		{
+			asprintf(&tmp, "%02x ", memory[mem_pos + j]);
+			result = mystrcat(result, tmp); free(tmp);
+		}
+
+		result = mystrcat(result, "\t<span color='green'>");
+
+		//Print the string interpretation
+		for(size_t j = 0; j < bytes; j++)
+		{
+			char c = memory[mem_pos + j];
+			int utf = c >= 32 && c <= 126 && c != '<' && c != '>';
+			if(!utf)
+				result = mystrcat(result, ".");
+			else
+			{
+				asprintf(&tmp, "%c", memory[mem_pos + j]);
+				result = mystrcat(result, tmp); free(tmp);
+			}
+		}
+
+		result = mystrcat(result, "</span>\n");
+	}
+	result = mystrcat(result, "</span>");
+
+	gtk_label_set_markup(hex_view, result);
+
+	free(result);
+}
+
 /**
  * @brief Update the disassemble buffer
  */
@@ -155,6 +226,8 @@ void update_buffer() {
     free(adrrs);
 	free(opcodes);
 	free(operandes);
+
+	update_mem_view();
 }
 
 /**

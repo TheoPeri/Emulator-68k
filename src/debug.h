@@ -6,4 +6,6 @@ void show_current_instruction(char** addrs, char** opcode, char** operands);
 void pretty_print_instruction(char** addrs, char** opcode, char** operands);
 void uint32_tostring(char *buffer, uint32_t value);
 
+char* mystrcat(char* a, char* b);
+
 #endif
