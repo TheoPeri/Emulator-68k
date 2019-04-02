@@ -235,6 +235,15 @@ inline void addressing_mode_destination(
             SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
             *displacement += 2;
             break;
+        case 0x38: // address absolut
+            tmp = (int32_t)read_32bit_memory(PC + 2);
+            if(reg == 0)
+                size = 2;
+            else
+                size = 4;
+            SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
+            *displacement += 4;
+            break;
     }
 }
 

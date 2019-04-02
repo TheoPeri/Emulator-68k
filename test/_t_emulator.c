@@ -2228,6 +2228,67 @@ Test(emulator, test_jsr, .init=setup_emulator) {
     cr_assert(PC == 0xf969, "Expect the valid new address => %x", PC);
     cr_assert(read_32bit(memory + A(7)) == 0x504, "Expect the valid return address => %x",
         read_32bit(memory + A(7)));
+}
+
+Test(emulator, test_clr, .init=setup_emulator) {
+    uint16_t instruction;
+
+
+    //clr.b   D0
+    instruction = 0x4200;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x12345600, "Error on the destination address for clr: "
+        "(data register .b) => D0 = 0x%x", D(0));
+
+
+    //clr.w   D0
+    instruction = 0x4240;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x12340000, "Error on the destination address for clr: "
+        "(data register .w) => D0 = 0x%x", D(0));
+
+    //clr.l   D0
+    instruction = 0x4280;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x00000000, "Error on the destination address for clr: "
+        "(data register .l) => D0 = 0x%x", D(0));
+
+    //clr.w   (A0)
+    instruction = 0x4250;
+
+    PC = 0x500;
+    A(0) = 0x666;
+    write_16bit(memory + A(0), 0xf969);
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(read_16bit(memory + A(0)) == 0x0, "Error on the destination address for clr: "
+        "(data register .w) => (A0) = 0x%x", read_16bit(memory + A(0)));
+
+
+    //clr.w		$666
+    instruction = 0x4279;
+    PC = 0x508;
+    write_32bit(memory + PC + 2, 0x666);
+    write_16bit(memory + 0x666, 0xf969);
+    clr(instruction);
+    cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_assert(read_16bit(memory + 0x666) == 0x0, "Error on the destination address for clr: "
+        "(data register .w) => (0x666) = 0x%x // 0x666 = 0x%x", read_16bit(memory + 0x666), (int32_t)read_32bit(memory + 0x508 + 2));
+
+
+
 
 
 }
