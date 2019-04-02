@@ -64,4 +64,5 @@ int subi(uint16_t current_operation);
 
 int jsr(uint16_t current_operation);
 int clr(uint16_t current_operation);
+int lsd(uint16_t current_operation);
 #endif
