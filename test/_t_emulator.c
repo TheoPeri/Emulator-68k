@@ -889,7 +889,6 @@ Test(emulator, test_bcc, .init=setup_emulator) {
 
 }
 
-
 Test(emulator, test_tst, .init=setup_emulator) {
     uint16_t instruction = 0x4a80;
 
@@ -939,7 +938,28 @@ Test(emulator, test_tst, .init=setup_emulator) {
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
         "OVERFLOW = 0x%x", OVERFLOW);
+}
 
+Test(emulator, test_dbra, .init=setup_emulator) {
+    uint16_t instruction = 0x51c8;
+
+    // return bra
+    PC = 0x508; // long d0
+    D(0) = 0x10040;
+    write_16bit_memory(PC + 2, 0xfffc);
+    dbcc(instruction);
+
+    cr_assert(PC == 0x506, "A correct incrementation of the PC => %x", PC);
+    cr_assert(D(0) == 0x1003f, "Error on the data register (data register .l) => "
+        "D(0) = 0x%x", D(0));
+
+    PC = 0x508;
+    D(0) = 0x10000;
+
+    dbcc(instruction);
+    cr_assert(PC == 0x50c, "A correct incrementation of the PC => %x", PC);
+    cr_assert(D(0) == 0x1ffff, "Error on the data register (data register .l) => "
+        "D(0) = 0x%x", D(0));
 }
 
 Test(emulator, test_cmp, .init=setup_emulator) {

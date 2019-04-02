@@ -38,6 +38,8 @@ int bcc(uint16_t current_operation);
 // test
 int tst(uint16_t current_operation);
 
+int dbcc(uint16_t current_operation);
+
 // cmp
 int cmp(uint16_t current_operation);
 int cmpa(uint16_t current_operation);

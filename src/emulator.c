@@ -463,6 +463,7 @@ int next_instruction() {
         goto warning;
     }
 
+
     if (mask_0xffc0 == 0x4e80) {
         // is_jsr
         goto warning;
@@ -483,6 +484,7 @@ int next_instruction() {
         lea(current_operation);
     }
 
+
     if (mask_0xf1c0 == 0x4180) {
         // is_chk
         goto warning;
@@ -493,14 +495,15 @@ int next_instruction() {
         return addq(current_operation);
     }
 
-    if (mask_0xf100 == 0x5100) {
-        // is_subq
-        return subq(current_operation);
-    }
 
     if ((0xf0f8 & current_operation) == 0x50c8) {
         // is_dbcc
-        goto warning;
+        return dbcc(current_operation);
+    }
+
+    if (mask_0xf100 == 0x5100) {
+        // is_subq
+        return subq(current_operation);
     }
 
     if (mask_0xf0c0 == 0x50c0) {
@@ -807,6 +810,23 @@ inline int tst(uint16_t current_operation) {
 
     PC += displacement;
 
+    return 0;
+}
+
+
+inline int dbcc(uint16_t current_operation) {
+    if ((current_operation & 0x100) != 0x100) {
+        warnx("Not implemented!!!\n");
+        return -1;
+    }
+    
+    uint8_t reg = current_operation & 0x7;
+    uint16_t tmp = D(reg) - 1;
+
+    D(reg) = (tmp | (D(reg) & 0xffff0000));
+
+    PC += tmp == 0xffff ? 4 : (int16_t)read_16bit_memory(PC + 2) + 2;
+            
     return 0;
 }
 
@@ -1159,6 +1179,7 @@ inline int addq(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t source = (current_operation & 0xe00) >> 9;
+
     if (!source) {
         source = 8;
     }

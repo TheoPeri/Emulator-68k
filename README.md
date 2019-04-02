@@ -6,6 +6,7 @@ implemented instruction:
     bcc
 
     tst
+    dbra
 
     cmp
     cmpa
