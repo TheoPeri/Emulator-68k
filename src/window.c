@@ -11,9 +11,9 @@
 #include "emulator.h"
 #include "debug.h"
 
-const size_t MEM_SIZE = 16777220 * sizeof(uint8_t);
+const size_t MEM_SIZE = 16777216 * sizeof(uint8_t);
 const size_t LINE_SIZE = 16;
-const size_t LINE_COUNT = 45;
+const size_t LINE_COUNT = 38;
 
 /**
  * @brief Init the graphic interface
@@ -91,13 +91,13 @@ void init_window(char *file_name) {
 	disassembled_memory_o = GTK_LABEL(gtk_builder_get_object(builder,
     "disassembled_memory_o"));
 
-	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
-	update_mem_view();
-
     toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
     "Toggle Disassembled Memory"));
 
-	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "sbadj"));
+	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
+
+	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
+	update_mem_view();
 
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
@@ -159,7 +159,7 @@ void scrolled_view()
 void update_mem_view()
 {
 	size_t first_line = (size_t)gtk_adjustment_get_value(scrollbar);
-	
+
 	char* tmp = NULL;
 	char* result = calloc(1, sizeof(char));
 	result = mystrcat(result, "<span font_family='Monospace'>");
@@ -251,14 +251,13 @@ void loadfile_button() {
 
     // load the file
     // reset memory
-    memset(memory, 0, 16777220 * sizeof(uint8_t));
+    memset(memory, 0, 16777216 * sizeof(uint8_t));
     load_file(filename);
     free(filename);
 
     // reset registers and flags
     memset(registers, 0, 17 * sizeof(uint32_t));
     memset(status_registers, 0, 6 * sizeof(uint8_t));
-
 
     // init the emulator and update the interface
     init();

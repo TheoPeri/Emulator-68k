@@ -12,7 +12,7 @@
  * @return -1 => error || other => OK
  */
 int init_memory() {
-    if ((memory = malloc(16777220 * sizeof(uint8_t))) == NULL) {
+    if ((memory = malloc(16777216 * sizeof(uint8_t))) == NULL) {
         return -1;
     }
     return 0;
@@ -803,8 +803,8 @@ inline int tst(uint16_t current_operation) {
             shift = 31;
     }
 
-    ZERO = source == 0; 
-    NEGATIVE = (source >> shift) & 0x1; 
+    ZERO = source == 0;
+    NEGATIVE = (source >> shift) & 0x1;
     CARRY = 0;
     OVERFLOW = 0;
 
@@ -819,14 +819,14 @@ inline int dbcc(uint16_t current_operation) {
         warnx("Not implemented!!!\n");
         return -1;
     }
-    
+
     uint8_t reg = current_operation & 0x7;
     uint16_t tmp = D(reg) - 1;
 
     D(reg) = (tmp | (D(reg) & 0xffff0000));
 
     PC += tmp == 0xffff ? 4 : (int16_t)read_16bit_memory(PC + 2) + 2;
-            
+
     return 0;
 }
 
@@ -1450,11 +1450,11 @@ int lea(uint16_t current_operation) {
     // mode
     switch (current_operation & 0x38) {
         case 0x10: // address
-            source = A(reg); 
+            source = A(reg);
             displacement = 2;
             break;
         case 0x38: // absolute long
-            source = read_32bit_memory(PC + 2);  
+            source = read_32bit_memory(PC + 2);
             displacement = 6;
             break;
         default:
