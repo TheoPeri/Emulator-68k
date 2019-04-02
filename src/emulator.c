@@ -1656,3 +1656,91 @@ inline int clr(uint16_t current_operation) {
     return 0;
 }
 
+inline int lsd(uint16_t current_operation) {
+    // info
+    uint8_t size;
+
+    // select size
+    switch (current_operation & 0xC0) {
+        case 0x0:
+            size = 0;
+            break;
+        case 0x40:
+            size = 1;
+            break;
+        case 0x80:
+            size = 2;
+            break;
+       default:
+            size = 3;
+            break;
+    }
+
+    uint8_t dr = (current_operation >> 8) & 1;
+    uint32_t displacement = 2;
+
+    if(size == 3) // MEMORY SHIFTS
+    {
+        uint8_t reg = current_operation & 0x3f;
+        uint32_t source = addressing_mode_source(2,
+                reg, &displacement);
+        if(dr == 0)
+        {
+            CARRY = source & 1;
+            source = source >> 1;
+        }
+        else
+        {
+            CARRY = source >> 31;
+            source = source << 1;
+        }
+
+        addressing_mode_destination(2, reg, &displacement, source);
+        ZERO = (source==0);
+        NEGATIVE = (source >> 31) == 1;
+
+    }
+    else // REGISTER SHIFTS
+    {
+        uint8_t reg = current_operation & 7;
+        uint8_t count = (current_operation >> 9) & 7;
+        uint8_t ir = (current_operation >> 5) & 1;
+
+        if(ir == 1)
+        {
+            count = D(count) %64;
+        }
+        uint32_t source = addressing_mode_source(2,
+                reg, &displacement);
+        if(count == 0)
+            count = 8;
+        while (count != 0)
+        {
+            if(dr == 0)
+            {
+                CARRY = source & 1;
+                source = source >> 1;
+            }
+            else
+            {
+                CARRY = source >> 31;
+                source = source << 1;
+            }
+            count--;
+        }
+        addressing_mode_destination(2, reg, &displacement, source);
+
+        ZERO = (source==0);
+        NEGATIVE = (source >> 31) == 1;
+
+    }
+
+    OVERFLOW = 0;
+
+
+
+    PC += displacement;
+
+    return 0;
+}
+

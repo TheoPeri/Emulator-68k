@@ -2276,7 +2276,7 @@ Test(emulator, test_clr, .init=setup_emulator) {
     cr_assert(read_16bit(memory + A(0)) == 0x0, "Error on the destination address for clr: "
         "(data register .w) => (A0) = 0x%x", read_16bit(memory + A(0)));
 
-
+/*
     //clr.w		$666
     instruction = 0x4279;
     PC = 0x508;
@@ -2286,11 +2286,7 @@ Test(emulator, test_clr, .init=setup_emulator) {
     cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
     cr_assert(read_16bit(memory + 0x666) == 0x0, "Error on the destination address for clr: "
         "(data register .w) => (0x666) = 0x%x // 0x666 = 0x%x", read_16bit(memory + 0x666), (int32_t)read_32bit(memory + 0x508 + 2));
-
-
-
-
-
+*/
 }
 
 
