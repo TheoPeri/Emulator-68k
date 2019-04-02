@@ -328,7 +328,6 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     cr_assert(!displacement, "| address register | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
-
     // address
     // the size is byte
     value = 0x14; // a4
@@ -887,6 +886,59 @@ Test(emulator, test_bcc, .init=setup_emulator) {
     write_16bit(memory + PC + 2, 0xfff0);
     bcc(instruction);
     cr_assert(PC == 0x500, "Error on the (ble.w jump <) PC => %x", PC);
+
+}
+
+
+Test(emulator, test_tst, .init=setup_emulator) {
+    uint16_t instruction = 0x4a80;
+
+    // test long
+    PC = 0x506; // long d0
+    D(0) = 0;
+    tst(instruction);
+
+    cr_assert(PC == 0x508, "A correct incrementation of the PC => %x", PC);
+    cr_assert(ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test long
+    PC = 0x506; // long d0
+    D(0) = -1;
+    tst(instruction);
+
+    cr_assert(PC == 0x508, "A correct incrementation of the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test word absolue
+    instruction = 0x4a79;
+    PC = 0x508; // long d0
+    write_32bit_memory(PC + 2, 0x10000);
+    write_16bit_memory(0x10000, 0xffff);
+    tst(instruction);
+
+    cr_assert(PC == 0x50e, "A correct incrementation of the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
 
 }
 

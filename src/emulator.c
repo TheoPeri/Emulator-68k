@@ -780,6 +780,36 @@ inline int bcc(uint16_t current_operation) {
     return 0;
 }
 
+inline int tst(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+
+    uint8_t shift;
+
+    // shift selection
+    switch(size) {
+        case 0:
+            shift = 7;
+            break;
+        case 1:
+            shift = 15;
+            break;
+        default:
+            shift = 31;
+    }
+
+    ZERO = source == 0; 
+    NEGATIVE = (source >> shift) & 0x1; 
+    CARRY = 0;
+    OVERFLOW = 0;
+
+    PC += displacement;
+
+    return 0;
+}
+
 /**
 * @brief Execute the command cmp
 *
