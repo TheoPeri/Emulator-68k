@@ -27,35 +27,41 @@ void addressing_mode_destination
     uint32_t data
 );
 
+// return
 int rts();
 
+// branch
 int bra(uint16_t current_operation);
 int bsr(uint16_t current_operation);
 int bcc(uint16_t current_operation);
 
+// test
+int tst(uint16_t current_operation);
+
+int dbcc(uint16_t current_operation);
+
+// cmp
 int cmp(uint16_t current_operation);
 int cmpa(uint16_t current_operation);
 int cmpi(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
 
-void add_flag
-(
-    uint32_t source,
-    uint32_t destination,
-    uint32_t result,
-    uint8_t shift
-);
-
+// add
 int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
 int addq(uint16_t current_operation);
 int addi(uint16_t current_operation);
 
+// move
 int move(uint16_t current_operation);
 int moveq(uint16_t current_operation);
 int movea(uint16_t current_operation);
 int movem(uint16_t current_operation);
 
+// lea
+int lea(uint16_t current_operation);
+
+// sub
 int sub(uint16_t current_operation);
 int suba(uint16_t current_operation);
 int subq(uint16_t current_operation);

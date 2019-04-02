@@ -13,8 +13,7 @@ void setup_emulator(void) {
 Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     uint8_t value;
     uint32_t source;
-    uint32_t displacement = 0;
-
+    uint32_t displacement = 2;
 
     // data register (no cast)
     value = 0x02; // d2
@@ -22,7 +21,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
 
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x45, "| data register (byte) | Expect source == D2(0x%x)", D(2));
-    cr_assert(!displacement, "| data register (byte) | Expect displacement to be"
+    cr_assert(displacement == 2, "| data register (byte) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
     value = 0x02; // d2
@@ -30,7 +29,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
 
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x2345, "| data register (word) | Expect source == D2(0x%x)", D(2));
-    cr_assert(!displacement, "| data register (word) | Expect displacement to be"
+    cr_assert(displacement == 2, "| data register (word) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
     value = 0x02; // d2
@@ -38,10 +37,8 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
 
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0x09872345, "| data register (long) | Expect source == D2(0x%x)", D(2));
-    cr_assert(!displacement, "| data register (long) | Expect displacement to be"
+    cr_assert(displacement == 2, "| data register (long) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
-
-
 
     // address register (no cast)
     value = 0x0f; // a7
@@ -49,7 +46,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
 
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x003223233, "| address register | Expect source == A7(0x%x)", A(7));
-    cr_assert(!displacement, "| address register | Expect displacement to be"
+    cr_assert(displacement == 2, "| address register | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
 
@@ -61,7 +58,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
 
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x37, "| address (byte) | Expect source == (A4)(0x%x)", memory[A(4)]);
-    cr_assert(!displacement, "| address (byte) | Expect displacement to be"
+    cr_assert(displacement == 2, "| address (byte) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
     // the size is word
@@ -72,7 +69,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x9823, "| address (word) | Expect source == "
         "(A2)(0x%x)", read_16bit(memory + A(2)));
-    cr_assert(!displacement, "| address (word) | Expect displacement to be"
+    cr_assert(displacement == 2, "| address (word) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
     // the size is long
@@ -83,7 +80,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0x12089823, "| address (long) | Expect source == "
         "(A1)(0x%x)", read_32bit(memory + A(1)));
-    cr_assert(!displacement, "| address (long) | Expect displacement to be"
+    cr_assert(displacement == 2, "| address (long) | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
 
 
@@ -92,11 +89,10 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     value = 0x1e; // a6
     A(6) = 0x03028; // address of the value
     memory[A(6)] = 0x90; // the expected source value
-
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x90, "| address postincrement (byte) | Expect source "
         "== (A6)+(0x%x)", memory[0x03028]);
-    cr_assert(!displacement, "| address postincrement (byte) | Expect "
+    cr_assert(displacement == 2, "| address postincrement (byte) | Expect "
         "displacement to be  not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(6) == 0x03029, "| address postincrement (byte) | Expect a "
@@ -110,7 +106,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x1689, "| address postincrement (word) | Expect "
         "source == (A0)+(0x%x)", read_16bit(memory + A(0) - 2));
-    cr_assert(!displacement, "| address postincrement (word) | Expect "
+    cr_assert(displacement == 2, "| address postincrement (word) | Expect "
         "displacement to be not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(0) == 0x2390a, "| address postincrement (word) | Expect a "
@@ -124,7 +120,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0x12828933, "| address postincrement (long) | Expect "
         "source == (A2)+(0x%x)", read_32bit(memory + A(2) - 4));
-    cr_assert(!displacement, "| address postincrement (long) | Expect "
+    cr_assert(displacement == 2, "| address postincrement (long) | Expect "
         "displacement to be not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(2) == 0x2948b, "| address postincrement (long) | Expect a "
@@ -140,7 +136,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x90, "| address predecrement (byte) | Expect source "
         "== (A6)+(0x%x)", memory[0x03028]);
-    cr_assert(!displacement, "| address predecrement (byte) | Expect "
+    cr_assert(displacement == 2, "| address predecrement (byte) | Expect "
         "displacement to be  not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(6) == 0x03028, "| address predecrement (byte) | Expect a "
@@ -154,7 +150,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x1689, "| address predecrement (word) | Expect "
         "source == (A0)+(0x%x)", read_16bit(memory + A(0)));
-    cr_assert(!displacement, "| address predecrement (word) | Expect "
+    cr_assert(displacement == 2, "| address predecrement (word) | Expect "
         "displacement to be not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(0) == 0x23908, "| address predecrement (word) | Expect a "
@@ -168,7 +164,7 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0x12828933, "| address predecrement (long) | Expect "
         "source == (A2)+(0x%x)", read_32bit(memory + A(2)));
-    cr_assert(!displacement, "| address predecrement (long) | Expect "
+    cr_assert(displacement == 2, "| address predecrement (long) | Expect "
         "displacement to be not modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
     cr_assert(A(2) == 0x29487, "| address predecrement (long) | Expect a "
@@ -186,35 +182,35 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x90, "| address displacement (byte) | Expect source "
         "== 0x1689(A6)(0x%x)", memory[0x03029 + 0x1689]);
-    cr_assert(displacement == 2, "| address displacement (byte) | Expect "
+    cr_assert(displacement == 4, "| address displacement (byte) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
     // the size is word
     value = 0x28; // a0
-    displacement = 0;
     A(0) = 0x22390;
     write_16bit(memory + PC + 2, 0x1689); // 0x1689
     write_16bit(memory + A(0) + 0x1689, 0x1689); // the expected source value
+    displacement = 2;
 
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x1689, "| address displacement (word) | Expect "
         "source == 0x1689(A0)(0x%x)", read_16bit(memory + A(0) + 0x1689));
-    cr_assert(displacement == 2, "| address displacement (word) | Expect "
+    cr_assert(displacement == 4, "| address displacement (word) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
     // the size is long
     value = 0x2a; // a2
-    displacement = 0;
     A(2) = 0x2948b;
     write_16bit(memory + PC + 2, 0xfff4); // -12
     write_32bit(memory + 0x2948b - 12, 0x12828933); // the expected source value
+    displacement = 2;
 
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0x12828933, "| address displacement (long) | Expect "
         "source == -12(A2)(0x%x)", read_32bit(memory + A(2) - 12));
-    cr_assert(displacement == 2, "| address displacement (long) | Expect "
+    cr_assert(displacement == 4, "| address displacement (long) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
@@ -222,40 +218,79 @@ Test(emulator, test_addressing_mode_source, .init=setup_emulator) {
     // immediate
     PC = 0x8998;
     // the size is byte
-    displacement = 0;
     value = 0x3c; // a6
     write_16bit(memory + PC + 2, 0x67); // 0x1689
+    displacement = 2;
 
     source = addressing_mode_source(0, value, &displacement);
     cr_assert(source == 0x67, "| immediate (byte) | Expect source "
         "== #i(0xfff4)");
-    cr_assert(displacement == 2, "| immediate (byte) | Expect "
+    cr_assert(displacement == 4, "| immediate (byte) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
     // the size is word
-    displacement = 0;
     value = 0x3c; // a0
-    displacement = 0;
     write_16bit(memory + PC + 2, 0x1689); // 0x1689
+    displacement = 2;
 
     source = addressing_mode_source(1, value, &displacement);
     cr_assert(source == 0x1689, "| immediate (word) | Expect "
         "source == #i(0xfff4)");
-    cr_assert(displacement == 2, "| immediate (word) | Expect "
+    cr_assert(displacement == 4, "| immediate (word) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
     // the size is long
-    displacement = 0;
     value = 0x3c; // a2
-    displacement = 0;
     write_32bit(memory + PC + 2, 0xfff4); // -12
+    displacement = 2;
 
     source = addressing_mode_source(2, value, &displacement);
     cr_assert(source == 0xfff4, "| immediate (long) | Expect "
         "source == #i(0xfff4)");
-    cr_assert(displacement == 4, "| immediate (long) | Expect "
+    cr_assert(displacement == 6, "| immediate (long) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // absolute long
+    PC = 0x8998;
+    // the size is byte
+    value = 0x39;
+    write_32bit_memory(PC + 2, 0x67);
+    write_8bit_memory(0x67, 0xab);
+    displacement = 2;
+
+    source = addressing_mode_source(0, value, &displacement);
+    cr_assert(source == 0xab, "| absolute long (byte) | Expect source "
+        "== #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (byte) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is word
+    value = 0x39; // a0
+    write_32bit_memory(PC + 2, 0x1689); // 0x1689
+    write_16bit_memory(0x1689, 0x8395); // 0x1689
+    displacement = 2;
+
+    source = addressing_mode_source(1, value, &displacement);
+    cr_assert(source == 0x8395, "| absolute long (word) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (word) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is long
+    value = 0x39; // a2
+    write_32bit_memory(PC + 2, 0xfff4); // -12
+    write_32bit_memory(0xfff4, 0xabcdef); // -12
+    displacement = 2;
+
+    source = addressing_mode_source(2, value, &displacement);
+    cr_assert(source == 0xabcdef, "| absolute long (long) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (long) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 }
@@ -292,7 +327,6 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     cr_assert(D(2) == 0x12345678, "| data register (long) | Expect D2 == 0x12345678 (0x%x)", D(2));
     cr_assert(!displacement, "| address register | Expect displacement to be"
         " not modified (value of the modification: 0x%x)", displacement); // no displacement for this op
-
 
     // address
     // the size is byte
@@ -419,6 +453,8 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
         " postincrementation"); // check postincrementation (-4)
 
 
+    displacement = 2;
+
     // address displacement
     PC = 0x8998;
     // the size is byte
@@ -430,7 +466,7 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     addressing_mode_destination(0, value, &displacement, 0x12345678);
     cr_assert(memory[0x03029 + 0x1689] == 0x78, "| address displacement "
         "(byte) | Expect source == 0x1689(A6)(0x%x)", memory[0x03029 + 0x1689]);
-    cr_assert(displacement == 2, "| address displacement (byte) | Expect "
+    cr_assert(displacement == 4, "| address displacement (byte) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
@@ -438,6 +474,7 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     value = 0x28; // a0
     displacement = 0;
     A(0) = 0x22390;
+    displacement = 2;
     write_16bit(memory + PC + 2, 0x1689); // 0x1689
     write_16bit(memory + A(0) + 0x1689, 0x1689); // the expected source value
 
@@ -445,7 +482,7 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     cr_assert(read_16bit(memory + A(0) + 0x1689) == 0x5678, "| address "
         "displacement (word) | Expect source == 0x1689(A0)(0x%x)",
         read_16bit(memory + A(0) + 0x1689));
-    cr_assert(displacement == 2, "| address displacement (word) | Expect "
+    cr_assert(displacement == 4, "| address displacement (word) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 
@@ -453,6 +490,7 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     value = 0x2a; // a2
     displacement = 0;
     A(2) = 0x2948b;
+    displacement = 2;
     write_16bit(memory + PC + 2, 0xfff4); // -12
     write_32bit(memory + 0x2948b - 12, 0x12828933); // the expected source value
 
@@ -460,7 +498,45 @@ Test(emulator, test_addressing_mode_destination, .init=setup_emulator) {
     cr_assert(read_32bit(memory + A(2) - 12) == 0x12345678, "| address "
         "displacement (long) | Expect source == -12(A2)(0x%x)",
         read_32bit(memory + A(2) - 12));
-    cr_assert(displacement == 2, "| address displacement (long) | Expect "
+    cr_assert(displacement == 4, "| address displacement (long) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // absolute long
+    PC = 0x8998;
+    // the size is byte
+    value = 0x39;
+    write_32bit_memory(PC + 2, 0x67);
+    displacement = 2;
+
+    addressing_mode_destination(0, value, &displacement, 0xab);
+    cr_assert(read_8bit_memory(0x67) == 0xab, "| absolute long (byte) | Expect source "
+        "== #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (byte) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is word
+    value = 0x39; // a0
+    write_32bit_memory(PC + 2, 0x1689); // 0x1689
+    displacement = 2;
+
+    addressing_mode_destination(1, value, &displacement, 0x7654);
+    cr_assert(read_16bit_memory(0x1689) == 0x7654, "| absolute long (word) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (word) | Expect "
+        "displacement to be modified (value of the modification: 0x%x)",
+        displacement); // no displacement for this op
+
+    // the size is long
+    value = 0x39; // a2
+    write_32bit_memory(PC + 2, 0xfff4); // -12
+    displacement = 2;
+
+    addressing_mode_destination(2, value, &displacement, 0x87563421);
+    cr_assert(read_32bit_memory(0xfff4) == 0x87563421, "| absolute long (long) | Expect "
+        "source == #i(0xfff4)");
+    cr_assert(displacement == 6, "| absolute long (long) | Expect "
         "displacement to be modified (value of the modification: 0x%x)",
         displacement); // no displacement for this op
 }
@@ -811,6 +887,79 @@ Test(emulator, test_bcc, .init=setup_emulator) {
     bcc(instruction);
     cr_assert(PC == 0x500, "Error on the (ble.w jump <) PC => %x", PC);
 
+}
+
+Test(emulator, test_tst, .init=setup_emulator) {
+    uint16_t instruction = 0x4a80;
+
+    // test long
+    PC = 0x506; // long d0
+    D(0) = 0;
+    tst(instruction);
+
+    cr_assert(PC == 0x508, "A correct incrementation of the PC => %x", PC);
+    cr_assert(ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test long
+    PC = 0x506; // long d0
+    D(0) = -1;
+    tst(instruction);
+
+    cr_assert(PC == 0x508, "A correct incrementation of the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test word absolue
+    instruction = 0x4a79;
+    PC = 0x508; // long d0
+    write_32bit_memory(PC + 2, 0x10000);
+    write_16bit_memory(0x10000, 0xffff);
+    tst(instruction);
+
+    cr_assert(PC == 0x50e, "A correct incrementation of the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register (data register .b) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register (data register .b) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .b) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .b) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+}
+
+Test(emulator, test_dbra, .init=setup_emulator) {
+    uint16_t instruction = 0x51c8;
+
+    // return bra
+    PC = 0x508; // long d0
+    D(0) = 0x10040;
+    write_16bit_memory(PC + 2, 0xfffc);
+    dbcc(instruction);
+
+    cr_assert(PC == 0x506, "A correct incrementation of the PC => %x", PC);
+    cr_assert(D(0) == 0x1003f, "Error on the data register (data register .l) => "
+        "D(0) = 0x%x", D(0));
+
+    PC = 0x508;
+    D(0) = 0x10000;
+
+    dbcc(instruction);
+    cr_assert(PC == 0x50c, "A correct incrementation of the PC => %x", PC);
+    cr_assert(D(0) == 0x1ffff, "Error on the data register (data register .l) => "
+        "D(0) = 0x%x", D(0));
 }
 
 Test(emulator, test_cmp, .init=setup_emulator) {
@@ -1827,7 +1976,6 @@ Test(emulator, test_movea, .init=setup_emulator) {
 }
 
 Test(emulator, test_movem, .init=setup_emulator) {
-
     uint16_t instruction;
 
     PC = 0x500;
@@ -1913,7 +2061,25 @@ Test(emulator, test_movem, .init=setup_emulator) {
         "(data register .l) => D7 = 0x%x", D(7));
 }
 
+Test(emulator, test_lea, .init=setup_emulator) {
+    uint16_t instruction;
 
+    PC = 0x500;
+    instruction = 0x43f9; // lea $ffff,a1
+    write_32bit_memory(PC + 2, 0xffff);
+
+    lea(instruction);
+    cr_assert(PC == 0x506, "Error on the PC => %x", PC);
+    cr_assert(A(1) == 0xffff, "Expect A1(%x) == 0xffff", A(1));
+
+    PC = 0x506;
+    instruction = 0x41d1; // lea $ffff,a1
+
+    lea(instruction);
+    cr_assert(PC == 0x508, "Error on the PC => %x", PC);
+    cr_assert(A(0) == 0xffff, "Expect A1(%x) == 0xffff", A(1));
+
+}
 
 Test(emulator, test_sub, .init=setup_emulator) {
     uint32_t instruction;
@@ -2173,4 +2339,5 @@ Test(emulator, test_subq, .init=setup_emulator) {
     cr_assert(D(0) == 0x2a, "Error on the destination for subq: "
         "(data register .l) => D0 = 0x%x", D(0));
 }
+
 

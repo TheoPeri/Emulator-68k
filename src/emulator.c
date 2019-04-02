@@ -100,17 +100,26 @@ inline uint32_t addressing_mode_source(
             PRE_DEC_READ_MEMORY_SIZE(source, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             *displacement += 2;
             break;
-        case 0x38: // immediate
-            if (size == 2) {
-                source = read_32bit_memory(PC + 2);
-                *displacement += 4;
-            } else {
-                source = read_16bit_memory(PC + 2);
-                *displacement += 2;
+        case 0x38:
+            switch (reg) {
+                case 0x1: // absolute long
+                    tmp = read_32bit_memory(PC + *displacement);
+                    SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
+                    *displacement += 4;
+                    break;
+                case 0x4: // immediate
+                    if (size == 2) {
+                        source = read_32bit_memory(PC + *displacement);
+                        *displacement += 4;
+                    } else {
+                        source = read_16bit_memory(PC + *displacement);
+                        *displacement += 2;
+                    }
+                    break;
             }
     }
 
@@ -156,11 +165,19 @@ inline uint32_t addressing_mode_source_ro(
             tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             break;
-        case 0x38: // immediate
-            if (size == 2) {
-                source = read_32bit_memory(PC + 2);
-            } else {
-                source = read_16bit_memory(PC + 2);
+        case 0x38:
+            switch (reg) {
+                case 0x1: // absolute long
+                    tmp = read_32bit_memory(PC + 2);
+                    SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
+                    break;
+                case 0x4: // immediate
+                    if (size == 2) {
+                        source = read_32bit_memory(PC + 2);
+                    } else {
+                        source = read_16bit_memory(PC + 2);
+                    }
+                    break;
             }
             break;
         default:
@@ -231,9 +248,16 @@ inline void addressing_mode_destination(
             PRE_DEC_WRITE_MEMORY_SIZE(data, A(reg), size, A(reg), 1, 2, 4);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
             *displacement += 2;
+            break;
+        case 0x38:
+            if (reg == 0x1){ // absolute long
+                tmp = read_32bit_memory(PC + *displacement);
+                SIMPLE_WRITE_MEMORY_SIZE(data, tmp, size);
+                *displacement += 4;
+            }
             break;
     }
 }
@@ -416,7 +440,7 @@ int next_instruction() {
 
     if (mask_0xff00 == 0x4a00) {
         // is_tst
-        goto warning;
+        tst(current_operation);
     }
 
     if (mask_0xfff0 == 0x4e40) {
@@ -439,6 +463,7 @@ int next_instruction() {
         goto warning;
     }
 
+
     if (mask_0xffc0 == 0x4e80) {
         // is_jsr
         goto warning;
@@ -456,8 +481,9 @@ int next_instruction() {
 
     if (mask_0xf1c0 == 0x41c0) {
         // is_lea
-        goto warning;
+        lea(current_operation);
     }
+
 
     if (mask_0xf1c0 == 0x4180) {
         // is_chk
@@ -469,14 +495,15 @@ int next_instruction() {
         return addq(current_operation);
     }
 
-    if (mask_0xf100 == 0x5100) {
-        // is_subq
-        return subq(current_operation);
-    }
 
     if ((0xf0f8 & current_operation) == 0x50c8) {
         // is_dbcc
-        goto warning;
+        return dbcc(current_operation);
+    }
+
+    if (mask_0xf100 == 0x5100) {
+        // is_subq
+        return subq(current_operation);
     }
 
     if (mask_0xf0c0 == 0x50c0) {
@@ -756,6 +783,53 @@ inline int bcc(uint16_t current_operation) {
     return 0;
 }
 
+inline int tst(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+
+    uint8_t shift;
+
+    // shift selection
+    switch(size) {
+        case 0:
+            shift = 7;
+            break;
+        case 1:
+            shift = 15;
+            break;
+        default:
+            shift = 31;
+    }
+
+    ZERO = source == 0; 
+    NEGATIVE = (source >> shift) & 0x1; 
+    CARRY = 0;
+    OVERFLOW = 0;
+
+    PC += displacement;
+
+    return 0;
+}
+
+
+inline int dbcc(uint16_t current_operation) {
+    if ((current_operation & 0x100) != 0x100) {
+        warnx("Not implemented!!!\n");
+        return -1;
+    }
+    
+    uint8_t reg = current_operation & 0x7;
+    uint16_t tmp = D(reg) - 1;
+
+    D(reg) = (tmp | (D(reg) & 0xffff0000));
+
+    PC += tmp == 0xffff ? 4 : (int16_t)read_16bit_memory(PC + 2) + 2;
+            
+    return 0;
+}
+
 /**
 * @brief Execute the command cmp
 *
@@ -853,8 +927,8 @@ int cmpa(uint16_t current_operation) {
 */
 int cmpi(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
-
-    uint32_t source, displacement, tmp;
+    uint32_t displacement = 2;
+    uint32_t source, tmp;
     uint8_t shift;
 
     uint32_t destination = addressing_mode_source(size,
@@ -864,17 +938,17 @@ int cmpi(uint16_t current_operation) {
         case 0x0:
             source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
-            displacement = 4;
+            displacement += 2;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
             shift = 15;
-            displacement = 4;
+            displacement += 2;
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
             shift = 31;
-            displacement = 6;
+            displacement += 4;
             break;
         default:
             return -1;
@@ -1105,6 +1179,7 @@ inline int addq(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t source = (current_operation & 0xe00) >> 9;
+
     if (!source) {
         source = 8;
     }
@@ -1154,23 +1229,23 @@ inline int addi(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
 
-    uint32_t displacement = 2;
+    uint32_t displacement;
     uint8_t value = current_operation;
     uint32_t source, destination, result;
     uint8_t shift;
 
     switch (size) {
         case 0x0:
-            PC += 2;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
+            displacement = 4;
             shift = 7;
 
             destination = addressing_mode_source_ro(size, value);
             result = (source + destination) & 0xff;
             break;
         case 0x1:
-            PC += 2;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
+            displacement = 4;
             shift = 15;
 
             destination = addressing_mode_source_ro(size, value);
@@ -1178,7 +1253,7 @@ inline int addi(uint16_t current_operation) {
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
-            PC += 4;
+            displacement = 6;
             shift = 31;
 
             destination = addressing_mode_source_ro(size, value);
@@ -1364,6 +1439,33 @@ inline int movem(uint16_t current_operation) {
     }
 
     PC += displacement;
+    return 0;
+}
+
+int lea(uint16_t current_operation) {
+    uint8_t reg = current_operation & 0x7;
+    uint32_t displacement;
+    uint32_t source;
+
+    // mode
+    switch (current_operation & 0x38) {
+        case 0x10: // address
+            source = A(reg); 
+            displacement = 2;
+            break;
+        case 0x38: // absolute long
+            source = read_32bit_memory(PC + 2);  
+            displacement = 6;
+            break;
+        default:
+            warnx("undefined behavior.");
+            return -1;
+    }
+
+    A((current_operation & 0xe00) >> 9) = source;
+
+    PC += displacement;
+
     return 0;
 }
 
