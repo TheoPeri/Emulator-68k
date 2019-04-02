@@ -440,7 +440,7 @@ int next_instruction() {
 
     if (mask_0xff00 == 0x4a00) {
         // is_tst
-        goto warning;
+        tst(current_operation);
     }
 
     if (mask_0xfff0 == 0x4e40) {
@@ -480,7 +480,7 @@ int next_instruction() {
 
     if (mask_0xf1c0 == 0x41c0) {
         // is_lea
-        goto warning;
+        lea(current_operation);
     }
 
     if (mask_0xf1c0 == 0x4180) {
@@ -1418,6 +1418,33 @@ inline int movem(uint16_t current_operation) {
     }
 
     PC += displacement;
+    return 0;
+}
+
+int lea(uint16_t current_operation) {
+    uint8_t reg = current_operation & 0x7;
+    uint32_t displacement;
+    uint32_t source;
+
+    // mode
+    switch (current_operation & 0x38) {
+        case 0x10: // address
+            source = A(reg); 
+            displacement = 2;
+            break;
+        case 0x38: // absolute long
+            source = read_32bit_memory(PC + 2);  
+            displacement = 6;
+            break;
+        default:
+            warnx("undefined behavior.");
+            return -1;
+    }
+
+    A((current_operation & 0xe00) >> 9) = source;
+
+    PC += displacement;
+
     return 0;
 }
 

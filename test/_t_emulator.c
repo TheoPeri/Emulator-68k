@@ -1956,7 +1956,6 @@ Test(emulator, test_movea, .init=setup_emulator) {
 }
 
 Test(emulator, test_movem, .init=setup_emulator) {
-
     uint16_t instruction;
 
     PC = 0x500;
@@ -2042,7 +2041,25 @@ Test(emulator, test_movem, .init=setup_emulator) {
         "(data register .l) => D7 = 0x%x", D(7));
 }
 
+Test(emulator, test_lea, .init=setup_emulator) {
+    uint16_t instruction;
 
+    PC = 0x500;
+    instruction = 0x43f9; // lea $ffff,a1
+    write_32bit_memory(PC + 2, 0xffff);
+
+    lea(instruction);
+    cr_assert(PC == 0x506, "Error on the PC => %x", PC);
+    cr_assert(A(1) == 0xffff, "Expect A1(%x) == 0xffff", A(1));
+
+    PC = 0x506;
+    instruction = 0x41d1; // lea $ffff,a1
+
+    lea(instruction);
+    cr_assert(PC == 0x508, "Error on the PC => %x", PC);
+    cr_assert(A(0) == 0xffff, "Expect A1(%x) == 0xffff", A(1));
+
+}
 
 Test(emulator, test_sub, .init=setup_emulator) {
     uint32_t instruction;

@@ -34,6 +34,7 @@ int rts();
 int bra(uint16_t current_operation);
 int bsr(uint16_t current_operation);
 int bcc(uint16_t current_operation);
+
 // test
 int tst(uint16_t current_operation);
 
@@ -48,11 +49,16 @@ int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
 int addq(uint16_t current_operation);
 int addi(uint16_t current_operation);
+
 // move
 int move(uint16_t current_operation);
 int moveq(uint16_t current_operation);
 int movea(uint16_t current_operation);
 int movem(uint16_t current_operation);
+
+// lea
+int lea(uint16_t current_operation);
+
 // sub
 int sub(uint16_t current_operation);
 int suba(uint16_t current_operation);
