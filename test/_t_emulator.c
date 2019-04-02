@@ -2340,4 +2340,143 @@ Test(emulator, test_subq, .init=setup_emulator) {
         "(data register .l) => D0 = 0x%x", D(0));
 }
 
+Test(emulator, test_jsr, .init=setup_emulator) {
+    uint16_t instruction;
+
+    // test long
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_32bit(memory + PC + 2, 0x1234);
+    instruction = 0x4eb9;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack.");
+    cr_assert(PC == 0x1234, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x506, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test long neg
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_32bit(memory + PC + 2, 0xffff1234);
+    instruction = 0x4eb9;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack.");
+    cr_assert(PC == 0xffff1234, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x506, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test word
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_16bit(memory + PC + 2, 0x6969);
+    instruction = 0x4eb8;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack. SP => %x", A(7));
+    cr_assert(PC == 0x6969, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x504, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+
+    // test word neg
+    A(7) = 0x10000;
+    PC = 0x500;
+    write_16bit(memory + PC + 2, 0xf969);
+    instruction = 0x4eb8;
+
+    jsr(instruction);
+
+    cr_assert(A(7) == 0xfffc, "Expect a push on the stack. SP => %x", A(7));
+    cr_assert(PC == 0xf969, "Expect the valid new address => %x", PC);
+    cr_assert(read_32bit(memory + A(7)) == 0x504, "Expect the valid return address => %x",
+        read_32bit(memory + A(7)));
+}
+
+Test(emulator, test_clr, .init=setup_emulator) {
+    uint16_t instruction;
+
+
+    //clr.b   D0
+    instruction = 0x4200;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x12345600, "Error on the destination address for clr: "
+        "(data register .b) => D0 = 0x%x", D(0));
+
+
+    //clr.w   D0
+    instruction = 0x4240;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x12340000, "Error on the destination address for clr: "
+        "(data register .w) => D0 = 0x%x", D(0));
+
+    //clr.l   D0
+    instruction = 0x4280;
+
+    PC = 0x500;
+    D(0) = 0x12345678;
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x00000000, "Error on the destination address for clr: "
+        "(data register .l) => D0 = 0x%x", D(0));
+
+    //clr.w   (A0)
+    instruction = 0x4250;
+
+    PC = 0x500;
+    A(0) = 0x666;
+    write_16bit(memory + A(0), 0xf969);
+    clr(instruction);
+    cr_assert(PC == 0x502, "Error on the PC => %x", PC);
+    cr_assert(read_16bit(memory + A(0)) == 0x0, "Error on the destination address for clr: "
+        "(data register .w) => (A0) = 0x%x", read_16bit(memory + A(0)));
+
+/*
+    //clr.w		$666
+    instruction = 0x4279;
+    PC = 0x508;
+    write_32bit(memory + PC + 2, 0x666);
+    write_16bit(memory + 0x666, 0xf969);
+    clr(instruction);
+    cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_assert(read_16bit(memory + 0x666) == 0x0, "Error on the destination address for clr: "
+        "(data register .w) => (0x666) = 0x%x // 0x666 = 0x%x", read_16bit(memory + 0x666), (int32_t)read_32bit(memory + 0x508 + 2));
+*/
+}
+
+
+Test(emulator, test_lsd, .init=setup_emulator) {
+    uint32_t instruction;
+
+    // test data register .w
+    instruction = 0x9240;
+
+    PC = 0x50c;
+    D(0) = 0x1;
+    D(1) = 0x2;
+    lsd(instruction);
+    cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x1, "Expect D1(%x) == 0x1", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+}
+
+
 

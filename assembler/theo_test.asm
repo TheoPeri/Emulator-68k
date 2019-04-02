@@ -3,9 +3,11 @@ Vector_000	dc.l	$10000
 Vector_001	dc.l	Main
 
 			org		$500
-Main		move.l	#$10040,d0
-
-\loop		addq.l	#1,d1
-			dbra	d0,\loop
-
+Main		
+			lea			$666,a0
+			move.l		#$12345678,(a0)
+			lsl.l		#3,d0
+			lsl.l		d1,d0
+\loop
+			dbra		d0,\loop
 			illegal
