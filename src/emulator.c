@@ -1941,7 +1941,7 @@ inline int ori_to_ccr() {
 }
 
 /**
-* @brief Execute the command and_to_ccr
+* @brief Execute the command andi_to_ccr
 *
 * @param current_operation the current operation
 *
@@ -1957,6 +1957,75 @@ inline int andi_to_ccr() {
     EXTEND      = EXTEND & ((data & 0b10000) >> 4);
 
     PC += 4;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command or
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int OR(uint16_t current_operation) {
+    uint8_t reg = (current_operation & 0xe00) >> 9;
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t displacement = 2;
+    uint32_t source;
+    uint32_t tmp;
+    uint8_t shift;
+
+    if (current_operation & 0x100) { // DN or <ea> -> ea
+        source = addressing_mode_source_ro(size, current_operation & 0xff);
+
+        switch (size) {
+            case 0:
+                shift = 7;
+                break;
+            case 1:
+                shift = 15;
+                break;
+            default:
+                shift = 31;
+        }
+
+        tmp = D(reg) | source;
+
+        addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, tmp);
+
+        ZERO = tmp == 0;
+        NEGATIVE = (tmp >> shift) & 0x1;
+        OVERFLOW = 0;
+        CARRY = 0;
+        EXTEND = 0;
+
+    } else { // <ea> or DN -> DN
+        source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+
+        switch (size) {
+            case 0:
+                shift = 7;
+                break;
+            case 1:
+                shift = 15;
+                break;
+            default:
+                shift = 31;
+        }
+
+        D(reg) = D(reg) | source;
+
+        ZERO = D(reg) == 0;
+        NEGATIVE = (D(reg) >> shift) & 0x1;
+        OVERFLOW = 0;
+        CARRY = 0;
+        EXTEND = 0;
+    }
+
+    PC += displacement;
 
     return 0;
 }
