@@ -2754,9 +2754,31 @@ Test(emulator, test_lsd, .init=setup_emulator) {
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
+}
+
+
+Test(emulator, test_muls, .init=setup_emulator) {
+    uint32_t instruction;
+
+    // test data register .w
+    instruction = 0xc3c2; // muls.w   D2,D1
+
+    PC = 0x50c;
+    D(1) = 0x2;
+    D(2) = 0x8;
+    muls(instruction);
+    cr_assert(PC == 0x50e, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x10, "Expect D(1) == 0x%x", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+        "OVERFLOW = 0x%x", OVERFLOW);
 
 
 }
-
 
 

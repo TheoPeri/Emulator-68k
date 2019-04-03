@@ -1859,4 +1859,39 @@ inline int lsd(uint16_t current_operation) {
 
     return 0;
 }
+/*
+inline uint32_t compa1(uint32_t value)
+{
+    for(uint8_t i =)
+
+}*/
+inline int muls(uint16_t current_operation) {
+    // only word (.w) : see manual of the teacher
+
+    // info
+    uint8_t size = 2;
+
+    uint32_t displacement = 2;
+    uint32_t source = addressing_mode_source(size,
+            current_operation & 0xff, &displacement);
+
+    // add
+
+    source = D((current_operation>>9)&0x7) * source;
+
+
+    NEGATIVE = (source >> 31) == 1;
+    ZERO = (source==0);
+    CARRY = 0;
+    OVERFLOW = 0;
+
+    addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+
+
+    PC += displacement;
+    return 0;
+
+
+}
+
 
