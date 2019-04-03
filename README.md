@@ -5,7 +5,10 @@ implemented instruction:
     bsr
     bcc
 
+    jsr
+
     tst
+    clr
     dbra
 
     cmp
@@ -30,9 +33,15 @@ implemented instruction:
     subq
     subi
 
+    lsd
+    muls
+
+    ori_to_ccr
+    andi_to_ccr
+
 addressing mode:
     data register
-    address register 
+    address register
     address
     address with postincrement
     address with predecrement

@@ -35,8 +35,12 @@ int bra(uint16_t current_operation);
 int bsr(uint16_t current_operation);
 int bcc(uint16_t current_operation);
 
+int jsr(uint16_t current_operation);
+
 // test
 int tst(uint16_t current_operation);
+
+int clr(uint16_t current_operation);
 
 int dbcc(uint16_t current_operation);
 
@@ -68,8 +72,9 @@ int subq(uint16_t current_operation);
 int subi(uint16_t current_operation);
 
 
-int jsr(uint16_t current_operation);
-int clr(uint16_t current_operation);
 int lsd(uint16_t current_operation);
 int muls(uint16_t current_operation);
+
+int ori_to_ccr();
+int andi_to_ccr();
 #endif

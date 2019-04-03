@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <criterion/criterion.h>
 
-#include "../src/memory.h"
 #include "../src/emulator.h"
+#include "../src/memory.h"
 
 void setup_emulator(void) {
     memory = calloc(16777220, 1);
@@ -2823,7 +2823,6 @@ Test(emulator, test_muls, .init=setup_emulator) {
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
-
     //corner case
     PC = 0x50c;
     D(1) = 0xffff;
@@ -2907,10 +2906,39 @@ Test(emulator, test_muls, .init=setup_emulator) {
         "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
         "OVERFLOW = 0x%x", OVERFLOW);
-
-
-
-
 }
 
+Test(emulator, test_to_ccr, .init=setup_emulator) {
+    PC = 0x500;
+    write_16bit(memory + PC + 2, 0xa);
 
+    ZERO = 0;
+    CARRY = 0;
+    OVERFLOW = 0;
+    NEGATIVE = 0;
+    ori_to_ccr();
+
+    cr_assert(PC == 0x504, "Error on the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(OVERFLOW, "Error on the status register => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+
+    PC = 0x504;
+    write_16bit(memory + PC + 2, 0x15);
+    andi_to_ccr();
+
+    cr_assert(PC == 0x508, "Error on the PC => %x", PC);
+    cr_assert(!ZERO, "Error on the status register => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+}
