@@ -1691,14 +1691,37 @@ inline int jsr(uint16_t current_operation) {
 
     // push address
     A(7) -= 4;
-    // return address
-    uint8_t size = (current_operation & 0x1) + 1;
 
-    uint32_t displacement = 2;
+    uint32_t displacement;
+    uint8_t reg = current_operation & 0x7;
 
-    uint32_t source = addressing_mode_source(size,
-        current_operation & 0xff, &displacement);
+    uint32_t source;
+    switch (current_operation & 0x38) {
+        case 0x10: // address
+            source = A(reg);
+            displacement = 2;
+            break;
+        case 0x38: // absolute long
+            if(reg == 0x1)
+            {
+                source = read_32bit_memory(PC + 2);
+                displacement = 6;
+            }
+            else // absolute word
+            {
+                source = read_16bit_memory(PC + 2);
+                displacement = 4;
+            }
+
+            break;
+        default:
+            warnx("undefined behavior.");
+            return -1;
+    }
+
+
     PC += displacement;
+
 
     write_32bit_memory(A(7), PC);
 
@@ -1836,4 +1859,64 @@ inline int lsd(uint16_t current_operation) {
 
     return 0;
 }
+
+inline uint32_t compa1(uint32_t value)
+{
+    uint8_t i =0;
+    while(!((value>>i)&0x1) && i<31)
+    {
+        i++;
+    }
+    i++;
+    return value ^ ((0xffffffff >> i) << i);
+
+
+
+}
+
+inline int muls(uint16_t current_operation) {
+    // only word (.w) : see manual of the teacher
+
+    // info
+    uint8_t size = 1;
+
+    uint32_t displacement = 2;
+    uint32_t src2 = addressing_mode_source(size,
+            current_operation & 0xff, &displacement);
+
+    uint32_t source = D((current_operation>>9)&0x7) & 0xffff;
+
+    uint8_t neg =0;
+    if(source>>15 & 0x1)
+    {
+        source = compa1(source);
+        neg++;
+    }
+    if(src2>>15 & 0x1)
+    {
+        src2 = compa1(src2);
+        neg++;
+    }
+
+    source = (src2 & 0xffff) * (source & 0xffff);
+
+    if(neg%2)
+    {
+        source = compa1(source);
+    }
+
+    NEGATIVE = (source >> 31) == 1;
+    ZERO = (source==0);
+    CARRY = 0;
+    OVERFLOW = 0;
+
+    D((current_operation>>9)&0x7) = source;
+
+
+    PC += displacement;
+    return 0;
+
+
+}
+
 
