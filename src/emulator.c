@@ -1691,14 +1691,37 @@ inline int jsr(uint16_t current_operation) {
 
     // push address
     A(7) -= 4;
-    // return address
-    uint8_t size = (current_operation & 0x1) + 1;
 
-    uint32_t displacement = 2;
+    uint32_t displacement;
+    uint8_t reg = current_operation & 0x7;
 
-    uint32_t source = addressing_mode_source(size,
-        current_operation & 0xff, &displacement);
+    uint32_t source;
+    switch (current_operation & 0x38) {
+        case 0x10: // address
+            source = A(reg);
+            displacement = 2;
+            break;
+        case 0x38: // absolute long
+            if(reg == 0x1)
+            {
+                source = read_32bit_memory(PC + 2);
+                displacement = 6;
+            }
+            else // absolute word
+            {
+                source = read_16bit_memory(PC + 2);
+                displacement = 4;
+            }
+
+            break;
+        default:
+            warnx("undefined behavior.");
+            return -1;
+    }
+
+
     PC += displacement;
+
 
     write_32bit_memory(A(7), PC);
 
