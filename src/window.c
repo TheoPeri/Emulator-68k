@@ -11,13 +11,14 @@
 #include "emulator.h"
 #include "debug.h"
 
-const size_t MEM_SIZE = 16777216 * sizeof(uint8_t);
-const size_t LINE_SIZE = 16;
-const size_t LINE_COUNT = 38;
+#define MEM_SIZE 16777216 * sizeof(uint8_t)
+#define MAX_VALUE 16777216/16 -1
+#define LINE_SIZE 16
+#define LINE_COUNT 32
 
 #define BYTES_PER_PIXEL 3
 
-/** 
+/**
  * @brief Init the graphic interface
  *
  * @param file_name Need the file path for load the interface.
@@ -109,13 +110,13 @@ void init_window(char *file_name) {
 	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
 
 	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
-	
+
 	consoleimg = GTK_WIDGET(gtk_builder_get_object(builder, "consoleimg"));
 
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
 	console = GTK_WIDGET(gtk_builder_get_object(builder, "ConsoleWindow"));
-	
+
 	update_mem_view();
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
@@ -140,7 +141,7 @@ void update_console_display()
 	int cols = w;
 	int rows = h;
 	int r, c, i, stride_adjust;
-	
+
 	int stride = cols * BYTES_PER_PIXEL;
 	stride_adjust = (4 - stride % 4) % 4;
 	stride += stride_adjust;
@@ -160,7 +161,7 @@ void update_console_display()
 				size_t address = r * line_size + (c / 8);
 				size_t shift = 7 - c % 8;
 
-				rgb[r * stride + c * BYTES_PER_PIXEL + i] = 
+				rgb[r * stride + c * BYTES_PER_PIXEL + i] =
 						VIDEO_BUFFER[address] & 1 << shift ? 255 : 0;
 			}
 		//Adjust the stride otherwise it fucks up
@@ -179,7 +180,7 @@ void update_console_display()
         NULL
     );
 	gtk_image_set_from_pixbuf(GTK_IMAGE(consoleimg), pb);
-	
+
 	//free(rgb);
 }
 
@@ -197,7 +198,7 @@ void toggle_console()
 /**
  * @brief Update the data window
  */
-void update_window() {	
+void update_window() {
     unsigned i;
     char buffer[47]; //buffer à verifier
 
@@ -223,14 +224,14 @@ void update_window() {
 
     // data string register
     for (i = 0; i < 8; ++i) {
-        uint32_tostring(buffer, registers[i]); 
+        uint32_tostring(buffer, registers[i]);
         gtk_label_set_text(window_str_registers[i], buffer);
     }
 
     //address memory register //buffer à verifier
     for (i = 0; i < 8; ++i) {
-        snprintf(buffer, 47, " %04X %04X %04X %04X %04X %04X %04X %04X %04X ", read_16bit_memory(A(i)), read_16bit_memory(A(i)+2), 
-        read_16bit_memory(A(i)+4), read_16bit_memory(A(i)+6), read_16bit_memory(A(i)+8), read_16bit_memory(A(i)+10), 
+        snprintf(buffer, 47, " %04X %04X %04X %04X %04X %04X %04X %04X %04X ", read_16bit_memory(A(i)), read_16bit_memory(A(i)+2),
+        read_16bit_memory(A(i)+4), read_16bit_memory(A(i)+6), read_16bit_memory(A(i)+8), read_16bit_memory(A(i)+10),
         read_16bit_memory(A(i)+12), read_16bit_memory(A(i)+14), read_16bit_memory(A(i)+16));
         gtk_label_set_text(window_memory_registers[i], buffer);
     }
@@ -253,7 +254,11 @@ void scrolled_view()
 void update_mem_view()
 {
 	update_console_display();
-	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / LINE_SIZE);
+	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / 16);
+
+    if (first_line + 0x19 >= MAX_VALUE) {
+        first_line = MAX_VALUE - 31;
+    }
 
 	char* tmp = NULL;
 	char* result = calloc(1, sizeof(char));

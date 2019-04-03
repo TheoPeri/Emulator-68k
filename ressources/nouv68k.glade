@@ -3,9 +3,8 @@
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkAdjustment" id="Adjustement">
-    <property name="upper">16777216</property>
+    <property name="upper">16777215</property>
     <property name="step_increment">16</property>
-    <property name="page_increment">608</property>
   </object>
   <object class="GtkWindow" id="MainWindow">
     <property name="name">MainWindow</property>
@@ -242,10 +241,10 @@
                     <property name="layout_style">center</property>
                     <child>
                       <object class="GtkSpinButton">
+                        <property name="width_request">230</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="primary_icon_stock">gtk-find-and-replace</property>
-                        <property name="input_purpose">number</property>
+                        <property name="primary_icon_stock">gtk-find</property>
                         <property name="adjustment">Adjustement</property>
                         <property name="numeric">True</property>
                       </object>
