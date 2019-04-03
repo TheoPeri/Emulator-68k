@@ -15,7 +15,7 @@ const size_t MEM_SIZE = 16777216 * sizeof(uint8_t);
 const size_t LINE_SIZE = 16;
 const size_t LINE_COUNT = 38;
 
-/**
+/** 
  * @brief Init the graphic interface
  *
  * @param file_name Need the file path for load the interface.
@@ -59,7 +59,7 @@ void init_window(char *file_name) {
     // window_str_registers[12] = GTK_LABEL (gtk_builder_get_object (builder, "a4_str"));
     // window_str_registers[13] = GTK_LABEL (gtk_builder_get_object (builder, "a5_str"));
     // window_str_registers[14] = GTK_LABEL (gtk_builder_get_object (builder, "a6_str"));
-    // window_str_registers[15] = GTK_LABEL (gtk_builder_get_object (builder, "a7_str"));
+	// window_str_registers[15] = GTK_LABEL (gtk_builder_get_object (builder, "a7_str"));
 
 
     // flag
@@ -158,7 +158,7 @@ void scrolled_view()
  */
 void update_mem_view()
 {
-	size_t first_line = (size_t)gtk_adjustment_get_value(scrollbar);
+	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / LINE_SIZE);
 
 	char* tmp = NULL;
 	char* result = calloc(1, sizeof(char));
