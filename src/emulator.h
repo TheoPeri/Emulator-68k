@@ -50,6 +50,9 @@ int cmpa(uint16_t current_operation);
 int cmpi(uint16_t current_operation);
 int cmpm(uint16_t current_operation);
 
+void add_flag(uint32_t source, uint32_t destination,
+    uint32_t result, uint8_t shift);
+
 // add
 int add(uint16_t current_operation);
 int adda(uint16_t current_operation);
@@ -65,12 +68,16 @@ int movem(uint16_t current_operation);
 // lea
 int lea(uint16_t current_operation);
 
+void sub_flag(uint32_t source, uint32_t destination,
+    uint32_t result, uint8_t shift);
+
 // sub
 int sub(uint16_t current_operation);
 int suba(uint16_t current_operation);
 int subq(uint16_t current_operation);
 int subi(uint16_t current_operation);
 
+uint32_t compa1(uint32_t value);
 
 int lsd(uint16_t current_operation);
 int muls(uint16_t current_operation);

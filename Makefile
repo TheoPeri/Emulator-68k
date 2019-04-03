@@ -17,11 +17,11 @@ TOBJECTS=$(patsubst $(TEST_DIR)%.c, $(TMP_DIR)%.o, $(TSOURCES)) # all .o for tes
 
 LOBJECTS=$(filter-out $(TMP_DIR)main.o $(TMP_DIR)window.o, $(OBJECTS)) # all .o for the lib
 
-exec: $(OBJECTS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -Ofast $(OBJECTS) -o $(BUILD_DIR)$@
-
 debug: $(DOBJECTS)
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -g $(DOBJECTS) -o $(BUILD_DIR)$@
+
+exec: $(OBJECTS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -Ofast $(OBJECTS) -o $(BUILD_DIR)$@
 
 unit_test: $(TOBJECTS) $(LOBJECTS)
 	$(CC) $(CFLAGS) -Ofast -lcriterion $(TOBJECTS) $(LOBJECTS) -o $(BUILD_DIR)$@
@@ -30,7 +30,7 @@ $(OBJECTS): $(TMP_DIR)%.o : $(SRC_DIR)%.c
 	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -Ofast -c $< -o $@
 
 $(DOBJECTS): $(TMP_DIR)_d_%.o : $(SRC_DIR)%.c
-	$(CC) $(CFLAGS) $(LDFLAGS)  $(LDLIBS) -g -c $< -o $@
+	$(CC) $(CFLAGS) $(LDFLAGS) $(LDLIBS) -g -c $< -o $@
 
 $(TOBJECTS): $(TMP_DIR)%.o : $(TEST_DIR)%.c
 	$(CC) $(CFLAGS) -Ofast -lcriterion -c $< -o $@

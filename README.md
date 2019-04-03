@@ -39,6 +39,8 @@ implemented instruction:
     ori_to_ccr
     andi_to_ccr
 
+    or
+
 addressing mode:
     data register
     address register
