@@ -6,6 +6,7 @@
 // global parameter and tool
 GtkBuilder *builder;
 GtkWidget *window;
+GtkWidget *console;
 
 GtkLabel *window_pc;
 GtkLabel *window_memory;
@@ -22,6 +23,7 @@ GtkLabel *disassembled_memory_a;
 GtkLabel *disassembled_memory_op;
 GtkLabel *disassembled_memory_o;
 GtkLabel *hex_view;
+GtkWidget *consoleimg;
 
 GtkAdjustment *scrollbar;
 
@@ -36,6 +38,7 @@ void closefile_button();
 
 void change_mem_view();
 void scrolled_view();
+void toggle_console();
 
 void on_window_main_destroy();
 

@@ -15,6 +15,8 @@ const size_t MEM_SIZE = 16777216 * sizeof(uint8_t);
 const size_t LINE_SIZE = 16;
 const size_t LINE_COUNT = 38;
 
+#define BYTES_PER_PIXEL 3
+
 /** 
  * @brief Init the graphic interface
  *
@@ -97,10 +99,15 @@ void init_window(char *file_name) {
 	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
 
 	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
-	update_mem_view();
+	
+	consoleimg = GTK_WIDGET(gtk_builder_get_object(builder, "consoleimg"));
 
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
+
+	console = GTK_WIDGET(gtk_builder_get_object(builder, "ConsoleWindow"));
+	
+	update_mem_view();
 
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
@@ -114,10 +121,71 @@ void init_window(char *file_name) {
     gtk_main();
 }
 
+guchar *rgb;
+void update_console_display(size_t w, size_t h)
+{
+	gboolean v = gtk_widget_is_visible(console);
+	if(!v) return;
+
+	char* VIDEO_BUFFER = (char*)(memory + 0xFFB500);
+
+	int cols = w;
+	int rows = h;
+	int r, c, i, stride_adjust;
+	
+	int stride = cols * BYTES_PER_PIXEL;
+	stride_adjust = (4 - stride % 4) % 4;
+	stride += stride_adjust;
+
+	int line_size = w / 8;
+
+	/*VIDEO_BUFFER[0] = 0xFF;
+	VIDEO_BUFFER[1] = 0x0F;
+	VIDEO_BUFFER[2] = 0x0F;*/
+
+	if(!rgb) rgb = malloc(stride * rows * BYTES_PER_PIXEL);
+	for (r = 0; r < rows; r++) {
+		//Fill the pixels
+    	for (c = 0; c < cols; c++)
+			for (i = 0; i < BYTES_PER_PIXEL; i++)
+			{
+				size_t address = r * line_size + (c / 8);
+				size_t shift = 7 - c % 8;
+
+				rgb[r * stride + c * BYTES_PER_PIXEL + i] = 
+						VIDEO_BUFFER[address] & 1 << shift ? 255 : 0;
+			}
+		//Adjust the stride otherwise it fucks up
+		for (i = 0; i < stride_adjust; i++)
+			rgb[r * stride + cols * BYTES_PER_PIXEL + i] = 0;
+	}
+
+	GdkPixbuf* pb = gdk_pixbuf_new_from_data(
+        rgb,
+        GDK_COLORSPACE_RGB,
+        0,
+        8,
+        w, h,
+        stride,
+        NULL,
+        NULL
+    );
+	gtk_image_set_from_pixbuf(GTK_IMAGE(consoleimg), pb);
+	
+	//free(rgb);
+}
+
+void toggle_console()
+{
+	gboolean v = gtk_widget_is_visible(console);
+	if(v)	gtk_widget_hide(console);
+	else	gtk_widget_show(console);
+}
+
 /**
  * @brief Update the data window
  */
-void update_window() {
+void update_window() {	
     unsigned i;
     char buffer[10];
 
@@ -158,6 +226,7 @@ void scrolled_view()
  */
 void update_mem_view()
 {
+	update_console_display(480, 320);
 	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / LINE_SIZE);
 
 	char* tmp = NULL;

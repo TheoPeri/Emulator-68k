@@ -5,8 +5,7 @@
   <object class="GtkAdjustment" id="Adjustement">
     <property name="upper">16777216</property>
     <property name="step_increment">16</property>
-    <property name="page_increment">1000</property>
-    <property name="page_size">16777.209999999999</property>
+    <property name="page_increment">608</property>
   </object>
   <object class="GtkWindow" id="MainWindow">
     <property name="name">MainWindow</property>
@@ -43,6 +42,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="always_show_image">True</property>
                         <signal name="activate" handler="openfile_button" swapped="no"/>
                       </object>
                     </child>
@@ -59,6 +59,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="always_show_image">True</property>
                         <signal name="activate" handler="on_window_main_destroy" swapped="no"/>
                       </object>
                     </child>
@@ -72,6 +73,20 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Affichage</property>
                 <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="toggleconsole">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Toggle Console</property>
+                        <signal name="activate" handler="toggle_console" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -91,6 +106,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="always_show_image">True</property>
                       </object>
                     </child>
                   </object>
@@ -232,7 +248,6 @@
                         <property name="input_purpose">number</property>
                         <property name="adjustment">Adjustement</property>
                         <property name="numeric">True</property>
-                        <property name="wrap">True</property>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -2223,6 +2238,25 @@
             <property name="position">8</property>
           </packing>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="ConsoleWindow">
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">Console View</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="type_hint">dialog</property>
+    <property name="deletable">False</property>
+    <property name="attached_to">MainWindow</property>
+    <property name="has_resize_grip">True</property>
+    <child>
+      <placeholder/>
+    </child>
+    <child>
+      <object class="GtkImage" id="consoleimg">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="stock">gtk-missing-image</property>
       </object>
     </child>
   </object>
