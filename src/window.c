@@ -122,13 +122,13 @@ void init_window(char *file_name) {
 }
 
 guchar *rgb;
-void update_console_display(size_t w, size_t h)
+void update_console_display()
 {
 	gboolean v = gtk_widget_is_visible(console);
 	if(!v) return;
 
 	char* VIDEO_BUFFER = (char*)(memory + 0xFFB500);
-
+	int w = 480, h = 320;
 	int cols = w;
 	int rows = h;
 	int r, c, i, stride_adjust;
@@ -179,7 +179,11 @@ void toggle_console()
 {
 	gboolean v = gtk_widget_is_visible(console);
 	if(v)	gtk_widget_hide(console);
-	else	gtk_widget_show(console);
+	else
+	{
+		gtk_widget_show(console);
+		update_console_display();
+	}
 }
 
 /**
@@ -226,7 +230,7 @@ void scrolled_view()
  */
 void update_mem_view()
 {
-	update_console_display(480, 320);
+	update_console_display();
 	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / LINE_SIZE);
 
 	char* tmp = NULL;
