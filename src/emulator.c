@@ -289,13 +289,13 @@ int next_instruction() {
     switch (current_operation) {
         case 0x003c:
             // is_ori_to_ccr
-            goto warning;
+            return ori_to_ccr(current_operation);
         case 0x007c:
             // is_ori_to_sr
             goto warning;
         case 0x023c:
             // is_andi_to_ccr
-            goto warning;
+            return andi_to_ccr(current_operation);
         case 0x27c:
             // is_andi_to_sr
             goto warning;
@@ -405,7 +405,7 @@ int next_instruction() {
             goto warning;
         case 0x4200:
             // is_clr
-            goto warning;
+            return clr(current_operation);
         case 0x4400:
             // is_neg
             goto warning;
@@ -440,7 +440,7 @@ int next_instruction() {
 
     if (mask_0xff00 == 0x4a00) {
         // is_tst
-        tst(current_operation);
+        return tst(current_operation);
     }
 
     if (mask_0xfff0 == 0x4e40) {
@@ -466,7 +466,7 @@ int next_instruction() {
 
     if (mask_0xffc0 == 0x4e80) {
         // is_jsr
-        goto warning;
+        return jsr(current_operation);
     }
 
     if (mask_0xffc0 == 0x4ec0) {
@@ -481,7 +481,7 @@ int next_instruction() {
 
     if (mask_0xf1c0 == 0x41c0) {
         // is_lea
-        lea(current_operation);
+        return lea(current_operation);
     }
 
 
@@ -593,7 +593,7 @@ int next_instruction() {
 
     if (mask_0xf1c0 == 0xc1c0) {
         // is_muls
-        goto warning;
+        return muls(current_operation);
     }
 
     if (mask_0xf1f0 == 0xc100) {
@@ -633,7 +633,7 @@ int next_instruction() {
 
     if (mask_0xfec0 == 0xe2c0 || mask_0xf018== 0xe008) {
         // is_lsd
-        goto warning;
+        return lsd(current_operation);
     }
 
     if (mask_0xfec0 == 0xe4c0 || mask_0xf018== 0xe010) {
@@ -1738,7 +1738,6 @@ inline int jsr(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-
 inline int clr(uint16_t current_operation) {
     // info
     uint8_t size;
@@ -1772,6 +1771,13 @@ inline int clr(uint16_t current_operation) {
     return 0;
 }
 
+/**
+* @brief Execute the command lsd
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
 inline int lsd(uint16_t current_operation) {
     // info
     uint8_t size;
@@ -1795,18 +1801,15 @@ inline int lsd(uint16_t current_operation) {
     uint8_t dr = (current_operation >> 8) & 1;
     uint32_t displacement = 2;
 
-    if(size == 3) // MEMORY SHIFTS
-    {
+    if(size == 3) {// MEMORY SHIFTS
         uint8_t reg = current_operation & 0x3f;
         uint32_t source = addressing_mode_source(2,
                 reg, &displacement);
-        if(dr == 0)
-        {
+        if(dr == 0) {
             CARRY = source & 1;
             source = source >> 1;
         }
-        else
-        {
+        else {
             CARRY = source >> 31;
             source = source << 1;
         }
@@ -1816,24 +1819,22 @@ inline int lsd(uint16_t current_operation) {
         NEGATIVE = (source >> 31) == 1;
 
     }
-    else // REGISTER SHIFTS
-    {
+    else { // REGISTER SHIFTS
         uint8_t reg = current_operation & 7;
         uint8_t count = (current_operation >> 9) & 7;
         uint8_t ir = (current_operation >> 5) & 1;
 
-        if(ir == 1)
-        {
+        if(ir == 1) {
             count = D(count) %64;
         }
         uint32_t source = addressing_mode_source(2,
                 reg, &displacement);
-        if(count == 0)
+        if(count == 0) {
             count = 8;
-        while (count != 0)
-        {
-            if(dr == 0)
-            {
+        }
+
+        while (count != 0) {
+            if(dr == 0) {
                 CARRY = source & 1;
                 source = source >> 1;
             }
@@ -1863,17 +1864,21 @@ inline int lsd(uint16_t current_operation) {
 inline uint32_t compa1(uint32_t value)
 {
     uint8_t i =0;
-    while(!((value>>i)&0x1) && i<31)
-    {
+    while(!((value>>i)&0x1) && i<31) {
         i++;
     }
     i++;
+
     return value ^ ((0xffffffff >> i) << i);
-
-
-
 }
 
+/**
+* @brief Execute the command muls
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
 inline int muls(uint16_t current_operation) {
     // only word (.w) : see manual of the teacher
 
@@ -1887,21 +1892,18 @@ inline int muls(uint16_t current_operation) {
     uint32_t source = D((current_operation>>9)&0x7) & 0xffff;
 
     uint8_t neg =0;
-    if(source>>15 & 0x1)
-    {
+    if(source>>15 & 0x1) {
         source = compa1(source);
         neg++;
     }
-    if(src2>>15 & 0x1)
-    {
+    if(src2>>15 & 0x1) {
         src2 = compa1(src2);
         neg++;
     }
 
     source = (src2 & 0xffff) * (source & 0xffff);
 
-    if(neg%2)
-    {
+    if(neg % 2) {
         source = compa1(source);
     }
 
@@ -1915,8 +1917,115 @@ inline int muls(uint16_t current_operation) {
 
     PC += displacement;
     return 0;
-
-
 }
 
+/**
+* @brief Execute the command ori_to_ccr
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int ori_to_ccr() {
+    uint8_t data = read_16bit_memory(PC + 2);
 
+    CARRY       = CARRY | (data & 0b00001);
+    OVERFLOW    = OVERFLOW | ((data & 0b00010) >> 1);
+    ZERO        = ZERO | ((data & 0b00100) >> 2);
+    NEGATIVE    = NEGATIVE | ((data & 0b01000) >> 3);
+    EXTEND      = EXTEND | ((data & 0b10000) >> 4);
+
+    PC += 4;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command andi_to_ccr
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int andi_to_ccr() {
+    uint8_t data = read_16bit_memory(PC + 2);
+
+    CARRY       = CARRY & (data & 0b00001);
+    OVERFLOW    = OVERFLOW & ((data & 0b00010) >> 1);
+    ZERO        = ZERO & ((data & 0b00100) >> 2);
+    NEGATIVE    = NEGATIVE & ((data & 0b01000) >> 3);
+    EXTEND      = EXTEND & ((data & 0b10000) >> 4);
+
+    PC += 4;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command or
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int OR(uint16_t current_operation) {
+    uint8_t reg = (current_operation & 0xe00) >> 9;
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t displacement = 2;
+    uint32_t source;
+    uint32_t tmp;
+    uint8_t shift;
+
+    if (current_operation & 0x100) { // DN or <ea> -> ea
+        source = addressing_mode_source_ro(size, current_operation & 0xff);
+
+        switch (size) {
+            case 0:
+                shift = 7;
+                break;
+            case 1:
+                shift = 15;
+                break;
+            default:
+                shift = 31;
+        }
+
+        tmp = D(reg) | source;
+
+        addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, tmp);
+
+        ZERO = tmp == 0;
+        NEGATIVE = (tmp >> shift) & 0x1;
+        OVERFLOW = 0;
+        CARRY = 0;
+        EXTEND = 0;
+
+    } else { // <ea> or DN -> DN
+        source = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
+
+        switch (size) {
+            case 0:
+                shift = 7;
+                break;
+            case 1:
+                shift = 15;
+                break;
+            default:
+                shift = 31;
+        }
+
+        D(reg) = D(reg) | source;
+
+        ZERO = D(reg) == 0;
+        NEGATIVE = (D(reg) >> shift) & 0x1;
+        OVERFLOW = 0;
+        CARRY = 0;
+        EXTEND = 0;
+    }
+
+    PC += displacement;
+
+    return 0;
+}
