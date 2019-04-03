@@ -1,5 +1,8 @@
+#define _GNU_SOURCE
+
 #include <string.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "window.h"
 #include "memory.h"
@@ -8,7 +11,13 @@
 #include "emulator.h"
 #include "debug.h"
 
-/**
+const size_t MEM_SIZE = 16777216 * sizeof(uint8_t);
+const size_t LINE_SIZE = 16;
+const size_t LINE_COUNT = 38;
+
+#define BYTES_PER_PIXEL 3
+
+/** 
  * @brief Init the graphic interface
  *
  * @param file_name Need the file path for load the interface.
@@ -45,7 +54,6 @@ void init_window(char *file_name) {
     window_str_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "d6_str"));
     window_str_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "d7_str"));
 
-    //nouv
     //memory register
     window_memory_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "a0_memory"));
     window_memory_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "a1_memory"));
@@ -65,7 +73,6 @@ void init_window(char *file_name) {
     window_memory_str_registers[5] = GTK_LABEL (gtk_builder_get_object (builder, "a5_memory_str"));
     window_memory_str_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "a6_memory_str"));
     window_memory_str_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "a7_memory_str"));
-    //fin nouv
 
     // flag
     window_status_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "C"));
@@ -96,14 +103,20 @@ void init_window(char *file_name) {
 	disassembled_memory_o = GTK_LABEL(gtk_builder_get_object(builder,
     "disassembled_memory_o"));
 
-	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
-
     toggle_disassembled_memory = GTK_CHECK_BUTTON(gtk_builder_get_object(builder,
     "Toggle Disassembled Memory"));
 
+	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
+
+	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
+	
+	consoleimg = GTK_WIDGET(gtk_builder_get_object(builder, "consoleimg"));
+
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
-    
+	console = GTK_WIDGET(gtk_builder_get_object(builder, "ConsoleWindow"));
+	
+	update_mem_view();
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
 
@@ -116,21 +129,86 @@ void init_window(char *file_name) {
     gtk_main();
 }
 
+guchar *rgb;
+void update_console_display()
+{
+	gboolean v = gtk_widget_is_visible(console);
+	if(!v) return;
+
+	char* VIDEO_BUFFER = (char*)(memory + 0xFFB500);
+	int w = 480, h = 320;
+	int cols = w;
+	int rows = h;
+	int r, c, i, stride_adjust;
+	
+	int stride = cols * BYTES_PER_PIXEL;
+	stride_adjust = (4 - stride % 4) % 4;
+	stride += stride_adjust;
+
+	int line_size = w / 8;
+
+	/*VIDEO_BUFFER[0] = 0xFF;
+	VIDEO_BUFFER[1] = 0x0F;
+	VIDEO_BUFFER[2] = 0x0F;*/
+
+	if(!rgb) rgb = malloc(stride * rows * BYTES_PER_PIXEL);
+	for (r = 0; r < rows; r++) {
+		//Fill the pixels
+    	for (c = 0; c < cols; c++)
+			for (i = 0; i < BYTES_PER_PIXEL; i++)
+			{
+				size_t address = r * line_size + (c / 8);
+				size_t shift = 7 - c % 8;
+
+				rgb[r * stride + c * BYTES_PER_PIXEL + i] = 
+						VIDEO_BUFFER[address] & 1 << shift ? 255 : 0;
+			}
+		//Adjust the stride otherwise it fucks up
+		for (i = 0; i < stride_adjust; i++)
+			rgb[r * stride + cols * BYTES_PER_PIXEL + i] = 0;
+	}
+
+	GdkPixbuf* pb = gdk_pixbuf_new_from_data(
+        rgb,
+        GDK_COLORSPACE_RGB,
+        0,
+        8,
+        w, h,
+        stride,
+        NULL,
+        NULL
+    );
+	gtk_image_set_from_pixbuf(GTK_IMAGE(consoleimg), pb);
+	
+	//free(rgb);
+}
+
+void toggle_console()
+{
+	gboolean v = gtk_widget_is_visible(console);
+	if(v)	gtk_widget_hide(console);
+	else
+	{
+		gtk_widget_show(console);
+		update_console_display();
+	}
+}
+
 /**
  * @brief Update the data window
  */
-void update_window() {
+void update_window() {	
     unsigned i;
     char buffer[47]; //buffer à verifier
 
     // window register
     for (i = 0; i < 17; ++i) {
-        snprintf(buffer, 10, "%08x", registers[i]);
+        snprintf(buffer, 10, "%08X", registers[i]);
         gtk_label_set_text(window_registers[i], buffer);
     }
 
     // a7
-    snprintf(buffer, 10, "%08x", A(7));
+    snprintf(buffer, 10, "%08X", A(7));
     gtk_label_set_text(window_registers[i], buffer);
 
     // status register
@@ -140,7 +218,7 @@ void update_window() {
     }
 
     // update pc
-    snprintf(buffer, 10, "%08x", PC);
+    snprintf(buffer, 10, "%08X", PC);
     gtk_label_set_text(window_pc, buffer);
 
     // data string register
@@ -164,6 +242,68 @@ void update_window() {
     }
 }
 
+void scrolled_view()
+{
+	update_mem_view();
+}
+
+/**
+ * @brief Updates the memory visualization buffer
+ */
+void update_mem_view()
+{
+	update_console_display();
+	size_t first_line = (size_t)(gtk_adjustment_get_value(scrollbar) / LINE_SIZE);
+
+	char* tmp = NULL;
+	char* result = calloc(1, sizeof(char));
+	result = mystrcat(result, "<span font_family='Monospace'>");
+
+	for(size_t i = 0; i < LINE_COUNT; i++)
+	{
+		unsigned long mem_pos = LINE_SIZE * (first_line + i);
+		//if(mem_pos > MEM_SIZE / 2) break;
+
+		//Make sure we don't read past the memory size
+		size_t bytes = MEM_SIZE - mem_pos;
+		if(bytes > LINE_SIZE) bytes = LINE_SIZE;
+
+		//Print the address of the current line
+		asprintf(&tmp, "<span color='gray'>0x%07lx</span>\t", mem_pos);
+		result = mystrcat(result, tmp); free(tmp);
+
+		//Print the hex interpretation
+		for(size_t j = 0; j < bytes; j++)
+		{
+			asprintf(&tmp, "%02x ", memory[mem_pos + j]);
+			result = mystrcat(result, tmp); free(tmp);
+		}
+
+		result = mystrcat(result, "\t<span color='green'>");
+
+		//Print the string interpretation
+		for(size_t j = 0; j < bytes; j++)
+		{
+			char c = memory[mem_pos + j];
+			int utf = c >= 32 && c <= 126 && c != '<' && c != '>';
+			if(!utf)
+				result = mystrcat(result, ".");
+			else
+			{
+				asprintf(&tmp, "%c", memory[mem_pos + j]);
+				result = mystrcat(result, tmp); free(tmp);
+			}
+		}
+
+		result = mystrcat(result, "</span>\n");
+	}
+	result = mystrcat(result, "</span>");
+
+	gtk_label_set_markup(hex_view, result);
+
+	free(result);
+}
+
 /**
  * @brief Update the disassemble buffer
  */
@@ -181,6 +321,8 @@ void update_buffer() {
     free(adrrs);
 	free(opcodes);
 	free(operandes);
+
+	update_mem_view();
 }
 
 /**
@@ -204,14 +346,13 @@ void loadfile_button() {
 
     // load the file
     // reset memory
-    memset(memory, 0, 16777220 * sizeof(uint8_t));
+    memset(memory, 0, 16777216 * sizeof(uint8_t));
     load_file(filename);
     free(filename);
 
     // reset registers and flags
     memset(registers, 0, 17 * sizeof(uint32_t));
     memset(status_registers, 0, 6 * sizeof(uint8_t));
-
 
     // init the emulator and update the interface
     init();

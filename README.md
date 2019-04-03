@@ -5,6 +5,9 @@ implemented instruction:
     bsr
     bcc
 
+    tst
+    dbra
+
     cmp
     cmpa
     cmpi
@@ -20,6 +23,13 @@ implemented instruction:
     movea
     movem
 
+    lea
+
+    sub
+    suba
+    subq
+    subi
+
 addressing mode:
     data register
     address register 
@@ -28,3 +38,4 @@ addressing mode:
     address with predecrement
     address with displacement
     immediate
+    absolute long
