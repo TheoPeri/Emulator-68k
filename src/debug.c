@@ -153,15 +153,35 @@ void pretty_print_instruction(char** addresses, char** opcode, char** operande) 
  *
  * @param buffer The output buffer
  * @param value The value to convert
+ * @param size The size of the value to convert
+ *
+ */
+void memory_tostring(char *buffer, char *value, unsigned size) {
+	unsigned i;
+
+	for (i = 0; i < size; ++i)
+	{
+		buffer[i] = value[i] < 20 ? '.' : value[i];
+	}
+
+	buffer[i] = '\0';
+}
+
+/**
+ * @brief Converts uint32 to str
+ *
+ * @param buffer The output buffer
+ * @param value The value to convert
+ * @param size The size of the value to convert
  *
  */
 void uint32_tostring(char *buffer, uint32_t value) {
-	char* c_value = (char*)&value;
 	unsigned i;
+	char *c_value = (char *)&value;
 
 	for (i = 0; i < 4; ++i)
 	{
-		buffer[3-i] = c_value[i] < 20 ? '.' : c_value[i];
+		buffer[3 - i] = c_value[i] < 20 ? '.' : c_value[i];
 	}
 
 	buffer[i] = '\0';

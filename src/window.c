@@ -45,15 +45,27 @@ void init_window(char *file_name) {
     window_str_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "d6_str"));
     window_str_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "d7_str"));
 
-    // window_str_registers[8] = GTK_LABEL (gtk_builder_get_object (builder, "a0_str"));
-    // window_str_registers[9] = GTK_LABEL (gtk_builder_get_object (builder, "a1_str"));
-    // window_str_registers[10] = GTK_LABEL (gtk_builder_get_object (builder, "a2_str"));
-    // window_str_registers[11] = GTK_LABEL (gtk_builder_get_object (builder, "a3_str"));
-    // window_str_registers[12] = GTK_LABEL (gtk_builder_get_object (builder, "a4_str"));
-    // window_str_registers[13] = GTK_LABEL (gtk_builder_get_object (builder, "a5_str"));
-    // window_str_registers[14] = GTK_LABEL (gtk_builder_get_object (builder, "a6_str"));
-    // window_str_registers[15] = GTK_LABEL (gtk_builder_get_object (builder, "a7_str"));
+    //nouv
+    //memory register
+    window_memory_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "a0_memory"));
+    window_memory_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "a1_memory"));
+    window_memory_registers[2] = GTK_LABEL (gtk_builder_get_object (builder, "a2_memory"));
+    window_memory_registers[3] = GTK_LABEL (gtk_builder_get_object (builder, "a3_memory"));
+    window_memory_registers[4] = GTK_LABEL (gtk_builder_get_object (builder, "a4_memory"));
+    window_memory_registers[5] = GTK_LABEL (gtk_builder_get_object (builder, "a5_memory"));
+    window_memory_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "a6_memory"));
+    window_memory_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "a7_memory"));
 
+    //memory string register
+    window_memory_str_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "a0_memory_str"));
+    window_memory_str_registers[1] = GTK_LABEL (gtk_builder_get_object (builder, "a1_memory_str"));
+    window_memory_str_registers[2] = GTK_LABEL (gtk_builder_get_object (builder, "a2_memory_str"));
+    window_memory_str_registers[3] = GTK_LABEL (gtk_builder_get_object (builder, "a3_memory_str"));
+    window_memory_str_registers[4] = GTK_LABEL (gtk_builder_get_object (builder, "a4_memory_str"));
+    window_memory_str_registers[5] = GTK_LABEL (gtk_builder_get_object (builder, "a5_memory_str"));
+    window_memory_str_registers[6] = GTK_LABEL (gtk_builder_get_object (builder, "a6_memory_str"));
+    window_memory_str_registers[7] = GTK_LABEL (gtk_builder_get_object (builder, "a7_memory_str"));
+    //fin nouv
 
     // flag
     window_status_registers[0] = GTK_LABEL (gtk_builder_get_object (builder, "C"));
@@ -91,7 +103,7 @@ void init_window(char *file_name) {
 
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
-
+    
     gtk_builder_connect_signals(builder, NULL);
     g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
 
@@ -109,7 +121,7 @@ void init_window(char *file_name) {
  */
 void update_window() {
     unsigned i;
-    char buffer[10];
+    char buffer[47]; //buffer à verifier
 
     // window register
     for (i = 0; i < 17; ++i) {
@@ -131,10 +143,24 @@ void update_window() {
     snprintf(buffer, 10, "%08x", PC);
     gtk_label_set_text(window_pc, buffer);
 
-    // string register
+    // data string register
     for (i = 0; i < 8; ++i) {
-        uint32_tostring(buffer, registers[i]);
+        uint32_tostring(buffer, registers[i]); 
         gtk_label_set_text(window_str_registers[i], buffer);
+    }
+
+    //address memory register //buffer à verifier
+    for (i = 0; i < 8; ++i) {
+        snprintf(buffer, 47, " %04X %04X %04X %04X %04X %04X %04X %04X %04X ", read_16bit_memory(A(i)), read_16bit_memory(A(i)+2), 
+        read_16bit_memory(A(i)+4), read_16bit_memory(A(i)+6), read_16bit_memory(A(i)+8), read_16bit_memory(A(i)+10), 
+        read_16bit_memory(A(i)+12), read_16bit_memory(A(i)+14), read_16bit_memory(A(i)+16));
+        gtk_label_set_text(window_memory_registers[i], buffer);
+    }
+
+    //address string memory register
+    for (i = 0; i < 8; ++i) {
+        memory_tostring(buffer, (char *)(memory + A(i)), 18);
+        gtk_label_set_text(window_memory_str_registers[i], buffer);
     }
 }
 
@@ -208,9 +234,9 @@ void closefile_button() {
 void change_memory_view() {
 	if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
-        gtk_widget_hide(GTK_WIDGET(hex_view));
-    } else {
         gtk_widget_show(GTK_WIDGET(hex_view));
+    } else {
+        gtk_widget_hide(GTK_WIDGET(hex_view));
     }
 }
 
