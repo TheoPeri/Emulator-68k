@@ -7,9 +7,8 @@ Main
 			
 			;move.l		#$8,d0
 			
-			move.l		#$-8,d1
-			move.l		#$-6,d2			
-			muls		d2,d1     
+			move.l		#$2,d1	
+			muls.w		#-5,d1     
 ;~ \loop
 			;~ dbra		d0,\loop
 			;~ illegal

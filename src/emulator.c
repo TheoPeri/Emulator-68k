@@ -1859,33 +1859,58 @@ inline int lsd(uint16_t current_operation) {
 
     return 0;
 }
-/*
+
 inline uint32_t compa1(uint32_t value)
 {
-    for(uint8_t i =)
+    uint8_t i =0;
+    while(!((value>>i)&0x1) && i<31)
+    {
+        i++;
+    }
+    i++;
+    return value ^ ((0xffffffff >> i) << i);
 
-}*/
+
+
+}
+
 inline int muls(uint16_t current_operation) {
     // only word (.w) : see manual of the teacher
 
     // info
-    uint8_t size = 2;
+    uint8_t size = 1;
 
     uint32_t displacement = 2;
-    uint32_t source = addressing_mode_source(size,
+    uint32_t src2 = addressing_mode_source(size,
             current_operation & 0xff, &displacement);
 
-    // add
+    uint32_t source = D((current_operation>>9)&0x7) & 0xffff;
 
-    source = D((current_operation>>9)&0x7) * source;
+    uint8_t neg =0;
+    if(source>>15 & 0x1)
+    {
+        source = compa1(source);
+        neg++;
+    }
+    if(src2>>15 & 0x1)
+    {
+        src2 = compa1(src2);
+        neg++;
+    }
 
+    source = (src2 & 0xffff) * (source & 0xffff);
+
+    if(neg%2)
+    {
+        source = compa1(source);
+    }
 
     NEGATIVE = (source >> 31) == 1;
     ZERO = (source==0);
     CARRY = 0;
     OVERFLOW = 0;
 
-    addressing_mode_destination(size, current_operation & 0xff, &displacement, source);
+    D((current_operation>>9)&0x7) = source;
 
 
     PC += displacement;
