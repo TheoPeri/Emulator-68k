@@ -346,6 +346,7 @@ void openfile_button() {
  * @brief Load the file in the emulator
  */
 void loadfile_button() {
+	break_points = dict_new(100);
     char *filename;
 
     // get the file name
@@ -395,13 +396,18 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
 
     switch (event->keyval) {
-        case 65480:
+        case GDK_KEY_F1:
+			togglebreakpoint();
+			update_window();
+			update_buffer();
+			break;
+		case 65480:
             next_instruction();
             update_window();
             update_buffer();
             break;
         case 65478:
-            while (!next_instruction());
+            while (!next_instruction() && !dict_get(break_points, PC));
             update_window();
             update_buffer();
             break;

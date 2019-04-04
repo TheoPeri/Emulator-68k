@@ -12,6 +12,7 @@
  * @return -1 => error || other => OK
  */
 int init_memory() {
+	break_points = dict_new(100);
     if ((memory = malloc(16777216 * sizeof(uint8_t))) == NULL) {
         return -1;
     }

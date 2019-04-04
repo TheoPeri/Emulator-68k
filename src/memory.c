@@ -8,7 +8,7 @@ uint32_t PC;
 uint8_t status_registers[6];
 uint32_t registers[17];
 
-
+dictionary break_points;
 
 /**
 * @brief Get index in the registers array of stack ptr

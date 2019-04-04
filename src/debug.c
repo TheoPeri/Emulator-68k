@@ -7,6 +7,7 @@
 #include <capstone/capstone.h>
 
 #include "memory.h"
+#include "dictionary.h"
 
 extern uint8_t *memory;
 
@@ -37,6 +38,14 @@ char *mystrcat(char *s1, char *s2) {
     *tmp = '\0';
 
     return s1;
+}
+
+void togglebreakpoint()
+{
+	if(!dict_get(break_points, PC))
+		dict_insert(break_points, PC, 1);
+	else
+		dict_remove(break_points, PC);
 }
 
 /**
@@ -70,7 +79,7 @@ void show_current_instruction(char** addrs, char** opcodes, char** operandes) {
 		size_t c = back_count < 8 ? back_count : 8;
 		for(j = 0; j < c; j++)
 		{
-			asprintf(&tmp, "   0x%06lx\n", binsn[back_count - c + j].address);
+			asprintf(&tmp,dict_get(break_points, binsn[back_count - c + j].address) ? " * 0x%06lx\n" :"   0x%06lx\n", binsn[back_count - c + j].address);
 			*addrs = mystrcat(*addrs, tmp);
 			free(tmp);
 
@@ -92,8 +101,9 @@ void show_current_instruction(char** addrs, char** opcodes, char** operandes) {
 		size_t j;
 		for (j = 0; j < count; j++) {
 			asprintf(&tmp, j == 0 ?
-				"-> <span color='green'>0x%06lx</span>\n" :
-				"   0x%06lx\n", insn[j].address);
+				(dict_get(break_points, insn[j].address) ? "*> <span color='green'>0x%06lx</span>\n" :
+														 "-> <span color='green'>0x%06lx</span>\n") :
+				(dict_get(break_points, insn[j].address) ? " * 0x%06lx\n" :"   0x%06lx\n"), insn[j].address);
 
 			*addrs = mystrcat(*addrs, tmp);
 			free(tmp);

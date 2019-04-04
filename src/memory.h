@@ -1,3 +1,5 @@
+#include "dictionary.h"
+
 #ifndef _MEMORY_H
 #define _MEMORY_H
 
@@ -187,6 +189,9 @@ extern uint8_t status_registers[6];
 
 // data and address registers
 extern uint32_t registers[17];
+
+// dico
+extern dictionary break_points;
 
 
 #define CARRY                           status_registers[0]
