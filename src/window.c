@@ -149,9 +149,9 @@ void update_console_display()
 
 	int line_size = w / 8;
 
-	/*VIDEO_BUFFER[0] = 0xFF;
-	VIDEO_BUFFER[1] = 0x0F;
-	VIDEO_BUFFER[2] = 0x0F;*/
+	//VIDEO_BUFFER[0] = 0xFF;
+	//VIDEO_BUFFER[1] = 0x0F;
+	//VIDEO_BUFFER[2] = 0x0F;
 
 	if(!rgb) rgb = malloc(stride * rows * BYTES_PER_PIXEL);
 	for (r = 0; r < rows; r++) {
@@ -268,7 +268,11 @@ void update_mem_view()
 	for(size_t i = 0; i < LINE_COUNT; i++)
 	{
 		unsigned long mem_pos = LINE_SIZE * (first_line + i);
-		//if(mem_pos > MEM_SIZE / 2) break;
+		if(mem_pos >= MEM_SIZE)
+		{
+			result = mystrcat(result, "\n");
+			continue;
+		}
 
 		//Make sure we don't read past the memory size
 		size_t bytes = MEM_SIZE - mem_pos;
