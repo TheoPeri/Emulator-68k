@@ -161,7 +161,7 @@ void memory_tostring(char *buffer, char *value, unsigned size) {
 
 	for (i = 0; i < size; ++i)
 	{
-		buffer[i] = value[i] < 20 ? '.' : value[i];
+		buffer[i] = value[i] < 0x20 ? '.' : value[i];
 	}
 
 	buffer[i] = '\0';
@@ -181,7 +181,7 @@ void uint32_tostring(char *buffer, uint32_t value) {
 
 	for (i = 0; i < 4; ++i)
 	{
-		buffer[3 - i] = c_value[i] < 20 ? '.' : c_value[i];
+		buffer[3 - i] = c_value[i] < 0x20 ? '.' : c_value[i];
 	}
 
 	buffer[i] = '\0';
