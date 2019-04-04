@@ -108,6 +108,7 @@ void init_window(char *file_name) {
     "Toggle Disassembled Memory"));
 
 	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
+	memory_view = GTK_WIDGET(gtk_builder_get_object(builder, "memory_view"));
 
 	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
 
@@ -187,9 +188,9 @@ void update_console_display()
 void toggle_console()
 {
 	gboolean v = gtk_widget_is_visible(console);
-	if(v)	gtk_widget_hide(console);
-	else
-	{
+	if(v) {
+        gtk_widget_hide(console);
+    } else {
 		gtk_widget_show(console);
 		update_console_display();
 	}
@@ -380,9 +381,9 @@ void closefile_button() {
 void change_memory_view() {
 	if(gtk_toggle_button_get_active(
         GTK_TOGGLE_BUTTON(toggle_disassembled_memory))) {
-        gtk_widget_show(GTK_WIDGET(hex_view));
+        gtk_widget_show(GTK_WIDGET(memory_view));
     } else {
-        gtk_widget_hide(GTK_WIDGET(hex_view));
+        gtk_widget_hide(GTK_WIDGET(memory_view));
     }
 }
 

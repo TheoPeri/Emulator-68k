@@ -25,6 +25,7 @@ GtkLabel *disassembled_memory_a;
 GtkLabel *disassembled_memory_op;
 GtkLabel *disassembled_memory_o;
 GtkLabel *hex_view;
+GtkWidget *memory_view;
 GtkWidget *consoleimg;
 
 GtkAdjustment *scrollbar;
