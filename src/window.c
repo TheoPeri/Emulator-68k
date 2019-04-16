@@ -131,11 +131,12 @@ void init_window(char *file_name) {
     gtk_main();
 }
 
-guchar *rgb;
-void update_console_display()
+guchar *rgb; void update_console_display()
 {
-	gboolean v = gtk_widget_is_visible(console);
-	if(!v) return;
+	gboolean v = gtk_widget_is_visible(consoleimg);
+
+	if(!v)
+        return;
 
 	char* VIDEO_BUFFER = (char*)(memory + 0xFFB500);
 	int w = 480, h = 320;
@@ -149,11 +150,8 @@ void update_console_display()
 
 	int line_size = w / 8;
 
-	//VIDEO_BUFFER[0] = 0xFF;
-	//VIDEO_BUFFER[1] = 0x0F;
-	//VIDEO_BUFFER[2] = 0x0F;
-
 	if(!rgb) rgb = malloc(stride * rows * BYTES_PER_PIXEL);
+
 	for (r = 0; r < rows; r++) {
 		//Fill the pixels
     	for (c = 0; c < cols; c++)
