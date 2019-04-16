@@ -396,7 +396,7 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
 
     switch (event->keyval) {
-        case GDK_KEY_F1:
+        case GDK_KEY_F2:
 			togglebreakpoint();
 			update_window();
 			update_buffer();
