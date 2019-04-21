@@ -81,6 +81,7 @@ uint32_t compa1(uint32_t value);
 
 int lsd(uint16_t current_operation);
 int muls(uint16_t current_operation);
+int mulu(uint16_t current_operation);
 
 int ori_to_ccr();
 int andi_to_ccr();

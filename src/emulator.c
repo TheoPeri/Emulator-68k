@@ -2030,3 +2030,39 @@ inline int OR(uint16_t current_operation) {
 
     return 0;
 }
+
+
+/**
+* @brief Execute the command mulu
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int mulu(uint16_t current_operation) {
+    // only word (.w) : see manual of the teacher
+
+    // info
+    uint8_t size = 1;
+
+    uint32_t displacement = 2;
+    uint32_t src2 = addressing_mode_source(size,
+            current_operation & 0xff, &displacement);
+
+    uint32_t source = D((current_operation>>9)&0x7);
+
+    source = (src2 & 0xffff) * (source & 0xffff);
+
+    NEGATIVE = (source >> 31) == 1;
+    ZERO = (source==0);
+    CARRY = 0;
+    OVERFLOW = (current_operation>>31) != 0;
+
+    D((current_operation>>9)&0x7) = source;
+
+
+    PC += displacement;
+    return 0;
+}
+
+
