@@ -2079,6 +2079,17 @@ Test(emulator, test_lea, .init=setup_emulator) {
     cr_assert(PC == 0x508, "Error on the PC => %x", PC);
     cr_assert(A(0) == 0xffff, "Expect A1(%x) == 0xffff", A(1));
 
+    PC = 0x50e;
+    A(0) = 0x678;
+    A(1) = 0x0;
+    instruction = 0x43e8; // lea $ffff,a1
+    write_16bit_memory(PC + 2, 0x4);
+
+    lea(instruction);
+    cr_assert(PC == 0x512, "Error on the PC => %x", PC);
+    cr_assert(A(1) == 0x67c, "Expect A1(%x) == 0xffff", A(1));
+
+
 }
 
 Test(emulator, test_sub, .init=setup_emulator) {

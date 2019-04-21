@@ -338,7 +338,7 @@ int next_instruction() {
             goto warning;
         case 0x0200:
             // is_andi
-            goto warning;
+            return andi(current_operation);
         case 0x0400:
             // is_subi
             return subi(current_operation);
@@ -549,7 +549,7 @@ int next_instruction() {
 
     if (mask_0xf000 == 0x8000) {
         // is_or
-        goto warning;
+        return OR(current_operation);
     }
 
     if (mask_0xf130 == 0x9100) {
@@ -589,7 +589,7 @@ int next_instruction() {
 
     if (mask_0xf1c0 == 0xc0c0) {
         // is_mulu
-        goto warning;
+        return mulu(current_operation);
     }
 
     if (mask_0xf1c0 == 0xc1c0) {
@@ -607,14 +607,14 @@ int next_instruction() {
         goto warning;
     }
 
-    if (mask_0xf130 == 0xd100) {
-        // is_addx
-        goto warning;
-    }
-
     if (mask_0xf0c0 == 0xd0c0) {
         // is_adda
         return adda(current_operation);
+    }
+
+    if (mask_0xf130 == 0xd100) {
+        // is_addx
+        goto warning;
     }
 
     if (mask_0xf000 == 0xc000) {
@@ -1458,13 +1458,17 @@ int lea(uint16_t current_operation) {
             source = read_32bit_memory(PC + 2);
             displacement = 6;
             break;
+        case 0x28:
+            source = read_16bit_memory(PC + 2) + A(reg);
+            displacement = 4; // may be prob !!!!!
+            break;
         default:
             warnx("undefined behavior.");
             return -1;
+
     }
 
     A((current_operation & 0xe00) >> 9) = source;
-
     PC += displacement;
 
     return 0;
