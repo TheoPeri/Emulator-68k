@@ -2066,3 +2066,59 @@ inline int mulu(uint16_t current_operation) {
 }
 
 
+/**
+* @brief Execute the command andi
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+inline int andi(uint16_t current_operation) {
+
+    uint8_t size = (current_operation & 0xc0) >> 6;
+
+    uint32_t displacement;
+    uint8_t value = current_operation;
+    uint32_t source, destination, result;
+
+    switch (size) {
+        case 0x0:
+            source = read_16bit_memory(PC + 2); // if prob, may be here, 16 => 8
+            displacement = 4;
+
+            destination = addressing_mode_source_ro(size, value);
+            result = source & destination;
+            break;
+        case 0x1:
+            source = read_16bit_memory(PC + 2);
+            displacement = 4;
+
+            destination = addressing_mode_source_ro(size, value);
+            result = source & destination;
+            break;
+        case 0x2:
+            source = read_32bit_memory(PC + 4);
+            displacement = 6;
+
+            destination = addressing_mode_source_ro(size, value);
+            result = source & destination;
+            break;
+        default:
+            return -1;
+    }
+
+    addressing_mode_destination(size, value, &displacement, result);
+
+    CARRY       = 0;
+    OVERFLOW    = 0;
+    ZERO        = addressing_mode_source_ro(0x2, value) == 0;
+    NEGATIVE    = addressing_mode_source_ro(0x2, value) >> 31;
+
+
+
+    PC += displacement;
+
+    return 0;
+}
+
+

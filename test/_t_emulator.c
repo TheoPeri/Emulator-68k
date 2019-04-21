@@ -3141,3 +3141,68 @@ Test(emulator, test_mulu, .init=setup_emulator) {
 }
 
 
+Test(emulator, test_andi, .init=setup_emulator) {
+    uint16_t instruction;
+
+    // test data register .b
+    instruction = 0x0201;
+    PC = 0x506;
+    D(1) = 0x12345678; // 1
+    write_16bit(memory + PC + 2, 33);
+    andi(instruction);
+    cr_assert(PC == 0x50a, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x12345620, "Error on the destination for andi: "
+        "(data register .b) => D1 = 0x%x", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+            "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+            "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+            "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+            "OVERFLOW = 0x%x", OVERFLOW);
+
+    // test data register .w
+    instruction = 0x0241;
+
+    PC = 0x510;
+    D(1) = 0x12345678; // 1
+    write_16bit(memory + PC + 2, 0x6699);
+    andi(instruction);
+    cr_assert(PC == 0x514, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x12344618, "Error on the destination for andi: "
+            "(data register .w) => D1 = 0x%x", D(1));
+
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+            "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+            "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+            "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+            "OVERFLOW = 0x%x", OVERFLOW);
+
+
+    // test data register .l
+    instruction = 0x0281;
+
+    PC = 0x51a;
+    D(1) = 0x12345678; // 1
+    write_32bit(memory + PC + 4, 0xf0ff0f);
+    andi(instruction);
+    cr_assert(PC == 0x520, "Error on the PC => %x", PC);
+    cr_assert(D(1) == 0x00305608, "Error on the destination for andi: "
+            "(data register .l) => D1 = 0x%x", D(1));
+    cr_assert(!ZERO, "Error on the status register (data register .w) => "
+            "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+            "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+            "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+            "OVERFLOW = 0x%x", OVERFLOW);
+
+
+}
+
+

@@ -85,6 +85,7 @@ int mulu(uint16_t current_operation);
 
 int ori_to_ccr();
 int andi_to_ccr();
+int andi(uint16_t current_operation);
 
 int OR(uint16_t current_operation);
 #endif
