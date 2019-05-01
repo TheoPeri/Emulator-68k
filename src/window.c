@@ -11,12 +11,10 @@
 #include "emulator.h"
 #include "debug.h"
 
-#define MEM_SIZE 16777216 * sizeof(uint8_t)
-#define MAX_VALUE 16777216/16 -1
+#define MEM_SIZE (16777216 * sizeof(uint8_t))
+#define MAX_VALUE (16777216 / 16 - 1)
 #define LINE_SIZE 16
 #define LINE_COUNT 32
-
-#define BYTES_PER_PIXEL 3
 
 /**
  * @brief Init the graphic interface
@@ -114,6 +112,8 @@ void init_window(char *file_name) {
 
 	consoleimg = GTK_WIDGET(gtk_builder_get_object(builder, "consoleimg"));
 
+    gtk_win_buffer = malloc(WIN_HEIGHT * WIN_WIDTH * BYTES_PER_PIXEL);
+
     // link key
     window = GTK_WIDGET(gtk_builder_get_object(builder, "MainWindow"));
 	console = GTK_WIDGET(gtk_builder_get_object(builder, "ConsoleWindow"));
@@ -131,61 +131,54 @@ void init_window(char *file_name) {
     gtk_main();
 }
 
-guchar *rgb; void update_console_display()
-{
-	gboolean v = gtk_widget_is_visible(consoleimg);
+void update_console_display() {
+    if(gtk_widget_is_visible(consoleimg)) {
+        int i, j;
+        uint8_t *video_buffer = memory + 0xFFB500;
+        uint8_t tmp;
+        uint8_t *iter;
 
-	if(!v)
-        return;
+        // REMOVE
+        if(!gtk_win_buffer) {
+            printf("warning !!!\n");
+        }
 
-	char* VIDEO_BUFFER = (char*)(memory + 0xFFB500);
-	int w = 480, h = 320;
-	int cols = w;
-	int rows = h;
-	int r, c, i, stride_adjust;
+        iter = gtk_win_buffer;
 
-	int stride = cols * BYTES_PER_PIXEL;
-	stride_adjust = (4 - stride % 4) % 4;
-	stride += stride_adjust;
+        for (i = 0; i < WIN_HEIGHT * STRIDE_SIZE; ++i) {
+            for (j = 7; j >= 0; --j) {
+                tmp = (*video_buffer >> j) & 0x1 ? 255 : 0;
 
-	int line_size = w / 8;
+                iter[0] = tmp;
+                iter[1] = tmp;
+                iter[2] = tmp;
 
-	if(!rgb) rgb = malloc(stride * rows * BYTES_PER_PIXEL);
+                iter += 3;
+            }
 
-	for (r = 0; r < rows; r++) {
-		//Fill the pixels
-    	for (c = 0; c < cols; c++)
-			for (i = 0; i < BYTES_PER_PIXEL; i++)
-			{
-				size_t address = r * line_size + (c / 8);
-				size_t shift = 7 - c % 8;
+            ++video_buffer;
+        }
 
-				rgb[r * stride + c * BYTES_PER_PIXEL + i] =
-						VIDEO_BUFFER[address] & 1 << shift ? 255 : 0;
-			}
-		//Adjust the stride otherwise it fucks up
-		for (i = 0; i < stride_adjust; i++)
-			rgb[r * stride + cols * BYTES_PER_PIXEL + i] = 0;
-	}
+        GdkPixbuf* pb = gdk_pixbuf_new_from_data(
+            gtk_win_buffer,
+            GDK_COLORSPACE_RGB,
+            0,
+            8,
+            WIN_WIDTH,
+            WIN_HEIGHT,
+            WIN_STRIDE,
+            NULL,
+            NULL
+        );
 
-	GdkPixbuf* pb = gdk_pixbuf_new_from_data(
-        rgb,
-        GDK_COLORSPACE_RGB,
-        0,
-        8,
-        w, h,
-        stride,
-        NULL,
-        NULL
-    );
-	gtk_image_set_from_pixbuf(GTK_IMAGE(consoleimg), pb);
-
-	//free(rgb);
+        gtk_image_set_from_pixbuf(GTK_IMAGE(consoleimg), pb);
+    }
 }
 
 void toggle_console()
 {
 	gboolean v = gtk_widget_is_visible(console);
+
 	if(v) {
         gtk_widget_hide(console);
     } else {
@@ -392,6 +385,8 @@ void change_memory_view() {
 
 gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
+    unsigned i = 0;
+    // unsigned j = 0;
 
     switch (event->keyval) {
         case GDK_KEY_F2:
@@ -405,12 +400,25 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
             update_buffer();
             break;
         case GDK_KEY_F9:
-            while (!next_instruction() && !dict_get(break_points, PC));
+            while (!next_instruction() && !dict_get(break_points, PC)) {
+                // test
+                if (i == 1000000) {
+                    i = 0;
+                    // ++j;
+
+		            update_console_display();
+
+                    // update win
+                    gtk_widget_queue_draw(consoleimg);
+                }
+
+                ++i;
+            }
             update_window();
             update_buffer();
             break;
     }
-
+    // printf("%d\n", j);
     return FALSE;
 }
 

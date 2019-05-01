@@ -3,7 +3,18 @@
 
 #include <gtk/gtk.h>
 
+// win macro
+#define BYTES_PER_PIXEL 3
+
+#define WIN_WIDTH 480
+#define WIN_HEIGHT 320
+
+#define STRIDE_SIZE (WIN_WIDTH / 8)
+#define WIN_STRIDE (WIN_WIDTH * BYTES_PER_PIXEL)
+
 // global parameter and tool
+uint8_t *gtk_win_buffer;
+
 GtkBuilder *builder;
 GtkWidget *window;
 GtkWidget *console;

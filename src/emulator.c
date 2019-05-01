@@ -6,6 +6,8 @@
 #include "emulator.h"
 #include "memory.h"
 
+#include "window.h"
+
 /**
  * @brief Initialize the memory of the emulator.
  *
