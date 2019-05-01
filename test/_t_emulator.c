@@ -2996,9 +2996,51 @@ Test(emulator, test_or, .init=setup_emulator) {
         "OVERFLOW = 0x%x", OVERFLOW);
     cr_assert(!EXTEND, "Error on the status register => "
         "EXTEND = 0x%x", EXTEND);
-
 }
 
+Test(emulator, test_ori, .init=setup_emulator) {
+    uint16_t instruction = 0x0080;
+
+    PC = 0x506;
+    D(0) = 0x11ed;
+    write_32bit_memory(PC + 2, 0x12049);
+    ori(instruction);
+
+    cr_assert(PC == 0x50c, "Error on the PC => %x", PC);
+    cr_assert(D(0) == 0x131ed, "Error invalid value for the regiser D(0)", D(0));
+    cr_assert(!ZERO, "Error on the status register => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(!NEGATIVE, "Error on the status register => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_assert(!EXTEND, "Error on the status register => "
+        "EXTEND = 0x%x", EXTEND);
+
+
+    instruction = 0x00b9;
+    PC = 0x50a;
+    write_32bit_memory(PC + 2, 0x11ed);
+    write_32bit_memory(0x1112, 0xffffffff);
+    write_32bit_memory(PC + 2 + 4, 0x1112);
+    ori(instruction);
+
+    cr_assert(PC == 0x514, "Error on the PC => %x", PC);
+    cr_assert(read_32bit_memory(0x1112) == 0xffffffff, "Error invalid value"
+        " in the memory 0x%x", read_32bit_memory(0x1112));
+    cr_assert(!ZERO, "Error on the status register => "
+        "ZERO = 0x%x", ZERO);
+    cr_assert(NEGATIVE, "Error on the status register => "
+        "NEGATIVE = 0x%x", NEGATIVE);
+    cr_assert(!CARRY, "Error on the status register => "
+        "CARRY = 0x%x", CARRY);
+    cr_assert(!OVERFLOW, "Error on the status register => "
+        "OVERFLOW = 0x%x", OVERFLOW);
+    cr_assert(!EXTEND, "Error on the status register => "
+        "EXTEND = 0x%x", EXTEND);
+}
 
 Test(emulator, test_mulu, .init=setup_emulator) {
     uint32_t instruction;

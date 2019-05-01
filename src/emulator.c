@@ -64,7 +64,7 @@ int shutdown_emulator() {
  *
  * @return the value of the source operand.
  */
-inline uint32_t addressing_mode_source(
+uint32_t addressing_mode_source(
     uint8_t size,
     uint8_t value,
     uint32_t *displacement
@@ -136,7 +136,7 @@ inline uint32_t addressing_mode_source(
  *
  * @return the value of the source operand.
  */
-inline uint32_t addressing_mode_source_ro(
+uint32_t addressing_mode_source_ro(
     uint8_t size,
     uint8_t value
 ) {
@@ -201,7 +201,7 @@ inline uint32_t addressing_mode_source_ro(
  * @param data The data to write on destination operand.
  *
 */
-inline void addressing_mode_destination(
+void addressing_mode_destination(
     uint8_t size,
     uint8_t value,
     uint32_t *displacement,
@@ -335,7 +335,7 @@ int next_instruction() {
     switch(mask_0xff00) {
         case 0x0000:
             // is_ori
-            goto warning;
+            return ori(current_operation);
         case 0x0200:
             // is_andi
             return andi(current_operation);
@@ -665,7 +665,7 @@ int next_instruction() {
 *
 * @return -1 => error || other => OK
 */
-inline int rts() {
+int rts() {
     PC = read_32bit_memory(A(7)); // read addr
     A(7) += 4; // pop addr
 
@@ -677,7 +677,7 @@ inline int rts() {
 *
 * @return -1 => error || other => OK
 */
-inline int bra(uint16_t current_operation) {
+int bra(uint16_t current_operation) {
     uint8_t displacement = current_operation;
 
     // bra
@@ -694,7 +694,7 @@ inline int bra(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int bsr(uint16_t current_operation) {
+int bsr(uint16_t current_operation) {
     int8_t displacement = current_operation;
 
     // push address
@@ -722,7 +722,7 @@ inline int bsr(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int bcc(uint16_t current_operation) {
+int bcc(uint16_t current_operation) {
     int8_t byte_operation = current_operation;
     uint32_t condition = current_operation & 0xf00;
 
@@ -784,7 +784,7 @@ inline int bcc(uint16_t current_operation) {
     return 0;
 }
 
-inline int tst(uint16_t current_operation) {
+int tst(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t displacement = 2;
     uint32_t source = addressing_mode_source(size,
@@ -815,7 +815,7 @@ inline int tst(uint16_t current_operation) {
 }
 
 
-inline int dbcc(uint16_t current_operation) {
+int dbcc(uint16_t current_operation) {
     if ((current_operation & 0x100) != 0x100) {
         warnx("Not implemented!!!\n");
         return -1;
@@ -1031,7 +1031,7 @@ int cmpm(uint16_t current_operation) {
  * @param destination The destination value
  * @param shift The shift for get the high bit
  */
-inline void add_flag(uint32_t source, uint32_t destination,
+void add_flag(uint32_t source, uint32_t destination,
     uint32_t result, uint8_t shift) {
     ZERO = result == 0;
     NEGATIVE = (result >> shift) & 0x1;
@@ -1051,7 +1051,7 @@ inline void add_flag(uint32_t source, uint32_t destination,
  * @param destination The destination value
  * @param shift The shift for get the high bit
  */
-inline void sub_flag(uint32_t source, uint32_t destination,
+void sub_flag(uint32_t source, uint32_t destination,
     uint32_t result, uint8_t shift) {
     ZERO = result == 0;
     NEGATIVE = (result >> shift) & 0x1;
@@ -1070,7 +1070,7 @@ inline void sub_flag(uint32_t source, uint32_t destination,
 *
 * @return -1 => error || other => OK
 */
-inline int add(uint16_t current_operation) {
+int add(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint8_t reg = (current_operation & 0xe00) >> 9;
@@ -1148,7 +1148,7 @@ inline int add(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int adda(uint16_t current_operation) {
+int adda(uint16_t current_operation) {
     // info
     uint8_t size = ((current_operation >> 0x8) & 0x1) + 1;
 
@@ -1176,7 +1176,7 @@ inline int adda(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int addq(uint16_t current_operation) {
+int addq(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t source = (current_operation & 0xe00) >> 9;
@@ -1226,7 +1226,7 @@ inline int addq(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int addi(uint16_t current_operation) {
+int addi(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
 
@@ -1282,7 +1282,7 @@ inline int addi(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 
-inline int move(uint16_t current_operation) {
+int move(uint16_t current_operation) {
     // info
     uint8_t size;
 
@@ -1336,7 +1336,7 @@ inline int move(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 
-inline int moveq(uint16_t current_operation) {
+int moveq(uint16_t current_operation) {
     // info
     OVERFLOW = 0;
     CARRY = 0;
@@ -1366,7 +1366,7 @@ inline int moveq(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 
-inline int movea(uint16_t current_operation) {
+int movea(uint16_t current_operation) {
     // info
     uint8_t size = 2 ;
     if(current_operation & 0x1000)
@@ -1392,7 +1392,7 @@ inline int movea(uint16_t current_operation) {
 
 
 
-inline int movem(uint16_t current_operation) {
+int movem(uint16_t current_operation) {
     // info
     uint8_t size = ((current_operation & 0x40) >> 6) + 1; // word :1 and long :2
     uint16_t mask = read_16bit_memory(PC + 2);
@@ -1481,7 +1481,7 @@ int lea(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int sub(uint16_t current_operation) {
+int sub(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint8_t reg = (current_operation & 0xe00) >> 9;
@@ -1559,7 +1559,7 @@ inline int sub(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int suba(uint16_t current_operation) {
+int suba(uint16_t current_operation) {
     // info
     uint8_t size = current_operation & 0x100 ? 2 : 1;
 
@@ -1587,7 +1587,7 @@ inline int suba(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int subq(uint16_t current_operation) {
+int subq(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t source = (current_operation & 0xe00) >> 9;
@@ -1637,7 +1637,7 @@ inline int subq(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int subi(uint16_t current_operation) {
+int subi(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
 
@@ -1692,7 +1692,7 @@ inline int subi(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int jsr(uint16_t current_operation) {
+int jsr(uint16_t current_operation) {
 
     // push address
     A(7) -= 4;
@@ -1735,7 +1735,6 @@ inline int jsr(uint16_t current_operation) {
     return 0;
 }
 
-
 /**
 * @brief Execute the command clr
 *
@@ -1743,7 +1742,7 @@ inline int jsr(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int clr(uint16_t current_operation) {
+int clr(uint16_t current_operation) {
     // info
     uint8_t size;
 
@@ -1783,7 +1782,7 @@ inline int clr(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int lsd(uint16_t current_operation) {
+int lsd(uint16_t current_operation) {
     // info
     uint8_t size;
 
@@ -1866,7 +1865,7 @@ inline int lsd(uint16_t current_operation) {
     return 0;
 }
 
-inline uint32_t compa1(uint32_t value)
+uint32_t compa1(uint32_t value)
 {
     uint8_t i =0;
     while(!((value>>i)&0x1) && i<31) {
@@ -1884,7 +1883,7 @@ inline uint32_t compa1(uint32_t value)
 *
 * @return -1 => error || other => OK
 */
-inline int muls(uint16_t current_operation) {
+int muls(uint16_t current_operation) {
     // only word (.w) : see manual of the teacher
 
     // info
@@ -1925,13 +1924,64 @@ inline int muls(uint16_t current_operation) {
 }
 
 /**
+* @brief Execute the command ori
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+int ori(uint16_t current_operation) {
+    uint8_t size = (current_operation & 0xc0) >> 6;
+    uint32_t displacement = 2;
+    uint32_t source;
+    uint8_t shift;
+
+    switch (size) {
+        case 0x0:
+            source = read_16bit_memory(PC + 2) & 0xff;
+            shift = 7;
+            PC += 2;
+            break;
+        case 0x1:
+            source = read_16bit_memory(PC + 2);
+            shift = 15;
+            PC += 2;
+            break;
+        case 0x2:
+            source = read_32bit_memory(PC + 2);
+            shift = 31;
+            PC += 4;
+            break;
+        default:
+            return -1;
+    }
+
+    uint32_t destination = addressing_mode_source_ro(size,
+        current_operation & 0xff);
+
+    destination |= source;
+
+    CARRY = 0;
+    OVERFLOW = 0;
+    ZERO = !destination;
+    NEGATIVE = (destination >> shift) & 0x1;
+
+    addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, destination);
+
+    PC += displacement;
+
+    return 0;
+}
+
+/**
 * @brief Execute the command ori_to_ccr
 *
 * @param current_operation the current operation
 *
 * @return -1 => error || other => OK
 */
-inline int ori_to_ccr() {
+int ori_to_ccr() {
     uint8_t data = read_16bit_memory(PC + 2);
 
     CARRY       = CARRY | (data & 0b00001);
@@ -1952,7 +2002,7 @@ inline int ori_to_ccr() {
 *
 * @return -1 => error || other => OK
 */
-inline int andi_to_ccr() {
+int andi_to_ccr() {
     uint8_t data = read_16bit_memory(PC + 2);
 
     CARRY       = CARRY & (data & 0b00001);
@@ -1973,7 +2023,7 @@ inline int andi_to_ccr() {
 *
 * @return -1 => error || other => OK
 */
-inline int OR(uint16_t current_operation) {
+int OR(uint16_t current_operation) {
     uint8_t reg = (current_operation & 0xe00) >> 9;
     uint8_t size = (current_operation & 0xc0) >> 6;
     uint32_t displacement = 2;
@@ -2035,7 +2085,6 @@ inline int OR(uint16_t current_operation) {
     return 0;
 }
 
-
 /**
 * @brief Execute the command mulu
 *
@@ -2043,7 +2092,7 @@ inline int OR(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int mulu(uint16_t current_operation) {
+int mulu(uint16_t current_operation) {
     // only word (.w) : see manual of the teacher
 
     // info
@@ -2069,7 +2118,6 @@ inline int mulu(uint16_t current_operation) {
     return 0;
 }
 
-
 /**
 * @brief Execute the command andi
 *
@@ -2077,7 +2125,7 @@ inline int mulu(uint16_t current_operation) {
 *
 * @return -1 => error || other => OK
 */
-inline int andi(uint16_t current_operation) {
+int andi(uint16_t current_operation) {
 
     uint8_t size = (current_operation & 0xc0) >> 6;
 
@@ -2124,5 +2172,3 @@ inline int andi(uint16_t current_operation) {
 
     return 0;
 }
-
-

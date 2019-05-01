@@ -399,12 +399,12 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
 			update_window();
 			update_buffer();
 			break;
-		case 65480:
+		case GDK_KEY_F11:
             next_instruction();
             update_window();
             update_buffer();
             break;
-        case 65478:
+        case GDK_KEY_F9:
             while (!next_instruction() && !dict_get(break_points, PC));
             update_window();
             update_buffer();
