@@ -270,13 +270,13 @@ void update_mem_view()
 		if(bytes > LINE_SIZE) bytes = LINE_SIZE;
 
 		//Print the address of the current line
-		asprintf(&tmp, "<span color='gray'>0x%07lx</span>\t", mem_pos);
+		asprintf(&tmp, "<span color='gray'>$%07lX</span>\t", mem_pos);
 		result = mystrcat(result, tmp); free(tmp);
 
 		//Print the hex interpretation
 		for(size_t j = 0; j < bytes; j++)
 		{
-			asprintf(&tmp, "%02x ", memory[mem_pos + j]);
+			asprintf(&tmp, "%02X ", memory[mem_pos + j]);
 			result = mystrcat(result, tmp); free(tmp);
 		}
 
@@ -286,14 +286,35 @@ void update_mem_view()
 		for(size_t j = 0; j < bytes; j++)
 		{
 			char c = memory[mem_pos + j];
-			int utf = c >= 32 && c <= 126 && c != '<' && c != '>';
-			if(!utf)
+
+            if (c < 0x20 || c == 0x7f) {
 				result = mystrcat(result, ".");
-			else
-			{
-				asprintf(&tmp, "%c", memory[mem_pos + j]);
-				result = mystrcat(result, tmp); free(tmp);
-			}
+            } else {
+                switch(c) {
+                    case '"':
+				        result = mystrcat(result, "&#60;");
+                        break;
+                    case '&':
+				        result = mystrcat(result, "&#62;");
+                        break;
+                    case '\'':
+				        result = mystrcat(result, "&#34;");
+                        break;
+                    case '<':
+				        result = mystrcat(result, "&#38;");
+                        break;
+                    case '>':
+				        result = mystrcat(result, "&#39;");
+                        break;
+                    default:
+                        // dirty
+                        asprintf(&tmp, "%c", memory[mem_pos + j]);
+				        result = mystrcat(result, tmp);
+                        free(tmp);
+
+                        break;
+                }
+            }
 		}
 
 		result = mystrcat(result, "</span>\n");

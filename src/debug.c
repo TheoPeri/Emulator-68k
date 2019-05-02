@@ -11,7 +11,8 @@
 
 extern uint8_t *memory;
 
-#define code_size 64
+#define code_size 512
+#define NB_INSTRUCTION 34
 #define GREEN " <span color='green'>%s</span>\n"
 
 /**
@@ -79,7 +80,7 @@ void show_current_instruction(char** addrs, char** opcodes, char** operandes) {
 		size_t c = back_count < 8 ? back_count : 8;
 		for(j = 0; j < c; j++)
 		{
-			asprintf(&tmp,dict_get(break_points, binsn[back_count - c + j].address) ? " * 0x%06lx\n" :"   0x%06lx\n", binsn[back_count - c + j].address);
+			asprintf(&tmp,dict_get(break_points, binsn[back_count - c + j].address) ? " * $%06lX\n" :"   $%06lX\n", binsn[back_count - c + j].address);
 			*addrs = mystrcat(*addrs, tmp);
 			free(tmp);
 
@@ -99,11 +100,11 @@ void show_current_instruction(char** addrs, char** opcodes, char** operandes) {
 
 	if (count > 0) {
 		size_t j;
-		for (j = 0; j < count; j++) {
+		for (j = 0; j < count && j < NB_INSTRUCTION; j++) {
 			asprintf(&tmp, j == 0 ?
-				(dict_get(break_points, insn[j].address) ? "*> <span color='green'>0x%06lx</span>\n" :
-														 "-> <span color='green'>0x%06lx</span>\n") :
-				(dict_get(break_points, insn[j].address) ? " * 0x%06lx\n" :"   0x%06lx\n"), insn[j].address);
+				(dict_get(break_points, insn[j].address) ? "*> <span color='green'>$%06lX</span>\n" :
+														 "-> <span color='green'>$%06lX</span>\n") :
+				(dict_get(break_points, insn[j].address) ? " * $%06lX\n" :"   $%06lX\n"), insn[j].address);
 
 			*addrs = mystrcat(*addrs, tmp);
 			free(tmp);
@@ -159,7 +160,7 @@ void pretty_print_instruction(char** addresses, char** opcode, char** operande) 
 }
 
 /**
- * @brief Converts uint32 to str
+ * @brief Converts uint32 to str (no xml)
  *
  * @param buffer The output buffer
  * @param value The value to convert
@@ -171,7 +172,11 @@ void memory_tostring(char *buffer, char *value, unsigned size) {
 
 	for (i = 0; i < size; ++i)
 	{
-		buffer[i] = value[i] < 0x20 ? '.' : value[i];
+        if (value[i] < 0x20 || value[i] == 0x7f) {
+            buffer[i] = '.';
+        } else {
+            buffer[i] = value[i];
+        }
 	}
 
 	buffer[i] = '\0';
@@ -191,7 +196,11 @@ void uint32_tostring(char *buffer, uint32_t value) {
 
 	for (i = 0; i < 4; ++i)
 	{
-		buffer[3 - i] = c_value[i] < 0x20 ? '.' : c_value[i];
+        if (c_value[i] < 0x20 || c_value[i] == 0x7f) {
+            buffer[3 - i] = '.';
+        } else {
+            buffer[3 - i] = c_value[i];
+        }
 	}
 
 	buffer[i] = '\0';
