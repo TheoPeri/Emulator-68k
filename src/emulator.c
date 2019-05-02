@@ -140,7 +140,8 @@ uint32_t addressing_mode_source(
  */
 uint32_t addressing_mode_source_ro(
     uint8_t size,
-    uint8_t value
+    uint8_t value,
+    uint32_t *displacement
 ) {
     uint32_t source = -1;
     uint32_t tmp;
@@ -165,20 +166,20 @@ uint32_t addressing_mode_source_ro(
             source = A(reg);
             break;
         case 0x28: // address displacement
-            tmp = A(reg) + (int16_t)read_16bit_memory(PC + 2);
+            tmp = A(reg) + (int16_t)read_16bit_memory(PC + *displacement);
             SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
             break;
         case 0x38:
             switch (reg) {
                 case 0x1: // absolute long
-                    tmp = read_32bit_memory(PC + 2);
+                    tmp = read_32bit_memory(PC + *displacement);
                     SIMPLE_READ_MEMORY_SIZE(source, tmp, size);
                     break;
                 case 0x4: // immediate
                     if (size == 2) {
-                        source = read_32bit_memory(PC + 2);
+                        source = read_32bit_memory(PC + *displacement);
                     } else {
-                        source = read_16bit_memory(PC + 2);
+                        source = read_16bit_memory(PC + *displacement);
                     }
                     break;
             }
@@ -1088,7 +1089,8 @@ int add(uint16_t current_operation) {
         source = D(reg);
 
         // get destination
-        uint32_t destination = addressing_mode_source_ro(size, value);
+        uint32_t destination = addressing_mode_source_ro(size, value,
+            &displacement);
 
         // setup and add
         switch (size) {
@@ -1192,7 +1194,8 @@ int addq(uint16_t current_operation) {
     uint32_t result;
     uint8_t shift;
     // get destination
-    uint32_t destination = addressing_mode_source_ro(size, value);
+    uint32_t destination = addressing_mode_source_ro(size, value,
+        &displacement);
 
     // setup and add
     switch (size) {
@@ -1243,7 +1246,7 @@ int addi(uint16_t current_operation) {
             displacement = 4;
             shift = 7;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = (source + destination) & 0xff;
             break;
         case 0x1:
@@ -1251,7 +1254,7 @@ int addi(uint16_t current_operation) {
             displacement = 4;
             shift = 15;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = (source + destination) & 0xffff;
             break;
         case 0x2:
@@ -1259,7 +1262,7 @@ int addi(uint16_t current_operation) {
             displacement = 6;
             shift = 31;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = source + destination;
             break;
         default:
@@ -1499,7 +1502,8 @@ int sub(uint16_t current_operation) {
         source = D(reg);
 
         // get destination
-        uint32_t destination = addressing_mode_source_ro(size, value);
+        uint32_t destination = addressing_mode_source_ro(size, value,
+            &displacement);
 
         // setup and sub
         switch (size) {
@@ -1603,7 +1607,7 @@ int subq(uint16_t current_operation) {
     uint8_t value = current_operation;
 
     // get destination
-    uint32_t destination = addressing_mode_source_ro(size, value);
+    uint32_t destination = addressing_mode_source_ro(size, value, &displacement);
 
     // setup and sub
     switch (size) {
@@ -1643,34 +1647,34 @@ int subi(uint16_t current_operation) {
     // info
     uint8_t size = (current_operation & 0xc0) >> 6;
 
-    uint32_t displacement = 2;
+    uint32_t displacement;
     uint32_t source, destination, result;
     uint8_t shift;
     uint8_t value = current_operation;
 
     switch (size) {
         case 0x0:
-            PC += 2;
+            displacement = 4;
             source = read_16bit_memory(PC);
             shift = 7;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = (destination - source) & 0xff;
             break;
         case 0x1:
-            PC += 2;
+            displacement = 4;
             source = read_16bit_memory(PC);
             shift = 15;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = (destination - source) & 0xffff;
             break;
         case 0x2:
+            displacement = 6;
             source = read_32bit_memory(PC + 2);
-            PC += 4;
             shift = 31;
 
-            destination = addressing_mode_source_ro(size, value);
+            destination = addressing_mode_source_ro(size, value, &displacement);
             result = destination - source;
             break;
         default:
@@ -1934,7 +1938,7 @@ int muls(uint16_t current_operation) {
 */
 int ori(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
-    uint32_t displacement = 2;
+    uint32_t displacement;
     uint32_t source;
     uint8_t shift;
 
@@ -1942,24 +1946,24 @@ int ori(uint16_t current_operation) {
         case 0x0:
             source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
-            PC += 2;
+            displacement = 4;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
             shift = 15;
-            PC += 2;
+            displacement = 4;
             break;
         case 0x2:
             source = read_32bit_memory(PC + 2);
             shift = 31;
-            PC += 4;
+            displacement = 6;
             break;
         default:
             return -1;
     }
 
     uint32_t destination = addressing_mode_source_ro(size,
-        current_operation & 0xff);
+        current_operation & 0xff, &displacement);
 
     destination |= source;
 
@@ -2034,7 +2038,7 @@ int OR(uint16_t current_operation) {
     uint8_t shift;
 
     if (current_operation & 0x100) { // DN or <ea> -> ea
-        source = addressing_mode_source_ro(size, current_operation & 0xff);
+        source = addressing_mode_source_ro(size, current_operation & 0xff, &displacement);
 
         switch (size) {
             case 0:
@@ -2128,47 +2132,43 @@ int mulu(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 int andi(uint16_t current_operation) {
-
     uint8_t size = (current_operation & 0xc0) >> 6;
-
     uint32_t displacement;
-    uint8_t value = current_operation;
-    uint32_t source, destination, result;
+    uint32_t source;
+    uint8_t shift;
 
     switch (size) {
         case 0x0:
-            source = read_16bit_memory(PC + 2); // if prob, may be here, 16 => 8
+            source = read_16bit_memory(PC + 2) & 0xff;
+            shift = 7;
             displacement = 4;
-
-            destination = addressing_mode_source_ro(size, value);
-            result = source & destination;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
+            shift = 15;
             displacement = 4;
-
-            destination = addressing_mode_source_ro(size, value);
-            result = source & destination;
             break;
         case 0x2:
-            source = read_32bit_memory(PC + 4);
+            source = read_32bit_memory(PC + 2);
+            shift = 31;
             displacement = 6;
-
-            destination = addressing_mode_source_ro(size, value);
-            result = source & destination;
             break;
         default:
             return -1;
     }
 
-    addressing_mode_destination(size, value, &displacement, result);
+    uint32_t destination = addressing_mode_source_ro(size,
+        current_operation & 0xff, &displacement);
 
-    CARRY       = 0;
-    OVERFLOW    = 0;
-    ZERO        = addressing_mode_source_ro(0x2, value) == 0;
-    NEGATIVE    = addressing_mode_source_ro(0x2, value) >> 31;
+    destination &= source;
 
+    CARRY = 0;
+    OVERFLOW = 0;
+    ZERO = !destination;
+    NEGATIVE = (destination >> shift) & 0x1;
 
+    addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, destination);
 
     PC += displacement;
 

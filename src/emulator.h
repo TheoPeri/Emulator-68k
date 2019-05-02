@@ -16,7 +16,8 @@ uint32_t addressing_mode_source
 uint32_t addressing_mode_source_ro
 (
     uint8_t size,
-    uint8_t value
+    uint8_t value,
+    uint32_t *displacement
 );
 
 void addressing_mode_destination

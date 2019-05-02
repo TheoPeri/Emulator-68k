@@ -3241,7 +3241,7 @@ Test(emulator, test_andi, .init=setup_emulator) {
 
     PC = 0x51a;
     D(1) = 0x12345678; // 1
-    write_32bit(memory + PC + 4, 0xf0ff0f);
+    write_32bit_memory(PC + 2, 0xf0ff0f);
     andi(instruction);
     cr_assert(PC == 0x520, "Error on the PC => %x", PC);
     cr_assert(D(1) == 0x00305608, "Error on the destination for andi: "
@@ -3254,8 +3254,6 @@ Test(emulator, test_andi, .init=setup_emulator) {
             "CARRY = 0x%x", CARRY);
     cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
             "OVERFLOW = 0x%x", OVERFLOW);
-
-
 }
 
 
