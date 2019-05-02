@@ -9,7 +9,7 @@
   </object>
   <object class="GtkWindow" id="MainWindow">
     <property name="name">MainWindow</property>
-    <property name="width_request">1008</property>
+    <property name="width_request">1055</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Emulator 68k</property>
     <property name="has_resize_grip">True</property>
@@ -146,9 +146,11 @@
                 <property name="margin_left">10</property>
                 <property name="margin_top">10</property>
                 <property name="label" translatable="yes">Waiting file...</property>
-                <property name="use_markup">True</property>
                 <property name="width_chars">15</property>
                 <property name="xalign">0</property>
+                <attributes>
+                  <attribute name="font-desc" value="Source Code Pro 10"/>
+                </attributes>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -165,6 +167,9 @@
                 <property name="margin_top">10</property>
                 <property name="width_chars">10</property>
                 <property name="xalign">0</property>
+                <attributes>
+                  <attribute name="font-desc" value="Source Code Pro 10"/>
+                </attributes>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -181,6 +186,9 @@
                 <property name="margin_top">10</property>
                 <property name="width_chars">13</property>
                 <property name="xalign">0</property>
+                <attributes>
+                  <attribute name="font-desc" value="Source Code Pro 10"/>
+                </attributes>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -336,12 +344,12 @@
         </child>
         <child>
           <object class="GtkBox" id="DebugInfo">
-            <property name="height_request">200</property>
+            <property name="height_request">189</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
               <object class="GtkBox" id="DataRegisters">
-                <property name="width_request">20</property>
+                <property name="width_request">176</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
@@ -354,6 +362,7 @@
                     <property name="justify">center</property>
                     <property name="angle">0.01</property>
                     <attributes>
+                      <attribute name="font-desc" value="Source Code Pro 10"/>
                       <attribute name="foreground" value="#20204a4a8787"/>
                     </attributes>
                   </object>
@@ -367,11 +376,206 @@
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkSeparator">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D0: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D1: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D2: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D3: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D4: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D5: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">11</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D6: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">13</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">14</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; D7: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">15</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -380,15 +584,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id=" 8">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkSeparator">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D0: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -401,7 +604,6 @@
                             <property name="name">RegisterA0</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
                             <property name="label" translatable="yes">00000000</property>
                             <property name="width_chars">8</property>
                             <attributes>
@@ -426,13 +628,12 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="d0_str">
+                          <object class="GtkLabel" id="d1">
+                            <property name="name">RegisterA0</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">....</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -443,11 +644,179 @@
                             <property name="position">3</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d2">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d3">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d4">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d5">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">11</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d6">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">13</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">14</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="d7">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">15</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -458,19 +827,18 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id=" 9">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkSeparator">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D1: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -479,13 +847,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="d1">
-                            <property name="name">RegisterA0</property>
+                          <object class="GtkLabel" id="d0_str">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
+                            <property name="label" translatable="yes">....</property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -525,59 +893,6 @@
                             <property name="position">3</property>
                           </packing>
                         </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 10">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D2: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d2">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
                         <child>
                           <object class="GtkSeparator">
                             <property name="visible">True</property>
@@ -586,7 +901,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">4</property>
                           </packing>
                         </child>
                         <child>
@@ -604,60 +919,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 11">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D3: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d3">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                         <child>
@@ -668,7 +930,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                         <child>
@@ -686,60 +948,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">8</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 12">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D4: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d4">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">7</property>
                           </packing>
                         </child>
                         <child>
@@ -750,7 +959,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">8</property>
                           </packing>
                         </child>
                         <child>
@@ -768,60 +977,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">9</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">10</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 13">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D5: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d5">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">9</property>
                           </packing>
                         </child>
                         <child>
@@ -832,7 +988,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">10</property>
                           </packing>
                         </child>
                         <child>
@@ -850,60 +1006,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">11</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">12</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 14">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D6: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d6">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">11</property>
                           </packing>
                         </child>
                         <child>
@@ -914,7 +1017,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">12</property>
                           </packing>
                         </child>
                         <child>
@@ -932,60 +1035,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">13</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">14</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 15">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;D7: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="d7">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">13</property>
                           </packing>
                         </child>
                         <child>
@@ -996,7 +1046,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
+                            <property name="position">14</property>
                           </packing>
                         </child>
                         <child>
@@ -1014,14 +1064,14 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">3</property>
+                            <property name="position">15</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">15</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                   </object>
@@ -1064,6 +1114,7 @@
                     <property name="justify">center</property>
                     <property name="angle">0.01</property>
                     <attributes>
+                      <attribute name="font-desc" value="Source Code Pro 10"/>
                       <attribute name="foreground" value="#20204a4a8787"/>
                     </attributes>
                   </object>
@@ -1077,11 +1128,203 @@
                   <object class="GtkBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkSeparator">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A0: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A1: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A2: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A3: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A4: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A5: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">11</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A6: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">13</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">14</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; A7: &lt;/span&gt;$&lt;/span&gt;</property>
+                            <property name="use_markup">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">15</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1090,15 +1333,14 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id=" 0">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkSeparator">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A0: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1111,7 +1353,6 @@
                             <property name="name">RegisterA0</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
                             <property name="label" translatable="yes">00000000</property>
                             <property name="width_chars">8</property>
                             <attributes>
@@ -1136,13 +1377,12 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a0_memory">
+                          <object class="GtkLabel" id="a1">
+                            <property name="name">RegisterA0</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -1165,14 +1405,12 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a0_memory_str">
-                            <property name="width_request">187</property>
+                          <object class="GtkLabel" id="a2">
+                            <property name="name">RegisterA0</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -1183,11 +1421,151 @@
                             <property name="position">5</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a3">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a4">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a5">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">11</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a6">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">13</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">14</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a7">
+                            <property name="name">RegisterA0</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">00000000</property>
+                            <property name="width_chars">8</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">15</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -1198,19 +1576,18 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id=" 1">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkSeparator">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A1: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1219,13 +1596,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a1">
-                            <property name="name">RegisterA0</property>
+                          <object class="GtkLabel" id="a0_memory">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -1251,7 +1628,7 @@
                           <object class="GtkLabel" id="a1_memory">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1277,11 +1654,10 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a1_memory_str">
-                            <property name="width_request">187</property>
+                          <object class="GtkLabel" id="a2_memory">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1295,11 +1671,156 @@
                             <property name="position">5</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">6</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a3_memory">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">7</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">8</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a4_memory">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">9</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">10</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a5_memory">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">11</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">12</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a6_memory">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">13</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">14</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="a7_memory">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
+                            <attributes>
+                              <attribute name="font-desc" value="Source Code Pro 10"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">15</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">4</property>
                       </packing>
                     </child>
                     <child>
@@ -1310,19 +1831,18 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">4</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id=" 2">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkSeparator">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A2: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1331,13 +1851,13 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a2">
-                            <property name="name">RegisterA0</property>
+                          <object class="GtkLabel" id="a0_memory_str">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
+                            <property name="label" translatable="yes">..........................</property>
+                            <property name="justify">center</property>
+                            <property name="width_chars">6</property>
+                            <property name="max_width_chars">7</property>
                             <attributes>
                               <attribute name="font-desc" value="Source Code Pro 10"/>
                             </attributes>
@@ -1360,10 +1880,11 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="a2_memory">
+                          <object class="GtkLabel" id="a1_memory_str">
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1390,10 +1911,10 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="a2_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1407,59 +1928,6 @@
                             <property name="position">5</property>
                           </packing>
                         </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 3">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A3: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a3">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
                         <child>
                           <object class="GtkSeparator">
                             <property name="visible">True</property>
@@ -1468,44 +1936,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a3_memory">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="a3_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1516,60 +1955,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">5</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">7</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">8</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 4">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A4: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a4">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">7</property>
                           </packing>
                         </child>
                         <child>
@@ -1580,44 +1966,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a4_memory">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">8</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="a4_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1628,60 +1985,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">5</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">9</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">10</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 5">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A5: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a5">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">9</property>
                           </packing>
                         </child>
                         <child>
@@ -1692,44 +1996,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a5_memory">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">10</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="a5_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1740,60 +2015,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">5</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">11</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">12</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 6">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A6: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a6">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">11</property>
                           </packing>
                         </child>
                         <child>
@@ -1804,44 +2026,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a6_memory">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">12</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="a6_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1852,60 +2045,7 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">5</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">13</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">14</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id=" 7">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">    &lt;span foreground='orange'&gt;A7: &lt;/span&gt; $</property>
-                            <property name="use_markup">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a7">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_right">10</property>
-                            <property name="label" translatable="yes">00000000</property>
-                            <property name="width_chars">8</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">13</property>
                           </packing>
                         </child>
                         <child>
@@ -1916,44 +2056,15 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="a7_memory">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes"> 0000 0000 0000 0000 0000 0000 0000 0000 0000 </property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">6</property>
-                            <property name="max_width_chars">7</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
+                            <property name="position">14</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="a7_memory_str">
-                            <property name="width_request">187</property>
+                            <property name="width_request">233</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">..................</property>
+                            <property name="label" translatable="yes">..........................</property>
                             <property name="justify">center</property>
                             <property name="width_chars">6</property>
                             <property name="max_width_chars">7</property>
@@ -1964,21 +2075,21 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">5</property>
+                            <property name="position">15</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
-                        <property name="position">15</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -2011,9 +2122,10 @@
                     <property name="label" translatable="yes">Flags
 </property>
                     <property name="justify">center</property>
-                    <property name="width_chars">22</property>
+                    <property name="width_chars">0</property>
                     <property name="angle">0.01</property>
                     <attributes>
+                      <attribute name="font-desc" value="Source Code Pro 10"/>
                       <attribute name="foreground" value="#20204a4a8787"/>
                     </attributes>
                   </object>
@@ -2029,51 +2141,184 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="0">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	    &lt;span foreground='orange'&gt;C =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; C = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="C">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; Z = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="Z">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; X = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="X">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">5</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="C">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -2084,256 +2329,202 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; V = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="V">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; N = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="N">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; S = &lt;/span&gt;&lt;/span&gt;</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="justify">right</property>
+                                    <property name="width_chars">3</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="S">
+                                    <property name="name">RegisterA0</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="label" translatable="yes">0</property>
+                                    <property name="justify">center</property>
+                                    <property name="width_chars">4</property>
+                                    <attributes>
+                                      <attribute name="font-desc" value="Source Code Pro 10"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">5</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
                             <property name="position">2</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	    &lt;span foreground='orange'&gt;V =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="V">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
-                          </packing>
-                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">-1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="1">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	    &lt;span foreground='orange'&gt;Z =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="Z">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	   &lt;span foreground='orange'&gt;N =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="N">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="2">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	    &lt;span foreground='orange'&gt;X =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="X">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSeparator">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">	    &lt;span foreground='orange'&gt;S =&lt;/span&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="justify">right</property>
-                            <property name="width_chars">3</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">3</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="S">
-                            <property name="name">RegisterA0</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">0</property>
-                            <property name="justify">center</property>
-                            <property name="width_chars">4</property>
-                            <attributes>
-                              <attribute name="font-desc" value="Source Code Pro 10"/>
-                            </attributes>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">4</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">6</property>
                       </packing>
                     </child>
                   </object>
@@ -2350,10 +2541,11 @@
                     <property name="label" translatable="yes">Stack Pointer
 </property>
                     <property name="justify">center</property>
-                    <property name="width_chars">22</property>
+                    <property name="width_chars">0</property>
                     <property name="angle">0.01</property>
                     <property name="max_width_chars">0</property>
                     <attributes>
+                      <attribute name="font-desc" value="Source Code Pro 10"/>
                       <attribute name="foreground" value="#20204a4a8787"/>
                     </attributes>
                   </object>
@@ -2387,7 +2579,7 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">              &lt;span foreground='orange'&gt;SSP: &lt;/span&gt; $</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; SSP: &lt;/span&gt;$&lt;/span&gt;</property>
                             <property name="use_markup">True</property>
                           </object>
                           <packing>
@@ -2439,7 +2631,7 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">             &lt;span foreground='orange'&gt;USP: &lt;/span&gt; $</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt; USP: &lt;/span&gt;$&lt;/span&gt;</property>
                             <property name="use_markup">True</property>
                           </object>
                           <packing>
@@ -2491,7 +2683,7 @@
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">                &lt;span foreground='orange'&gt;PC: &lt;/span&gt; $</property>
+                            <property name="label" translatable="yes">&lt;span font_family='SourceCodePro' font='10'&gt;&lt;span foreground='orange'&gt;  PC: &lt;/span&gt;$&lt;/span&gt;</property>
                             <property name="use_markup">True</property>
                           </object>
                           <packing>

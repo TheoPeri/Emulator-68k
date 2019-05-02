@@ -192,7 +192,7 @@ void toggle_console()
  */
 void update_window() {
     unsigned i;
-    char buffer[47]; //buffer à verifier
+    char buffer[256]; //buffer à verifier
 
     // window register
     for (i = 0; i < 17; ++i) {
@@ -222,15 +222,15 @@ void update_window() {
 
     //address memory register //buffer à verifier
     for (i = 0; i < 8; ++i) {
-        snprintf(buffer, 47, " %04X %04X %04X %04X %04X %04X %04X %04X %04X ", read_16bit_memory(A(i)), read_16bit_memory(A(i)+2),
+        snprintf(buffer, 512, " %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X %04X ", read_16bit_memory(A(i)), read_16bit_memory(A(i)+2),
         read_16bit_memory(A(i)+4), read_16bit_memory(A(i)+6), read_16bit_memory(A(i)+8), read_16bit_memory(A(i)+10),
-        read_16bit_memory(A(i)+12), read_16bit_memory(A(i)+14), read_16bit_memory(A(i)+16));
+        read_16bit_memory(A(i)+12), read_16bit_memory(A(i)+14), read_16bit_memory(A(i)+16), read_16bit_memory(A(i)+18), read_16bit_memory(A(i)+20), read_16bit_memory(A(i)+22), read_16bit_memory(A(i)+24));
         gtk_label_set_text(window_memory_registers[i], buffer);
     }
 
     //address string memory register
     for (i = 0; i < 8; ++i) {
-        memory_tostring(buffer, (char *)(memory + A(i)), 18);
+        memory_tostring(buffer, (char *)(memory + A(i)), 26);
         gtk_label_set_text(window_memory_str_registers[i], buffer);
     }
 }
@@ -254,7 +254,7 @@ void update_mem_view()
 
 	char* tmp = NULL;
 	char* result = calloc(1, sizeof(char));
-	result = mystrcat(result, "<span font_family='Monospace'>");
+	result = mystrcat(result, "<span font_family='SourceCodePro' font='10'>");
 
 	for(size_t i = 0; i < LINE_COUNT; i++)
 	{
