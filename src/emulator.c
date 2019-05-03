@@ -413,7 +413,7 @@ int next_instruction() {
             return clr(current_operation);
         case 0x4400:
             // is_neg
-            goto warning;
+            return neg(current_operation);
         case 0x4600:
             // is_not
             goto warning;
@@ -2168,3 +2168,50 @@ int andi(uint16_t current_operation) {
 
     return 0;
 }
+
+
+
+/**
+* @brief Execute the command neg
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+int neg(uint16_t current_operation) {
+
+    // info
+    uint8_t size = (current_operation >> 6) & 0x7;
+
+    uint32_t displacement = 2;
+    uint32_t src = addressing_mode_source(size,
+            current_operation & 0xff, &displacement);
+
+    src = compa1(src);
+
+    addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, src);
+
+    uint8_t shift;
+    switch (size) {
+        case 0:
+            shift = 7;
+            break;
+        case 1:
+            shift = 15;
+            break;
+        default:
+            shift = 31;
+    }
+
+    NEGATIVE = (src >> shift) & 0x1;
+    ZERO = (src==0);
+    CARRY = !ZERO;
+    OVERFLOW = 0;
+
+
+    PC += displacement;
+    return 0;
+}
+
+
