@@ -1796,15 +1796,14 @@ int lsd(uint16_t current_operation) {
     uint8_t dr = (current_operation >> 8) & 1;
     uint32_t displacement = 2;
 
-    if (size == 3) {// MEMORY SHIFTS
+    if (size == 3) { // MEMORY SHIFTS
         uint8_t reg = current_operation & 0x3f;
         uint32_t source = addressing_mode_source(2, reg, &displacement);
 
         if(dr == 0) {
             CARRY = source & 1;
             source = source >> 1;
-        }
-        else {
+        } else {
             CARRY = source >> 31;
             source = source << 1;
         }
@@ -1833,20 +1832,21 @@ int lsd(uint16_t current_operation) {
 
         if (ir) {
             count = D(count) % 64;
-        }
-
-        if(count == 0) {
-            count = 8;
-        }
-
-        if (dr) {
-            source = (uint64_t)source << (count - 1);
-            EXTEND = source >> shift;
-            source = source << 1;
         } else {
-            source = source >> (count - 1);
-            EXTEND = source & 0x1;
-            source = source  >> 1;
+            if(count == 0) {
+                count = 8;
+            }
+        }
+        if (count > 0) {
+            if (dr) {
+                source = (uint64_t)source << (count - 1);
+                EXTEND = (source >> shift) & 0x1;
+                source = source << 1;
+            } else {
+                source = source >> (count - 1);
+                EXTEND = source & 0x1;
+                source = source  >> 1;
+            }
         }
 
         ZERO = source == 0;
@@ -2052,30 +2052,32 @@ int OR(uint16_t current_operation) {
         NEGATIVE = (tmp >> shift) & 0x1;
         OVERFLOW = 0;
         CARRY = 0;
-        EXTEND = 0;
-
     } else { // <ea> or DN -> DN
         source = addressing_mode_source(size,
-        current_operation & 0xff, &displacement);
+            current_operation & 0xff, &displacement);
 
         switch (size) {
             case 0:
                 shift = 7;
+                tmp = D(reg) & 0xff;
                 break;
             case 1:
                 shift = 15;
+                tmp = D(reg) & 0xffff;
                 break;
             default:
                 shift = 31;
+                tmp = D(reg);
         }
 
-        D(reg) = D(reg) | source;
+        tmp |= source;
 
-        ZERO = D(reg) == 0;
-        NEGATIVE = (D(reg) >> shift) & 0x1;
+        ZERO = tmp == 0;
+        NEGATIVE = (tmp >> shift) & 0x1;
         OVERFLOW = 0;
         CARRY = 0;
-        EXTEND = 0;
+
+        D(reg) |= tmp;
     }
 
     PC += displacement;

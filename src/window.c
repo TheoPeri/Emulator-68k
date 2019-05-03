@@ -444,7 +444,6 @@ void change_memory_view() {
 gboolean key_event(__attribute__((unused))GtkWidget *widget,
     GdkEventKey *event) {
     unsigned i = 0;
-    // unsigned j = 0;
 
     switch (event->keyval) {
         case GDK_KEY_F2:
@@ -457,25 +456,32 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
             update_buffer();
             break;
         case GDK_KEY_F9:
-            while (!next_instruction() && !dict_get(break_points, PC)) {
-                // test
-                if (i == 1000000) {
-                    i = 0;
-                    // ++j;
+            if (gtk_widget_is_visible(consoleimg)) {
+                while (!next_instruction() && !dict_get(break_points, PC)) {
+                    // test
+                    if (i == 1024) {
+                        i = 0;
 
-		            update_console_display();
+                        update_console_display();
 
-                    // update win
-                    gtk_widget_queue_draw(consoleimg);
+                        // update win
+                        gtk_widget_queue_draw(console);
+                        while (gtk_events_pending()) {
+                            gtk_main_iteration();
+                        }
+                    }
+
+                    ++i;
                 }
-
-                ++i;
+            } else {
+                while (!next_instruction() && !dict_get(break_points, PC));
             }
+
             update_window();
             update_buffer();
             break;
     }
-    // printf("%d\n", j);
+
     return FALSE;
 }
 
