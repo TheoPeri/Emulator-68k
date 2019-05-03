@@ -1831,7 +1831,7 @@ int lsd(uint16_t current_operation) {
                 shift = 31;
         }
 
-        if(ir) {
+        if (ir) {
             count = D(count) % 64;
         }
 
@@ -1839,24 +1839,21 @@ int lsd(uint16_t current_operation) {
             count = 8;
         }
 
-        while (count != 0) {
-            if(dr == 0) {
-                CARRY = source & 1;
-                source = source >> 1;
-            }
-            else
-            {
-                CARRY = source >> 31;
-                source = source << 1;
-            }
-            count--;
+        if (dr) {
+            source = (uint64_t)source << (count - 1);
+            EXTEND = source >> shift;
+            source = source << 1;
+        } else {
+            source = source >> (count - 1);
+            EXTEND = source & 0x1;
+            source = source  >> 1;
         }
-
-        addressing_mode_destination(size, reg, &displacement, source);
 
         ZERO = source == 0;
         NEGATIVE = (source >> shift) & 0x1;
-        EXTEND = CARRY;
+        CARRY = (count == 8) ? 0 : EXTEND;
+
+        addressing_mode_destination(size, reg, &displacement, source);
     }
 
     OVERFLOW = 0;

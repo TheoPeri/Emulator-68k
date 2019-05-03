@@ -2554,15 +2554,16 @@ Test(emulator, test_lsd, .init=setup_emulator) {
     D(0) = 0xff;
     D(1) = 0x2;
     lsd(instruction);
+
     cr_assert(PC == 0x51a, "Error on the PC => %x", PC);
     cr_assert(D(1) == 0x0, "Expect D(1) == 0x%x", D(1));
-    cr_assert(ZERO, "Error on the status register (data register .w) => "
+    cr_assert(ZERO, "Error on the status register (data register .l) => "
         "ZERO = 0x%x", ZERO);
-    cr_assert(!NEGATIVE, "Error on the status register (data register .w) => "
+    cr_assert(!NEGATIVE, "Error on the status register (data register .l) => "
         "NEGATIVE = 0x%x", NEGATIVE);
-    cr_assert(!CARRY, "Error on the status register (data register .w) => "
+    cr_assert(!CARRY, "Error on the status register (data register .l) => "
         "CARRY = 0x%x", CARRY);
-    cr_assert(!OVERFLOW, "Error on the status register (data register .w) => "
+    cr_assert(!OVERFLOW, "Error on the status register (data register .l) => "
         "OVERFLOW = 0x%x", OVERFLOW);
 
     // test data .l lsr d0,d1
