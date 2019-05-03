@@ -39,6 +39,9 @@ GtkLabel *hex_view;
 GtkWidget *memory_view;
 GtkWidget *consoleimg;
 
+GtkWidget *breakpoints_menu;
+GtkEntry *breakpoints_input;
+
 GtkAdjustment *scrollbar;
 
 void init_window();

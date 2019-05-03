@@ -23,12 +23,12 @@ struct dict* dict_new(size_t capacity)
 {
     //Allocating our dictionary
     struct dict* dict = malloc(sizeof(struct dict));
-    
+
     //Initialize the structure's properties
     dict->capacity = capacity;
     dict->size = 0;
     dict->data = malloc(capacity * sizeof(struct dict_element));
-    
+
     //Initialize our array based on capacity
     for(size_t i = 0; i < capacity; i++)
     {
@@ -37,6 +37,7 @@ struct dict* dict_new(size_t capacity)
         dict->data[i].value = 0;
         dict->data[i].next = NULL;
     }
+
     return dict;
 }
 
@@ -54,6 +55,7 @@ void dict_clear(struct dict *d)
             list = net;
         }
     }
+
     d->size = 0;
 }
 
@@ -73,12 +75,12 @@ struct dict_element *dict_get(struct dict *d, uint32_t key)
     uint32_t h = hash(&key, 4);
     //Calculate the position on our array
     uint32_t i = h % d->capacity;
-    
+
     //Search for the element inside the array
     struct dict_element* list = d->data[i].next;
     for(;list; list = list->next)
         if(list->hkey == h) return list;
-    
+
     return NULL;
 }
 
@@ -91,10 +93,10 @@ void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t ne
         {
             size_t newIndex = list->hkey % newcap;
             void* localnext = list->next;
-            
+
             list->next = newData[newIndex].next;
             newData[newIndex].next = list;
-            
+
             list = localnext;
         }
     }
@@ -106,47 +108,47 @@ int dict_insert(struct dict *d, uint32_t key, long value)
     uint32_t h = hash(&key, 4);
     //Calculate the position on our array
     uint32_t i = h % d->capacity;
-    
+
     //Make sure the key doesn't already exist
     struct dict_element* list = &d->data[i];
     //Since we are at it, get the last place in the list
     struct dict_element* last = list;
-    
+
     for(;list; list = list->next)
     {
         if(list->hkey == h) return 0;
         last = list;
     }
-    
+
     //Calculate how full we are
     int ratio = 100 * d->size / d->capacity;
-    
+
     struct dict_element* element = malloc(sizeof(struct dict_element));
-    
+
     element->hkey = h;
     element->value = value;
     element->key = key;
     element->next = NULL;
-    
+
     last->next = element;
-    
+
     d->size++;
-    
+
     //If our array is 75% full reallocate more space
     if(ratio > 75)
     {
         size_t newcap = d->capacity * 2;
         struct dict_element* newData = calloc(newcap, sizeof(struct dict_element));
-        
+
         //go through the existing elements and arrange them accordingly
         recalculate_indexes(d, newData, newcap);
-        
+
         free(d->data);
-        
+
         d->capacity = newcap;
         d->data = newData;
     }
-    
+
     return 1;
 }
 
@@ -154,14 +156,14 @@ void dict_remove(struct dict *d, uint32_t key)
 {
     uint32_t h = hash(&key, 4);
     uint32_t i = h % d->capacity;
-    
+
     //Current list corresponding to the hash key
     struct dict_element* list = d->data[i].next;
-    
+
     //Keep track of the last element so we can join
     //the list after removing an element
     struct dict_element* last = &d->data[i];
-    
+
     //Look for the element with the same key
     for(;list; list = list->next)
     {
@@ -171,7 +173,7 @@ void dict_remove(struct dict *d, uint32_t key)
             //Reconnect the list
             if(last) last->next = list->next;
             else d->data[i] = *list->next;
-            
+
             //Free the removed element
             free(list);
             break;
@@ -189,9 +191,9 @@ void dict_remove(struct dict *d, uint32_t key)
         printf("[%d]", i);
         struct dict_element* list = d->data[i].next;
         for(;list; list = list->next)
-            printf(" -> (%d, %d, %d)", 
-                    list->hkey, 
-                    list->key, 
+            printf(" -> (%d, %d, %d)",
+                    list->hkey,
+                    list->key,
                     (uint32_t)list->value);
         printf("\n");
     }

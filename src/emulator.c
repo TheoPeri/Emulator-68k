@@ -15,6 +15,7 @@
  */
 int init_memory() {
 	break_points = dict_new(100);
+
     if ((memory = malloc(16777216 * sizeof(uint8_t))) == NULL) {
         return -1;
     }
@@ -1789,32 +1790,16 @@ int clr(uint16_t current_operation) {
 * @return -1 => error || other => OK
 */
 int lsd(uint16_t current_operation) {
-    // info
-    uint8_t size;
-
     // select size
-    switch (current_operation & 0xC0) {
-        case 0x0:
-            size = 0;
-            break;
-        case 0x40:
-            size = 1;
-            break;
-        case 0x80:
-            size = 2;
-            break;
-       default:
-            size = 3;
-            break;
-    }
+    uint8_t size = (current_operation & 0xc0) >> 6;
 
     uint8_t dr = (current_operation >> 8) & 1;
     uint32_t displacement = 2;
 
-    if(size == 3) {// MEMORY SHIFTS
+    if (size == 3) {// MEMORY SHIFTS
         uint8_t reg = current_operation & 0x3f;
-        uint32_t source = addressing_mode_source(2,
-                reg, &displacement);
+        uint32_t source = addressing_mode_source(2, reg, &displacement);
+
         if(dr == 0) {
             CARRY = source & 1;
             source = source >> 1;
@@ -1825,20 +1810,31 @@ int lsd(uint16_t current_operation) {
         }
 
         addressing_mode_destination(2, reg, &displacement, source);
-        ZERO = (source==0);
-        NEGATIVE = (source >> 31) == 1;
+        ZERO = !source;
+        NEGATIVE = source >> 31;
+        EXTEND = CARRY;
+    } else { // REGISTER SHIFTS
+        uint8_t shift;
+        uint8_t reg = current_operation & 0x7;
+        uint8_t count = (current_operation >> 9) & 0x7;
+        uint8_t ir = (current_operation >> 5) & 0x1;
+        uint32_t source = addressing_mode_source(size, reg, &displacement);
 
-    }
-    else { // REGISTER SHIFTS
-        uint8_t reg = current_operation & 7;
-        uint8_t count = (current_operation >> 9) & 7;
-        uint8_t ir = (current_operation >> 5) & 1;
-
-        if(ir == 1) {
-            count = D(count) %64;
+        switch (size) {
+            case 0x0:
+                shift = 7;
+                break;
+            case 0x1:
+                shift = 15;
+                break;
+            default:
+                shift = 31;
         }
-        uint32_t source = addressing_mode_source(2,
-                reg, &displacement);
+
+        if(ir) {
+            count = D(count) % 64;
+        }
+
         if(count == 0) {
             count = 8;
         }
@@ -1855,16 +1851,15 @@ int lsd(uint16_t current_operation) {
             }
             count--;
         }
-        addressing_mode_destination(2, reg, &displacement, source);
 
-        ZERO = (source==0);
-        NEGATIVE = (source >> 31) == 1;
+        addressing_mode_destination(size, reg, &displacement, source);
 
+        ZERO = source == 0;
+        NEGATIVE = (source >> shift) & 0x1;
+        EXTEND = CARRY;
     }
 
     OVERFLOW = 0;
-
-
 
     PC += displacement;
 

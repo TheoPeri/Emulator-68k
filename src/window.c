@@ -108,6 +108,9 @@ void init_window(char *file_name) {
 	hex_view = GTK_LABEL(gtk_builder_get_object(builder, "hex_view"));
 	memory_view = GTK_WIDGET(gtk_builder_get_object(builder, "memory_view"));
 
+    breakpoints_menu = GTK_WIDGET(gtk_builder_get_object(builder, "breakpoints_menu"));
+    breakpoints_input = GTK_ENTRY(gtk_builder_get_object(builder, "breakpoints_input"));
+
 	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
 
 	consoleimg = GTK_WIDGET(gtk_builder_get_object(builder, "consoleimg"));
@@ -185,6 +188,38 @@ void toggle_console()
 		gtk_widget_show(console);
 		update_console_display();
 	}
+}
+
+
+void toggle_menu_breakpoint() {
+    if (gtk_widget_is_visible(breakpoints_menu)) {
+        gtk_widget_hide(breakpoints_menu);
+    } else {
+		gtk_widget_show(breakpoints_menu);
+    }
+}
+
+int is_hex(const char *tmp) {
+    for (; *tmp; ++tmp) {
+        if ((*tmp < '0' || *tmp > '9') && (*tmp < 'a' || *tmp > 'f')) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+void add_breakpoint_button() {
+    const char *tmp = gtk_entry_get_text(breakpoints_input);
+    uint32_t address;
+
+    if (is_hex(tmp) && sscanf(tmp, "%x", &address) == 1) {
+        togglebreakpoint(address);
+        toggle_menu_breakpoint();
+		update_buffer();
+    } else {
+        printf("Warning the input (0x%s) is not an hexadecimal number.\n", tmp);
+    }
 }
 
 /**
@@ -354,11 +389,13 @@ void openfile_button() {
     gtk_widget_show(GTK_WIDGET(openfile_window));
 }
 
+
 /**
  * @brief Load the file in the emulator
  */
 void loadfile_button() {
-	break_points = dict_new(100);
+    // TODO
+    // dict_clear(break_points);
     char *filename;
 
     // get the file name
@@ -411,9 +448,8 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
 
     switch (event->keyval) {
         case GDK_KEY_F2:
-			togglebreakpoint();
+			togglebreakpoint(PC);
 			update_window();
-			update_buffer();
 			break;
 		case GDK_KEY_F11:
             next_instruction();

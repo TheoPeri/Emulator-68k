@@ -41,12 +41,11 @@ char *mystrcat(char *s1, char *s2) {
     return s1;
 }
 
-void togglebreakpoint()
-{
-	if(!dict_get(break_points, PC))
-		dict_insert(break_points, PC, 1);
+void togglebreakpoint(uint32_t address) {
+	if(!dict_get(break_points, address))
+		dict_insert(break_points, address, 1);
 	else
-		dict_remove(break_points, PC);
+		dict_remove(break_points, address);
 }
 
 /**
