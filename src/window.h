@@ -59,5 +59,7 @@ void toggle_console();
 
 void on_window_main_destroy();
 
-gboolean key_event(GtkWidget *widget, GdkEventKey *event);
+void key_event_main(GtkWidget *widget, GdkEventKey *event);
+void key_press_event_display(GtkWidget *widget, GdkEventKey *event);
+void key_release_event_display(GtkWidget *widget, GdkEventKey *event);
 #endif

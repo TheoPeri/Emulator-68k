@@ -123,7 +123,14 @@ void init_window(char *file_name) {
 
 	update_mem_view();
     gtk_builder_connect_signals(builder, NULL);
-    g_signal_connect(window, "key-press-event", G_CALLBACK(key_event), NULL);
+
+    // connect key
+    // main win
+    g_signal_connect(window, "key-press-event", G_CALLBACK(key_event_main), NULL);
+
+    // display win
+    g_signal_connect(console, "key-press-event", G_CALLBACK(key_press_event_display), NULL);
+    g_signal_connect(console, "key-release-event", G_CALLBACK(key_release_event_display), NULL);
 
     g_object_unref(builder);
 
@@ -419,7 +426,7 @@ void loadfile_button() {
     update_window();
     update_buffer();
 
-	printf("\n\n=====\n");
+    printf("\n\n=====\n");
 }
 
 /**
@@ -441,8 +448,13 @@ void change_memory_view() {
     }
 }
 
-gboolean key_event(__attribute__((unused))GtkWidget *widget,
-    GdkEventKey *event) {
+/**
+ * @brief Compute input from the main win
+ *
+ * @param widget unused
+ * @param event the event value
+ */
+void key_event_main(__attribute__((unused))GtkWidget *widget, GdkEventKey *event) {
     unsigned i = 0;
 
     switch (event->keyval) {
@@ -459,7 +471,7 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
             if (gtk_widget_is_visible(consoleimg)) {
                 while (!next_instruction() && !dict_get(break_points, PC)) {
                     // test
-                    if (i == 1024) {
+                    if (i == 512) {
                         i = 0;
 
                         update_console_display();
@@ -481,8 +493,46 @@ gboolean key_event(__attribute__((unused))GtkWidget *widget,
             update_buffer();
             break;
     }
+}
 
-    return FALSE;
+/**
+ * @brief Compute input press from the display win
+ *
+ * @param widget unused
+ * @param event the event value
+ */
+void key_press_event_display(__attribute__((unused))GtkWidget *widget, GdkEventKey *event) {
+    switch (event->keyval) {
+        case GDK_KEY_space:
+            write_8bit_memory(0x420, 0xff);
+            break;
+        case GDK_KEY_Left:
+            write_8bit_memory(0x46f, 0xff);
+            break;
+        case GDK_KEY_Right:
+            write_8bit_memory(0x471, 0xff);
+            break;
+    }
+}
+
+/**
+ * @brief Compute input release from the display win
+ *
+ * @param widget unused
+ * @param event the event value
+ */
+void key_release_event_display(__attribute__((unused))GtkWidget *widget, GdkEventKey *event) {
+    switch (event->keyval) {
+        case GDK_KEY_space:
+            write_8bit_memory(0x420, 0x00);
+            break;
+        case GDK_KEY_Left:
+            write_8bit_memory(0x46f, 0x00);
+            break;
+        case GDK_KEY_Right:
+            write_8bit_memory(0x471, 0x00);
+            break;
+    }
 }
 
 // called when window is closed

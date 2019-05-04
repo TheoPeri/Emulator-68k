@@ -1654,7 +1654,7 @@ int subi(uint16_t current_operation) {
     switch (size) {
         case 0x0:
             displacement = 4;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
             shift = 7;
 
             destination = addressing_mode_source_ro(size, value, &displacement);
@@ -1662,7 +1662,7 @@ int subi(uint16_t current_operation) {
             break;
         case 0x1:
             displacement = 4;
-            source = read_16bit_memory(PC);
+            source = read_16bit_memory(PC + 2);
             shift = 15;
 
             destination = addressing_mode_source_ro(size, value, &displacement);
