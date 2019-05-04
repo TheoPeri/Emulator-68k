@@ -2168,8 +2168,8 @@ int neg(uint16_t current_operation) {
     uint8_t size = (current_operation >> 6) & 0x3;
 
     uint32_t displacement = 2;
-    uint32_t tmp = addressing_mode_source(size,
-            current_operation & 0xff, &displacement);
+    uint32_t tmp = addressing_mode_source_ro(size,
+        current_operation & 0xff, &displacement);
 
     switch (size) {
         case 0:
@@ -2181,10 +2181,9 @@ int neg(uint16_t current_operation) {
             tmp = 0 - (uint16_t)tmp;
             break;
         default:
-            tmp = 0 - tmp;
             shift = 31;
+            tmp = 0 - tmp;
     }
-
     addressing_mode_destination(size,
         current_operation & 0xff, &displacement, tmp);
 
