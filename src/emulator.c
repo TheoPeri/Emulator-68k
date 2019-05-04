@@ -413,7 +413,7 @@ int next_instruction() {
             return clr(current_operation);
         case 0x4400:
             // is_neg
-            goto warning;
+            return neg(current_operation);
         case 0x4600:
             // is_not
             goto warning;
@@ -1861,17 +1861,6 @@ int lsd(uint16_t current_operation) {
     return 0;
 }
 
-uint32_t compa1(uint32_t value)
-{
-    uint8_t i =0;
-    while(!((value>>i)&0x1) && i<31) {
-        i++;
-    }
-    i++;
-
-    return value ^ ((0xffffffff >> i) << i);
-}
-
 /**
 * @brief Execute the command muls
 *
@@ -1889,22 +1878,22 @@ int muls(uint16_t current_operation) {
     uint32_t src2 = addressing_mode_source(size,
             current_operation & 0xff, &displacement);
 
-    uint32_t source = D((current_operation>>9)&0x7) & 0xffff;
+    uint32_t source = D((current_operation >> 9) & 0x7) & 0xffff;
 
-    uint8_t neg =0;
-    if(source>>15 & 0x1) {
-        source = compa1(source);
+    uint8_t neg = 0;
+    if(source >> 15 & 0x1) {
+        source = -(uint16_t)source;
         neg++;
     }
-    if(src2>>15 & 0x1) {
-        src2 = compa1(src2);
+    if(src2 >> 15 & 0x1) {
+        src2 = -(uint16_t)src2;
         neg++;
     }
 
     source = (src2 & 0xffff) * (source & 0xffff);
 
     if(neg % 2) {
-        source = compa1(source);
+        source = -source;
     }
 
     NEGATIVE = (source >> 31) == 1;
@@ -1913,7 +1902,6 @@ int muls(uint16_t current_operation) {
     OVERFLOW = 0;
 
     D((current_operation>>9)&0x7) = source;
-
 
     PC += displacement;
     return 0;
@@ -2161,6 +2149,50 @@ int andi(uint16_t current_operation) {
 
     addressing_mode_destination(size,
         current_operation & 0xff, &displacement, destination);
+
+    PC += displacement;
+
+    return 0;
+}
+
+/**
+* @brief Execute the command neg
+*
+* @param current_operation the current operation
+*
+* @return -1 => error || other => OK
+*/
+int neg(uint16_t current_operation) {
+    // info
+    uint8_t shift;
+    uint8_t size = (current_operation >> 6) & 0x3;
+
+    uint32_t displacement = 2;
+    uint32_t tmp = addressing_mode_source(size,
+            current_operation & 0xff, &displacement);
+
+    switch (size) {
+        case 0:
+            shift = 7;
+            tmp = 0 - (uint8_t)tmp;
+            break;
+        case 1:
+            shift = 15;
+            tmp = 0 - (uint16_t)tmp;
+            break;
+        default:
+            tmp = 0 - tmp;
+            shift = 31;
+    }
+
+    addressing_mode_destination(size,
+        current_operation & 0xff, &displacement, tmp);
+
+    NEGATIVE = (tmp >> shift) & 0x1;
+    ZERO = tmp == 0;
+    CARRY = !ZERO;
+    OVERFLOW = 0;
+    EXTEND = CARRY;
 
     PC += displacement;
 
