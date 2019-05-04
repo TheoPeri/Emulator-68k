@@ -3,8 +3,8 @@ Vector_000	dc.l	$10000
 Vector_001	dc.l	Main
 
 			org		$500
-Main		move.l	#-4,d1
-			neg.l	d1
+Main		andi.l	#$FF,d0
+			ori.b	#$FF,d0
 
 			illegal
 			

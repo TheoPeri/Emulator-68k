@@ -1459,8 +1459,26 @@ int lea(uint16_t current_operation) {
             displacement = 2;
             break;
         case 0x38: // absolute long
-            source = read_32bit_memory(PC + 2);
-            displacement = 6;
+            if (reg == 1)
+            {
+                source = read_32bit_memory(PC + 2);
+                displacement = 6;
+            }
+            else
+            {
+                if (reg == 2)
+                {
+                    source = read_16bit_memory(PC + 2);
+                    source = PC + 2 + source;
+                    displacement = 4;
+                }
+
+                else
+                {
+                    warnx("undefined behavior. reg -> %hx", reg);
+                }
+
+            }
             break;
         case 0x28:
             source = read_16bit_memory(PC + 2) + A(reg);
