@@ -932,32 +932,30 @@ int cmpa(uint16_t current_operation) {
 */
 int cmpi(uint16_t current_operation) {
     uint8_t size = (current_operation & 0xc0) >> 6;
-    uint32_t displacement = 2;
+    uint32_t displacement;
     uint32_t source, tmp;
     uint8_t shift;
-
-    uint32_t destination = addressing_mode_source(size,
-        current_operation & 0xff, &displacement);
 
     switch (size) {
         case 0x0:
             source = read_16bit_memory(PC + 2) & 0xff;
             shift = 7;
-            displacement += 2;
+            displacement  = 4;
             break;
         case 0x1:
             source = read_16bit_memory(PC + 2);
             shift = 15;
-            displacement += 2;
-            break;
-        case 0x2:
-            source = read_32bit_memory(PC + 2);
-            shift = 31;
-            displacement += 4;
+            displacement = 4;
             break;
         default:
-            return -1;
+            source = read_32bit_memory(PC + 2);
+            shift = 31;
+            displacement = 6;
+            break;
     }
+
+    uint32_t destination = addressing_mode_source(size,
+        current_operation & 0xff, &displacement);
 
     tmp = destination - source;
 
