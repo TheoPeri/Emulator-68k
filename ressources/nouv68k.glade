@@ -84,7 +84,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Breakpoint</property>
-                        <signal name="activate" handler="toggle_menu_breakpoint" swapped="no"/>
+                        <signal name="activate" handler="toggle_breakpoint_window" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -106,31 +106,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Toggle Console</property>
-                        <signal name="activate" handler="toggle_console" swapped="no"/>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkMenuItem">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Aide</property>
-                <property name="use_underline">True</property>
-                <child type="submenu">
-                  <object class="GtkMenu">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkImageMenuItem">
-                        <property name="label">gtk-about</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
-                        <property name="always_show_image">True</property>
+                        <signal name="activate" handler="toggle_display_window" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -309,7 +285,7 @@
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <property name="adjustment">Adjustement</property>
-                <signal name="value-changed" handler="scrolled_view" swapped="no"/>
+                <signal name="value-changed" handler="update_mem_view" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -345,7 +321,7 @@
             <property name="opacity">0.56999999977648264</property>
             <property name="active">True</property>
             <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="change_memory_view" swapped="no"/>
+            <signal name="toggled" handler="toggle_memory_view" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -2795,7 +2771,7 @@
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="ConsoleWindow">
+  <object class="GtkWindow" id="displayWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Console View</property>
     <property name="resizable">False</property>
@@ -2807,7 +2783,7 @@
       <placeholder/>
     </child>
     <child>
-      <object class="GtkImage" id="consoleimg">
+      <object class="GtkImage" id="display_image">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="stock">gtk-missing-image</property>
@@ -2971,7 +2947,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="toggle_menu_breakpoint" swapped="no"/>
+                <signal name="clicked" handler="toggle_breakpoint_window" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2985,7 +2961,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <signal name="clicked" handler="add_breakpoint_button" swapped="no"/>
+                <signal name="clicked" handler="apply_breakpoint_button" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>

@@ -183,6 +183,7 @@ int load_file(char *name_file) {
     size_t len = 0;
     ssize_t read;
     fp = fopen(name_file, "r");
+
     if (fp == NULL) {
         warnx("FAIL OPEN THE FILE!!!.\n");
         return -1;
@@ -195,8 +196,9 @@ int load_file(char *name_file) {
     }
 
     fclose(fp);
-    if (line)
+    if (line) {
         free(line);
+    }
 
     return 0;
 }

@@ -4,9 +4,7 @@
 #define _MEMORY_H
 
 // easy memory management macro
-
 #define MEMORY() memory
-
 #define ALTERNATIVES_MEMORY(tmp) (tmp)
 
 /**
@@ -47,7 +45,6 @@ switch ((size)) { \
         (output) = read_32bit(memory + (d));\
         break; \
 }})
-
 
 /**
  * @brief Simplify pre op memory read
@@ -123,7 +120,6 @@ switch ((size)) { \
         break; \
 }})
 
-
 /**
  * @brief Simplify pre op memory write
  *
@@ -193,7 +189,6 @@ extern uint32_t registers[17];
 // dico
 extern dictionary break_points;
 
-
 #define CARRY                           status_registers[0]
 #define OVERFLOW                        status_registers[1]
 #define ZERO                            status_registers[2]
@@ -214,4 +209,5 @@ uint32_t read_32bit(uint8_t *address);
 void write_16bit(uint8_t *address, uint32_t value);
 
 void write_32bit(uint8_t*address, uint32_t value);
+
 #endif

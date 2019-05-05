@@ -29,7 +29,7 @@ uint32_t get_stack_ptr (){
  * @return The number in low endian.
  */
 uint32_t read_16bit(uint8_t *address) {
-    return (uint32_t)address[0]<<8 | (uint32_t)address[1];
+    return (uint32_t)address[0] << 8 | (uint32_t)address[1];
 }
 
 /**
@@ -40,8 +40,8 @@ uint32_t read_16bit(uint8_t *address) {
  * @return The number in low endian.
  */
 uint32_t read_32bit(uint8_t *address) {
-    return (uint32_t)address[0]<<24 | (uint32_t)address[1]<<16
-        | (uint32_t)address[2]<<8 | (uint32_t)address[3];
+    return (uint32_t)address[0] << 24 | (uint32_t)address[1] << 16
+        | (uint32_t)address[2] << 8 | (uint32_t)address[3];
 }
 
 /**
@@ -51,7 +51,7 @@ uint32_t read_32bit(uint8_t *address) {
  * @param value The value in low endian.
  */
 void write_16bit(uint8_t *address, uint32_t value) {
-    address[0] = (value & 0xFF00)>>8;
+    address[0] = (value & 0xFF00) >> 8;
     address[1] = value & 0xFF;
 }
 
@@ -63,7 +63,7 @@ void write_16bit(uint8_t *address, uint32_t value) {
  */
 void write_32bit(uint8_t*address, uint32_t value) {
     address[0] = value >> 24;
-    address[1] = (value & 0xFF0000)>>16;
-    address[2] = (value & 0xFF00)>>8;
+    address[1] = (value & 0xFF0000) >> 16;
+    address[2] = (value & 0xFF00) >> 8;
     address[3] = value & 0xFF;
 }

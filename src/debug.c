@@ -11,8 +11,10 @@
 
 extern uint8_t *memory;
 
+// capstone macro
 #define code_size 512
 #define NB_INSTRUCTION 34
+
 #define GREEN " <span color='green'>%s</span>\n"
 
 /**
@@ -41,11 +43,64 @@ char *mystrcat(char *s1, char *s2) {
     return s1;
 }
 
+/**
+ * @brief Converts uint32 to str
+ *
+ * @param buffer The output buffer
+ * @param value The value to convert
+ * @param size The size of the value to convert
+ *
+ */
+void uint32_tostring(char *buffer, uint32_t value) {
+	unsigned i;
+	char *c_value = (char *)&value;
+
+	for (i = 0; i < 4; ++i)
+	{
+        if (c_value[i] < 0x20 || c_value[i] == 0x7f) {
+            buffer[3 - i] = '.';
+        } else {
+            buffer[3 - i] = c_value[i];
+        }
+	}
+
+	buffer[i] = '\0';
+}
+
+/**
+ * @brief Converts uint32 to str (no xml)
+ *
+ * @param buffer The output buffer
+ * @param value The value to convert
+ * @param size The size of the value to convert
+ *
+ */
+void memory_tostring(char *buffer, char *value, unsigned size) {
+	unsigned i;
+
+	for (i = 0; i < size; ++i)
+	{
+        if (value[i] < 0x20 || value[i] == 0x7f) {
+            buffer[i] = '.';
+        } else {
+            buffer[i] = value[i];
+        }
+	}
+
+	buffer[i] = '\0';
+}
+
+/**
+ * @brief Toogle a breakpoint on the address.
+ *
+ * @param address The address of the breakpoint
+ */
 void togglebreakpoint(uint32_t address) {
-	if(!dict_get(break_points, address))
+	if(!dict_get(break_points, address)) {
 		dict_insert(break_points, address, 1);
-	else
+    } else {
 		dict_remove(break_points, address);
+    }
 }
 
 /**
@@ -59,7 +114,6 @@ void show_current_instruction(char** addrs, char** opcodes, char** operandes) {
 	cs_insn *binsn;
 	size_t count;
 	char *tmp = NULL;
-	//char *res = calloc(1, sizeof(char)); // init ""
 
 	if (cs_open(CS_ARCH_M68K, CS_MODE_BIG_ENDIAN, &handle) != CS_ERR_OK) {
 		warnx("ERROR: Failed to open the given code!\n");
@@ -141,7 +195,7 @@ void pretty_print_instruction(char** addresses, char** opcode, char** operande) 
 	addrs = mystrcat(addrs, "<span font_family='Monospace'>"
 							"<span color='blue'>[Address]</span>\n");
 
-	op = mystrcat(op,	"<span font_family='Monospace'>"
+	op = mystrcat(op, "<span font_family='Monospace'>"
 						"<span color='blue'>[Opcode]</span>\n");
 
 	o = mystrcat(o, "<span font_family='Monospace'>"
@@ -156,51 +210,4 @@ void pretty_print_instruction(char** addresses, char** opcode, char** operande) 
 	*addresses = addrs;
 	*opcode = op;
 	*operande = o;
-}
-
-/**
- * @brief Converts uint32 to str (no xml)
- *
- * @param buffer The output buffer
- * @param value The value to convert
- * @param size The size of the value to convert
- *
- */
-void memory_tostring(char *buffer, char *value, unsigned size) {
-	unsigned i;
-
-	for (i = 0; i < size; ++i)
-	{
-        if (value[i] < 0x20 || value[i] == 0x7f) {
-            buffer[i] = '.';
-        } else {
-            buffer[i] = value[i];
-        }
-	}
-
-	buffer[i] = '\0';
-}
-
-/**
- * @brief Converts uint32 to str
- *
- * @param buffer The output buffer
- * @param value The value to convert
- * @param size The size of the value to convert
- *
- */
-void uint32_tostring(char *buffer, uint32_t value) {
-	unsigned i;
-	char *c_value = (char *)&value;
-
-	for (i = 0; i < 4; ++i)
-	{
-        if (c_value[i] < 0x20 || c_value[i] == 0x7f) {
-            buffer[3 - i] = '.';
-        } else {
-            buffer[3 - i] = c_value[i];
-        }
-	}
-
-	buffer[i] = '\0';
 }

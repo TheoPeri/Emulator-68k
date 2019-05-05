@@ -1,6 +1,13 @@
 #include "dictionary.h"
 
-// Jenkins's one_at_a_time hash algorithm
+/**
+ * @brief Jenkins's one_at_a_time hash algorithm
+ *
+ * @param value The value to hash
+ * @param len The lenfth of the dict
+ *
+ * @return The hash value
+ */
 uint32_t hash(void *value, size_t len)
 {
     unsigned char* key = (unsigned char*)value;
@@ -19,6 +26,13 @@ uint32_t hash(void *value, size_t len)
     return hash;
 }
 
+/**
+ * @brief Create a new dictionary
+ *
+ * @param capacity The capacity of the new dictionary
+ *
+ * @return The ptr on the dictionary
+ */
 struct dict* dict_new(size_t capacity)
 {
     //Allocating our dictionary
@@ -41,6 +55,11 @@ struct dict* dict_new(size_t capacity)
     return dict;
 }
 
+/**
+ * @brief Clear the dictionary given in parameter
+ *
+ * @param d The dictionary ptr
+ */
 void dict_clear(struct dict *d)
 {
     //Iterate through all the elements to delete them
@@ -59,6 +78,11 @@ void dict_clear(struct dict *d)
     d->size = 0;
 }
 
+/**
+ * @brief Free the dictionary given in parameter
+ *
+ * @param d The dictionary ptr
+ */
 void dict_free(struct dict *d)
 {
     //Clear the data
@@ -69,6 +93,14 @@ void dict_free(struct dict *d)
     free(d);
 }
 
+/**
+ * @brief Get one element of the dictionary
+ *
+ * @param d The dictionary ptr
+ * @param key The key of the corresponding element
+ *
+ * @return The element of the corresponfing key
+ */
 struct dict_element *dict_get(struct dict *d, uint32_t key)
 {
     //Hash our key
@@ -78,12 +110,22 @@ struct dict_element *dict_get(struct dict *d, uint32_t key)
 
     //Search for the element inside the array
     struct dict_element* list = d->data[i].next;
-    for(;list; list = list->next)
-        if(list->hkey == h) return list;
+    for(; list; list = list->next) {
+        if(list->hkey == h) {
+            return list;
+        }
+    }
 
     return NULL;
 }
 
+/**
+ * @brief Recalculate indexes in the dictionary
+ *
+ * @param d The dictionary ptr
+ * @param newData The new data to add
+ * @param newcap The new capacity
+ */
 void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t newcap)
 {
     for(size_t j = 0; j < d->capacity; j++)
@@ -102,6 +144,15 @@ void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t ne
     }
 }
 
+/**
+ * @brief Insert a new value in the dictionary
+ *
+ * @param d The dictionary ptr
+ * @param key The key of the element
+ * @param value The value
+ *
+ * @return 0 => already in || other => OK
+ */
 int dict_insert(struct dict *d, uint32_t key, long value)
 {
     //Hash our key
@@ -114,9 +165,11 @@ int dict_insert(struct dict *d, uint32_t key, long value)
     //Since we are at it, get the last place in the list
     struct dict_element* last = list;
 
-    for(;list; list = list->next)
-    {
-        if(list->hkey == h) return 0;
+    for(; list; list = list->next) {
+        if(list->hkey == h) {
+            return 0;
+        }
+
         last = list;
     }
 
@@ -135,8 +188,7 @@ int dict_insert(struct dict *d, uint32_t key, long value)
     d->size++;
 
     //If our array is 75% full reallocate more space
-    if(ratio > 75)
-    {
+    if(ratio > 75) {
         size_t newcap = d->capacity * 2;
         struct dict_element* newData = calloc(newcap, sizeof(struct dict_element));
 
@@ -152,6 +204,12 @@ int dict_insert(struct dict *d, uint32_t key, long value)
     return 1;
 }
 
+/**
+ * @brief Remove one element in the dict
+ *
+ * @param d The dictionary ptr
+ * @param key The key of the element
+ */
 void dict_remove(struct dict *d, uint32_t key)
 {
     uint32_t h = hash(&key, 4);
