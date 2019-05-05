@@ -130,6 +130,7 @@ void init_window(char *file_name) {
 
     // memory widget
 	scrollbar = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "Adjustement"));
+    mem_view_position = GTK_ENTRY(gtk_builder_get_object(builder, "memViewPos"));
 
     // breakpoint widget
     breakpoint_window = GTK_WIDGET(gtk_builder_get_object(builder, "breakpoints_menu"));
@@ -297,7 +298,7 @@ void update_mem_view() {
 		if(bytes > LINE_SIZE) bytes = LINE_SIZE;
 
 		//Print the address of the current line
-		asprintf(&tmp, "<span color='gray'>$%07lX</span>\t", mem_pos);
+		asprintf(&tmp, "<span font_weight='bold'>$%07lX</span>\t", mem_pos);
 		result = mystrcat(result, tmp); free(tmp);
 
 		//Print the hex interpretation
@@ -400,7 +401,6 @@ void openfile_button() {
     gtk_widget_show(GTK_WIDGET(openfile_window));
 }
 
-
 /**
  * @brief Load the file in the emulator
  */
@@ -440,7 +440,6 @@ void closefile_button() {
     gtk_widget_hide(GTK_WIDGET(openfile_window));
 }
 
-
 /**
  * @brief Handler for the apply beakpoint button
  */
@@ -453,8 +452,130 @@ void apply_breakpoint_button() {
         toggle_breakpoint_window();
 		update_buffer();
     } else {
-        printf("Warning the input (0x%s) is not an hexadecimal number.\n", tmp);
+        printf("Warning the input ($%s) is not an hexadecimal number.\n", tmp);
     }
+}
+
+/**
+ * @brief Update the scrollbar position at the value of the input
+ */
+void update_mem_view_position() {
+    const char *tmp = gtk_entry_get_text(mem_view_position);
+    uint32_t address;
+
+    if (is_hex(tmp) && sscanf(tmp, "%x", &address) == 1
+        && address < MEM_MAX_VALUE) {
+        gtk_adjustment_set_value(scrollbar, address);
+    } else {
+        printf("Warning the input ($%s) is invalid.\n", tmp);
+    }
+
+    update_mem_view();
+}
+
+
+/**
+ * @brief Start the timer on the press increment
+ */
+void press_increment_mem_view_position() {
+    button_pressed = 1;
+    g_timeout_add(100, increment_mem_view_position, 0);
+}
+
+/**
+ * @brief End the timer on the press increment
+ */
+void release_increment_mem_view_position() {
+    button_pressed = 0;
+}
+
+/**
+ * @brief Update the mem view pos after the button press up
+ */
+int increment_mem_view_position() {
+    const char *tmp = gtk_entry_get_text(mem_view_position);
+    uint32_t address;
+
+
+    if (is_hex(tmp) && sscanf(tmp, "%x", &address) == 1
+        && address < MEM_MAX_VALUE) {
+        address += 16;
+
+        if (address < MEM_MAX_VALUE) {
+            gtk_adjustment_set_value(scrollbar, address);
+        } else {
+        goto error;
+        }
+    } else {
+        goto error;
+    }
+
+    update_mem_view();
+
+    return button_pressed;
+
+error:
+    printf("Warning the value ($%x) is out of bound.\n", address);
+    return 0;
+}
+
+/**
+ * @brief Start the timer on the press decrement
+ */
+void press_decrement_mem_view_position() {
+    button_pressed = 1;
+    g_timeout_add(100, decrement_mem_view_position, 0);
+}
+
+/**
+ * @brief End the timer on the press decrement
+ */
+void release_decrement_mem_view_position() {
+    button_pressed = 0;
+}
+
+/**
+ * @brief Update the mem view pos after the button press down
+ */
+int decrement_mem_view_position() {
+    const char *tmp = gtk_entry_get_text(mem_view_position);
+    uint32_t address;
+
+
+    if (is_hex(tmp) && sscanf(tmp, "%x", &address) == 1
+        && address < MEM_MAX_VALUE) {
+        address -= 16;
+
+        if (address < MEM_MAX_VALUE) {
+            gtk_adjustment_set_value(scrollbar, address);
+        } else {
+            goto error;
+        }
+    } else {
+        goto error;
+    }
+
+    update_mem_view();
+
+    return button_pressed;
+
+error:
+    printf("Warning the input ($%s) is invalid.\n", tmp);
+    return 0;
+}
+
+/**
+ * @brief Update the mem view pos at the value of the scrollbar
+ */
+void update_mem_view_input() {
+    char buffer[7];
+    uint32_t tmp = gtk_adjustment_get_value(scrollbar);
+
+    sprintf(buffer, "%x", tmp);
+
+    gtk_entry_set_text(mem_view_position, buffer);
+
+    update_mem_view();
 }
 
 /**
@@ -466,7 +587,7 @@ void apply_breakpoint_button() {
  * @param widget unused
  * @param event the event value
  */
-void key_event_main(__attribute__((unused))GtkWidget *widget, GdkEventKey *event) {
+int key_event_main(__attribute__((unused))GtkWidget *widget, GdkEventKey *event) {
     unsigned i = 0;
 
     switch (event->keyval) {
@@ -474,11 +595,13 @@ void key_event_main(__attribute__((unused))GtkWidget *widget, GdkEventKey *event
 			togglebreakpoint(PC);
 			update_data_window();
             update_buffer();
+            return 1;
 			break;
 		case GDK_KEY_F11:
             next_instruction();
             update_data_window();
             update_buffer();
+            return 1;
             break;
         case GDK_KEY_F9:
             if (gtk_widget_is_visible(display_window)) {
@@ -504,8 +627,11 @@ void key_event_main(__attribute__((unused))GtkWidget *widget, GdkEventKey *event
 
             update_data_window();
             update_buffer();
+            return 1;
             break;
     }
+
+    return 0;
 }
 
 /**

@@ -4,8 +4,9 @@
 #include <gtk/gtk.h>
 
 // mem win macro
-#define MEM_SIZE (16777216 * sizeof(uint8_t))
-#define MAX_VALUE (16777216 / 16 - 1)
+#define MEM_MAX_VALUE 16777216
+#define MEM_SIZE (MEM_MAX_VALUE * sizeof(uint8_t))
+#define MAX_VALUE (MEM_MAX_VALUE / 16 - 1)
 #define LINE_SIZE 16
 #define LINE_COUNT 32
 
@@ -49,10 +50,14 @@ GtkLabel *hex_view;
 GtkWidget *memory_view;
 GtkWidget *display_image;
 
+GtkEntry *mem_view_position;
+
 GtkWidget *breakpoint_window;
 GtkEntry *breakpoints_input;
 
 GtkAdjustment *scrollbar;
+
+int button_pressed;
 
 // function
 // manage win
@@ -76,7 +81,18 @@ void closefile_button();
 
 void apply_breakpoint_button();
 
-void key_event_main(GtkWidget *widget, GdkEventKey *event);
+void update_mem_view_position();
+
+void press_increment_mem_view_position();
+void release_increment_mem_view_position();
+int increment_mem_view_position();
+int decrement_mem_view_position();
+void press_decrement_mem_view_position();
+void release_decrement_mem_view_position();
+
+void update_mem_view_input();
+
+int key_event_main(GtkWidget *widget, GdkEventKey *event);
 void key_press_event_display(GtkWidget *widget, GdkEventKey *event);
 void key_release_event_display(GtkWidget *widget, GdkEventKey *event);
 

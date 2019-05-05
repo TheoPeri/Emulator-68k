@@ -53,7 +53,6 @@ int init() {
  * @return -1 => error || other => OK
  */
 int shutdown_emulator() {
-	printf("################ Shutting down the emulator ###############\n");
     free(memory);
     return 0;
 }
