@@ -145,14 +145,6 @@ void init_window(char *file_name) {
     // connect signal
     gtk_builder_connect_signals(builder, NULL);
 
-    // connect key
-    // main win
-    g_signal_connect(main_window, "key-press-event", G_CALLBACK(key_event_main), NULL);
-
-    // display win
-    g_signal_connect(display_window, "key-press-event", G_CALLBACK(key_press_event_display), NULL);
-    g_signal_connect(display_window, "key-release-event", G_CALLBACK(key_release_event_display), NULL);
-
     g_object_unref(builder);
     gtk_widget_show_all(main_window);
 

@@ -14,6 +14,7 @@
     <property name="title" translatable="yes">Emulator 68k</property>
     <property name="has_resize_grip">True</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
+    <signal name="key-press-event" handler="key_event_main" swapped="no"/>
     <child type="titlebar">
       <placeholder/>
     </child>
@@ -2779,6 +2780,8 @@
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
     <property name="attached_to">MainWindow</property>
+    <signal name="key-press-event" handler="key_press_event_display" swapped="no"/>
+    <signal name="key-release-event" handler="key_release_event_display" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -2793,8 +2796,10 @@
   <object class="GtkFileChooserDialog" id="OpenFileHex">
     <property name="can_focus">False</property>
     <property name="resizable">False</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="deletable">False</property>
+    <signal name="file-activated" handler="loadfile_button" swapped="no"/>
     <child>
       <placeholder/>
     </child>
@@ -2912,6 +2917,7 @@
               <object class="GtkEntry" id="breakpoints_input">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <signal name="activate" handler="apply_breakpoint_button" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
