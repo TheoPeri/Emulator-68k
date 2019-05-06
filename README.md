@@ -8,8 +8,9 @@ implemented instruction:
     jsr
 
     tst
+    dbcc
+
     clr
-    dbra
 
     cmp
     cmpa
@@ -21,6 +22,11 @@ implemented instruction:
     addq
     addi
 
+    sub
+    suba
+    subq
+    subi
+
     move
     moveq
     movea
@@ -28,18 +34,18 @@ implemented instruction:
 
     lea
 
-    sub
-    suba
-    subq
-    subi
-
     lsd
+
+    mulu
     muls
 
-    ori_to_ccr
-    andi_to_ccr
-
     or
+    andi
+    ori
+    andi_to_ccr
+    ori_to_ccr
+
+    neg
 
 addressing mode:
     data register
