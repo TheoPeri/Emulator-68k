@@ -63,15 +63,17 @@ struct dict* dict_new(size_t capacity)
 void dict_clear(struct dict *d)
 {
     //Iterate through all the elements to delete them
-    for(size_t i = 0; i < d->size; i++)
+    for(size_t i = 0; i < d->capacity; i++)
     {
-        struct dict_element* list = &d->data[i];
+        dict_result list = &d->data[i];
+        dict_result l = list->next;
+
         //Free all the elements inside the local list
-        for(;list;)
+        while(l)
         {
-            struct dict_element* net = list->next;
-            free(list);
-            list = net;
+            dict_result nextElement = l->next;
+            free(l);
+            l = nextElement;
         }
     }
 
