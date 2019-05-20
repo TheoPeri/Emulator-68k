@@ -406,7 +406,8 @@ void openfile_button() {
  */
 void loadfile_button() {
     // TODO
-    // dict_clear(break_points);
+    dict_clear(break_points);
+
     char *filename;
 
     // get the file name
