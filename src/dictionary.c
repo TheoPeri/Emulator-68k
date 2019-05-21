@@ -8,18 +8,17 @@
  *
  * @return The hash value
  */
-uint32_t hash(void *value, size_t len)
-{
+uint32_t hash(void *value, size_t len) {
     unsigned char* key = (unsigned char*)value;
     uint32_t hash = 0;
     size_t i;
 
-    for (i = 0; i < len; i++)
-    {
+    for (i = 0; i < len; ++i) {
         hash += key[i];
         hash += (hash << 10);
         hash ^= (hash >> 6);
     }
+
     hash += (hash << 3);
     hash ^= (hash >> 11);
     hash += (hash << 15);
@@ -33,8 +32,7 @@ uint32_t hash(void *value, size_t len)
  *
  * @return The ptr on the dictionary
  */
-struct dict* dict_new(size_t capacity)
-{
+struct dict* dict_new(size_t capacity) {
     //Allocating our dictionary
     struct dict* dict = malloc(sizeof(struct dict));
 
@@ -44,8 +42,7 @@ struct dict* dict_new(size_t capacity)
     dict->data = malloc(capacity * sizeof(struct dict_element));
 
     //Initialize our array based on capacity
-    for(size_t i = 0; i < capacity; i++)
-    {
+    for (size_t i = 0; i < capacity; ++i) {
         dict->data[i].hkey = 0;
         dict->data[i].key = 0;
         dict->data[i].value = 0;
@@ -63,14 +60,12 @@ struct dict* dict_new(size_t capacity)
 void dict_clear(struct dict *d)
 {
     //Iterate through all the elements to delete them
-    for(size_t i = 0; i < d->capacity; i++)
-    {
+    for (size_t i = 0; i < d->capacity; ++i) {
         dict_result list = &d->data[i];
         dict_result l = list->next;
 
         //Free all the elements inside the local list
-        while(l)
-        {
+        while (l) {
             dict_result nextElement = l->next;
             free(l);
             l = nextElement;
@@ -85,8 +80,7 @@ void dict_clear(struct dict *d)
  *
  * @param d The dictionary ptr
  */
-void dict_free(struct dict *d)
-{
+void dict_free(struct dict *d) {
     //Clear the data
     dict_clear(d);
     //Free the dictionary's table
@@ -103,8 +97,7 @@ void dict_free(struct dict *d)
  *
  * @return The element of the corresponfing key
  */
-struct dict_element *dict_get(struct dict *d, uint32_t key)
-{
+struct dict_element *dict_get(struct dict *d, uint32_t key) {
     //Hash our key
     uint32_t h = hash(&key, 4);
     //Calculate the position on our array
@@ -112,7 +105,7 @@ struct dict_element *dict_get(struct dict *d, uint32_t key)
 
     //Search for the element inside the array
     struct dict_element* list = d->data[i].next;
-    for(; list; list = list->next) {
+    for (; list; list = list->next) {
         if(list->hkey == h) {
             return list;
         }
@@ -128,13 +121,10 @@ struct dict_element *dict_get(struct dict *d, uint32_t key)
  * @param newData The new data to add
  * @param newcap The new capacity
  */
-void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t newcap)
-{
-    for(size_t j = 0; j < d->capacity; j++)
-    {
+void recalculate_indexes(struct dict *d, struct dict_element* newData, size_t newcap) {
+    for (size_t j = 0; j < d->capacity; j++) {
         struct dict_element* list = d->data[j].next;
-        for(;list;)
-        {
+        for (;list;) {
             size_t newIndex = list->hkey % newcap;
             void* localnext = list->next;
 
@@ -225,11 +215,9 @@ void dict_remove(struct dict *d, uint32_t key)
     struct dict_element* last = &d->data[i];
 
     //Look for the element with the same key
-    for(;list; list = list->next)
-    {
+    for(;list; list = list->next) {
         //Does it have the same key?
-        if(list->hkey == h)
-        {
+        if(list->hkey == h) {
             //Reconnect the list
             if(last) last->next = list->next;
             else d->data[i] = *list->next;
@@ -242,20 +230,3 @@ void dict_remove(struct dict *d, uint32_t key)
     }
     d->size--;
 }
-
-/*void dict_print(struct dict *d)
-{
-    printf("==================\n");
-    for(size_t i = 0; i < d->capacity; i++)
-    {
-        printf("[%d]", i);
-        struct dict_element* list = d->data[i].next;
-        for(;list; list = list->next)
-            printf(" -> (%d, %d, %d)",
-                    list->hkey,
-                    list->key,
-                    (uint32_t)list->value);
-        printf("\n");
-    }
-    printf("==================\n");
-}*/

@@ -1,4 +1,8 @@
+Émulateur M68K
+=====
+
 implemented instruction:
+```
     rts
 
     bra
@@ -46,8 +50,10 @@ implemented instruction:
     ori_to_ccr
 
     neg
+```
 
-addressing mode:
+implemented addressing mode:
+```
     data register
     address register
     address
@@ -56,3 +62,4 @@ addressing mode:
     address with displacement
     immediate
     absolute long
+```
